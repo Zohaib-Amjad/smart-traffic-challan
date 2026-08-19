@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Stage: Image & Video Processing - Smart Traffic Challan</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  
+  <style>
+    .stage-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stage-title {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--color-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stage-img {
+      width: 100%;
+      height: 140px;
+      object-fit: contain;
+      background: #0F172A;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+    .tab-btn {
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+      border: 1px solid #CBD5E1;
+      background: #FFFFFF;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+    .tab-btn.active {
+      background: var(--color-secondary);
+      color: #FFFFFF;
+      border-color: var(--color-secondary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar (Deep Navy #0F172A) -->
+  <header class="navbar">
+    <a href="/" class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+      </div>
+      <div>
+        <div class="brand-title">Smart Traffic Challan System</div>
+        <div class="brand-subtitle">Input Stage: Image & Video Processing Engine</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="/" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Administrative Control</a>
+      <a href="/simulate.html" class="nav-item active"><i class="fa-solid fa-cloud-arrow-up"></i> Input Stage (Image/Video)</a>
+      <a href="/citizen.html" class="nav-item"><i class="fa-solid fa-id-card"></i> Citizen Portal</a>
+    </nav>
+
+    <div class="nav-status">
+      <div class="status-badge">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>OCR VERIFICATION ACTIVE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container (Light Gray #F8FAFC) -->
+  <main class="container">
+    
+    <!-- Input Mode Switcher Tabs -->
+    <div style="display: flex; gap: 8px; margin-bottom: 1.5rem;">
+      <button id="tabImageBtn" class="tab-btn active" onclick="switchInputTab('image')">
+        <i class="fa-solid fa-image"></i> Mode 1: Upload Single Image
+      </button>
+      <button id="tabVideoBtn" class="tab-btn" onclick="switchInputTab('video')">
+        <i class="fa-solid fa-file-video"></i> Mode 2: Upload Video Stream (.mp4/.avi)
+      </button>
+    </div>
+
+    <!-- Mode 1: Image Processing Card (White #FFFFFF) -->
+    <div id="imageInputSection" class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-image" style="color: #2563EB;"></i> Upload Image Input (Requirement #1)
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
+        <!-- Upload Custom Image -->
+        <div>
+          <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px;">
+            1. Select Vehicle Image (JPG/PNG):
+          </label>
+          <input type="file" id="imageFileInput" class="text-input" accept="image/*" style="width: 100%;">
+        </div>
+
+        <!-- Violation Type -->
+        <div>
+          <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px;">
+            2. Configure Traffic Rule Check:
+          </label>
+          <select id="simViolationType" class="select-input" style="width: 100%;">
+            <option value="V-RED-LIGHT">Red Light Signal Jumping (PKR 2,500)</option>
+            <option value="V-OVERSPEED">Over-Speeding Violation (PKR 2,000)</option>
+            <option value="V-WRONG-WAY">Wrong Way / Illegal U-Turn (PKR 3,000)</option>
+          </select>
+        </div>
+
+        <!-- Speed -->
+        <div>
+          <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px;">
+            3. Simulated Speed: <b id="simSpeedVal" style="color: #2563EB;">82 km/h</b> (Limit 60)
+          </label>
+          <input type="range" id="simSpeedSlider" min="30" max="140" value="82" class="text-input" style="width: 100%;" oninput="document.getElementById('simSpeedVal').innerText = this.value + ' km/h'">
+        </div>
+      </div>
+
+      <!-- Quick Vehicle Category Selector -->
+      <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">
+          Or Select from Pre-Loaded Vehicle Plates:
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <button class="btn btn-sm btn-secondary" onclick="loadSamplePreset('LEA-21-4589', 'sedan')"><i class="fa-solid fa-car"></i> Civic (LEA-21-4589)</button>
+          <button class="btn btn-sm btn-secondary" onclick="loadSamplePreset('LHE-5510', 'sedan')"><i class="fa-solid fa-car"></i> Mercedes (LHE-5510)</button>
+          <button class="btn btn-sm btn-secondary" onclick="loadSamplePreset('ICT-AB-567', 'sedan')"><i class="fa-solid fa-car"></i> Corolla (ICT-AB-567)</button>
+          <button class="btn btn-sm btn-secondary" onclick="loadSamplePreset('FD-2022-78', 'suv')"><i class="fa-solid fa-truck-monster"></i> Fortuner (FD-2022-78)</button>
+          <button class="btn btn-sm btn-secondary" onclick="loadSamplePreset('ISB-309', 'suv')"><i class="fa-solid fa-truck-monster"></i> Sportage (ISB-309)</button>
+          <button class="btn btn-sm btn-secondary" onclick="loadSamplePreset('KHI-8921', 'hatchback')"><i class="fa-solid fa-car-side"></i> Alto (KHI-8921)</button>
+          <button class="btn btn-sm btn-secondary" onclick="loadSamplePreset('MN-776-LHR', 'motorcycle')"><i class="fa-solid fa-motorcycle"></i> Yamaha (MN-776-LHR)</button>
+          <button class="btn btn-sm btn-secondary" onclick="loadSamplePreset('KHI-CC-401', 'pickup')"><i class="fa-solid fa-truck-pickup"></i> Revo (KHI-CC-401)</button>
+          <button class="btn btn-sm btn-secondary" onclick="loadSamplePreset('FSD-1199', 'bus')"><i class="fa-solid fa-bus"></i> Coaster (FSD-1199)</button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 1.25rem;">
+        <button id="btnRunPipeline" class="btn btn-primary" onclick="runSimulationPipeline()" style="padding: 10px 24px; font-size: 0.9rem;">
+          <i class="fa-solid fa-play"></i> Process Image (Detect & Generate Challan)
+        </button>
+      </div>
+    </div>
+
+    <!-- Mode 2: Video Processing Card -->
+    <div id="videoInputSection" class="card" style="margin-bottom: 1.5rem; display: none;">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-file-video" style="color: #2563EB;"></i> Upload Video Input (Requirement #1)
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
+        <div>
+          <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px;">
+            1. Select Video File (.mp4, .avi, .mov):
+          </label>
+          <input type="file" id="videoFileInput" class="text-input" accept="video/*" style="width: 100%;">
+        </div>
+
+        <div>
+          <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px;">
+            2. Camera Road Speed Limit:
+          </label>
+          <select id="videoSpeedLimit" class="select-input" style="width: 100%;">
+            <option value="50">50 km/h</option>
+            <option value="60" selected>60 km/h</option>
+            <option value="80">80 km/h</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px;">
+            3. Intersection Signal Phase:
+          </label>
+          <select id="videoSignalState" class="select-input" style="width: 100%;">
+            <option value="RED">RED (Stop-Line Enforcement)</option>
+            <option value="GREEN">GREEN (Speed Radar Only)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 1.25rem;">
+        <button id="btnRunVideo" class="btn btn-primary" onclick="runVideoProcessing()" style="padding: 10px 24px; font-size: 0.9rem;">
+          <i class="fa-solid fa-play"></i> Process Full Video Stream
+        </button>
+      </div>
+
+      <!-- Video Processing Results Box -->
+      <div id="videoResultsBox" style="display: none; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <h4 style="font-size: 1rem; font-weight: 700; color: #16A34A; margin-bottom: 8px;">
+          <i class="fa-solid fa-circle-check"></i> Video Processing Complete
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 1rem;">
+          <div style="background: #F8FAFC; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">FRAMES PROCESSED</div>
+            <div id="vidFrames" style="font-size: 1.2rem; font-weight: 800; color: #2563EB;">0</div>
+          </div>
+          <div style="background: #F8FAFC; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">PLATES RECOGNIZED</div>
+            <div id="vidPlatesCount" style="font-size: 1.2rem; font-weight: 800; color: #1E293B;">0</div>
+          </div>
+          <div style="background: #F8FAFC; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">VIOLATIONS ISSUED</div>
+            <div id="vidViolationsCount" style="font-size: 1.2rem; font-weight: 800; color: #DC2626;">0</div>
+          </div>
+        </div>
+        <div id="vidChallanList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      </div>
+    </div>
+
+    <!-- Step-by-Step Vision Pipeline Display -->
+    <div id="pipelineContainer" style="display: none;">
+      <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; color: #1E293B; display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-diagram-project" style="color: #2563EB;"></i> Computer Vision & OCR Processing Stages (Req #2, #3, #4, #5)
+      </h3>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <!-- Stage 1 -->
+        <div class="stage-card">
+          <div class="stage-title">STAGE 1: INPUT FRAME</div>
+          <img id="imgStage1" class="stage-img" alt="Stage 1">
+          <div style="font-size: 0.72rem; color: var(--text-muted);">Raw RGB capture from camera sensor.</div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="stage-card">
+          <div class="stage-title">STAGE 2: CANNY & EDGES</div>
+          <img id="imgStage2" class="stage-img" alt="Stage 2">
+          <div style="font-size: 0.72rem; color: var(--text-muted);">Bilateral noise filter & gradient edge localization.</div>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="stage-card">
+          <div class="stage-title">STAGE 3: PLATE ROI CROP</div>
+          <img id="imgStage3" class="stage-img" alt="Stage 3">
+          <div style="font-size: 0.72rem; color: var(--text-muted);">Aspect ratio & contour geometric extraction.</div>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="stage-card">
+          <div class="stage-title">STAGE 4: BINARY THRESHOLD</div>
+          <img id="imgStage4" class="stage-img" alt="Stage 4">
+          <div style="font-size: 0.72rem; color: var(--text-muted);">Adaptive Otsu binarization for character segmentation.</div>
+        </div>
+
+        <!-- Stage 5 -->
+        <div class="stage-card">
+          <div class="stage-title">STAGE 5: AI ANNOTATED</div>
+          <img id="imgStage5" class="stage-img" alt="Stage 5">
+          <div style="font-size: 0.72rem; color: var(--text-muted);">Bounding box overlays & speed tag.</div>
+        </div>
+      </div>
+
+      <!-- Pipeline Output Result Card -->
+      <div class="card" style="border-left: 4px solid #16A34A;">
+        <div class="card-header">
+          <div class="card-title" style="color: #16A34A;">
+            <i class="fa-solid fa-circle-check"></i> Processed Result & Generated Challan Record (Req #6, #8, #9)
+          </div>
+          <a id="resPdfBtn" href="#" target="_blank" class="btn btn-sm btn-primary">
+            <i class="fa-solid fa-file-pdf"></i> View Official Generated PDF
+          </a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; font-size: 0.88rem;">
+          <div>
+            <div style="color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">EXTRACTED NUMBER PLATE</div>
+            <div id="simResPlate" class="plate-badge" style="font-size: 1rem; display: inline-block; margin-top: 4px;">LEA-21-4589</div>
+          </div>
+          <div>
+            <div style="color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">OCR CONFIDENCE</div>
+            <div id="simResConf" style="font-weight: 700; color: #2563EB; font-size: 1rem; margin-top: 4px;">94.2%</div>
+          </div>
+          <div>
+            <div style="color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">CITATED VIOLATION</div>
+            <div id="simResViolation" style="font-weight: 700; color: #DC2626; margin-top: 4px;">Red Light Signal Jumping</div>
+          </div>
+          <div>
+            <div style="color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">AUTOMATED FINE</div>
+            <div id="simResFine" style="font-weight: 800; font-size: 1.15rem; color: #16A34A; margin-top: 2px;">PKR 2,500</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="/static/js/simulate.js"></script>
+</body>
+</html>

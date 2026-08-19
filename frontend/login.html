@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Smart Traffic Challan System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+  <!-- Top Navbar (Deep Navy #0F172A) -->
+  <header class="navbar">
+    <a href="/" class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-traffic-light"></i>
+      </div>
+      <div>
+        <div class="brand-title">Smart Traffic Challan System</div>
+        <div class="brand-subtitle">AI Violation Surveillance</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="/" class="nav-item">Home</a>
+      <a href="/register" class="nav-item">Register</a>
+    </nav>
+  </header>
+
+  <!-- Login Container -->
+  <main style="display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 140px); padding: 2rem 1.25rem;">
+    <div class="card" style="max-width: 440px; width: 100%; padding: 2.5rem 2rem; box-shadow: var(--shadow-lg); border-top: 4px solid var(--color-secondary);">
+      <h2 style="font-size: 1.6rem; font-weight: 800; text-align: center; color: #0F172A; margin-bottom: 1.75rem;">Login</h2>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <!-- Email Address -->
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="loginEmail" class="text-input" placeholder="Enter Email Address" required>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group" style="margin-bottom: 1.75rem;">
+          <label class="form-label">Password</label>
+          <input type="password" id="loginPassword" class="text-input" placeholder="Enter Password" required>
+        </div>
+
+        <!-- Submit Button (Blue #2563EB) -->
+        <button type="submit" id="btnLogin" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 1rem; margin-bottom: 1.25rem;">
+          Login
+        </button>
+
+        <!-- Register Link -->
+        <div style="text-align: center; font-size: 0.88rem; color: #64748B;">
+          Don't have an account? <a href="/register" style="color: #2563EB; font-weight: 700; text-decoration: none;">Register</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    © 2026 Smart Traffic Challan System | Final Year Project
+  </footer>
+
+  <script>
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('btnLogin');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
+          window.location.href = '/dashboard';
+        } else {
+          alert(data.detail || 'Login failed.');
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Login';
+      }
+    }
+  </script>
+</body>
+</html>

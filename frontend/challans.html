@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Challan History - Traffic Challan System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  
+  <style>
+    .hist-hero {
+      background-color: var(--color-primary);
+      padding: 4rem 1.5rem;
+      text-align: center;
+      color: #FFFFFF;
+      margin-bottom: 2.5rem;
+    }
+    .hist-hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.75rem;
+    }
+    .hist-hero-sub {
+      font-size: 1.05rem;
+      color: #CBD5E1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar (Deep Navy #0F172A) -->
+  <header class="navbar">
+    <a href="/dashboard" class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-traffic-light"></i>
+      </div>
+      <div>
+        <div class="brand-title">Smart Traffic Challan System</div>
+        <div class="brand-subtitle">AI Violation Surveillance</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="/dashboard" class="nav-item">Dashboard</a>
+      <a href="/generate-challan" class="nav-item">+ Generate Challan</a>
+      <a href="/reports" class="nav-item">Reports</a>
+      <a href="/login" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    </nav>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hist-hero">
+    <h1 class="hist-hero-title">Challan History</h1>
+    <p class="hist-hero-sub">View all your generated traffic challans</p>
+  </section>
+
+  <!-- Main Table Container -->
+  <main class="container" style="max-width: 1100px; padding-bottom: 4rem;">
+    <div class="card" style="padding: 2rem 2rem; box-shadow: var(--shadow-lg);">
+      
+      <!-- Card Top Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: #0F172A; margin-bottom: 4px;">My Challans</h2>
+          <p style="color: #64748B; font-size: 0.88rem;">Complete record of your traffic violation challans.</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <a href="/generate-challan" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Generate Challan
+          </a>
+          <a href="/reports" class="btn btn-dark">
+            <i class="fa-solid fa-chart-pie"></i> Reports
+          </a>
+        </div>
+      </div>
+
+      <!-- Master Table -->
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Vehicle Number</th>
+              <th>Violation</th>
+              <th>Fine</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="myChallansTbody">
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 2rem; color: #64748B;">
+                <i class="fa-solid fa-spinner fa-spin"></i> Loading challans history...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    © 2026 Smart Traffic Challan System | Final Year Project
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', loadMyChallans);
+
+    async function loadMyChallans() {
+      const tbody = document.getElementById('myChallansTbody');
+      try {
+        const res = await fetch('/api/challans');
+        const data = await res.json();
+
+        if (!data.items || data.items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: #64748B;">No challans found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.items.map(ch => {
+          const isPaid = (ch.status && ch.status.toLowerCase() === 'paid');
+          return `
+            <tr>
+              <td style="font-weight: 700;">#${ch.id}</td>
+              <td style="font-weight: 800; color: #0F172A;">
+                <span class="plate-badge">${ch.plate_number}</span>
+              </td>
+              <td style="color: #1E293B; font-weight: 600;">${ch.violation_name}</td>
+              <td style="font-weight: 800; color: #0F172A;">Rs. ${Number(ch.fine_amount).toLocaleString()}</td>
+              <td style="color: #64748B;">${ch.location || 'lahore'}</td>
+              <td>
+                <span class="status-pill ${isPaid ? 'paid' : 'pending'}">
+                  ${isPaid ? 'Paid' : 'Unpaid'}
+                </span>
+              </td>
+              <td style="font-size: 0.8rem; color: #64748B; white-space: nowrap;">${ch.created_at}</td>
+              <td>
+                <a href="/challan/${ch.id}" class="btn btn-primary btn-sm">
+                  View
+                </a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red; padding: 1.5rem;">Error loading challans: ${err.message}</td></tr>`;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Smart Traffic Challan System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  
+  <style>
+    .dash-hero {
+      background-color: var(--color-primary);
+      padding: 4rem 1.5rem;
+      text-align: center;
+      color: #FFFFFF;
+      margin-bottom: 2.5rem;
+    }
+    .dash-hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.75rem;
+    }
+    .dash-hero-sub {
+      font-size: 1.05rem;
+      color: #CBD5E1;
+    }
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .action-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem 1.75rem;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 240px;
+      transition: all 0.2s ease;
+    }
+    .action-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: #CBD5E1;
+    }
+    .action-icon-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .action-desc {
+      font-size: 0.88rem;
+      color: #64748B;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .account-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 1.5rem;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 3.5rem;
+      text-align: center;
+    }
+    .account-inner {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      max-width: 600px;
+      margin: 1.25rem auto 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar (Deep Navy #0F172A) -->
+  <header class="navbar">
+    <a href="/dashboard" class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-traffic-light"></i>
+      </div>
+      <div>
+        <div class="brand-title">Smart Traffic Challan System</div>
+        <div class="brand-subtitle">AI Violation Surveillance</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="/" class="nav-item">Home</a>
+      <a href="/dashboard" class="nav-item active">Dashboard</a>
+      <a href="/vehicles" class="nav-item">Vehicles</a>
+      <a href="/challans" class="nav-item">Challans</a>
+      <a href="#" onclick="handleLogout()" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    </nav>
+  </header>
+
+  <!-- Welcome Hero Banner -->
+  <section class="dash-hero">
+    <h1 class="dash-hero-title" id="welcomeUserHeading">Welcome, Officer</h1>
+    <p class="dash-hero-sub">Welcome to your Smart Traffic Challan Dashboard.</p>
+  </section>
+
+  <!-- Dashboard Container -->
+  <main class="container">
+    
+    <!-- 4 Hub Action Cards -->
+    <div class="action-grid">
+      <!-- Card 1: Vehicle Management -->
+      <div class="action-card">
+        <div>
+          <div class="action-icon-title">🚗 Vehicle Management</div>
+          <p class="action-desc">Register and manage vehicle information and ownership records.</p>
+        </div>
+        <a href="/vehicles" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; width: 100%; max-width: 200px;">
+          Manage Vehicles
+        </a>
+      </div>
+
+      <!-- Card 2: Number Plate Recognition -->
+      <div class="action-card">
+        <div>
+          <div class="action-icon-title">📷 Number Plate Recognition</div>
+          <p class="action-desc">Upload a vehicle image for automatic AI number plate detection.</p>
+        </div>
+        <a href="/number-plate" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; width: 100%; max-width: 200px;">
+          Upload Image
+        </a>
+      </div>
+
+      <!-- Card 3: Challan Management -->
+      <div class="action-card">
+        <div>
+          <div class="action-icon-title">📄 Challan Management</div>
+          <p class="action-desc">Create and manage traffic violation tickets and records.</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 200px;">
+          <a href="/generate-challan" class="btn btn-primary" style="justify-content: center; padding: 9px 16px; font-weight: 700;">
+            Generate Challan
+          </a>
+          <a href="/challans" class="btn btn-dark" style="justify-content: center; padding: 9px 16px; font-weight: 700;">
+            Challan History
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 4: Reports -->
+      <div class="action-card">
+        <div>
+          <div class="action-icon-title">📊 Reports</div>
+          <p class="action-desc">View traffic violation analytics and export official CSV reports.</p>
+        </div>
+        <a href="/reports" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; width: 100%; max-width: 200px;">
+          Reports
+        </a>
+      </div>
+    </div>
+
+    <!-- Account Information Card -->
+    <div class="account-card">
+      <h2 style="font-size: 1.35rem; font-weight: 800; color: #0F172A;">Account Information</h2>
+      <div class="account-inner">
+        <div style="margin-bottom: 8px; font-size: 0.95rem;">
+          <strong style="color: #1E293B;">Name:</strong> <span id="accName" style="color: #475569;">Traffic Officer</span>
+        </div>
+        <div style="font-size: 0.95rem;">
+          <strong style="color: #1E293B;">Email:</strong> <span id="accEmail" style="color: #475569;">officer@traffic.gov.pk</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    © 2026 Smart Traffic Challan System | Final Year Project
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Fetch official active officer user from backend
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user) {
+            localStorage.setItem('currentUser', JSON.stringify(data.user));
+            document.getElementById('welcomeUserHeading').innerText = `Welcome, ${data.user.name}`;
+            document.getElementById('accName').innerText = data.user.name;
+            document.getElementById('accEmail').innerText = data.user.email;
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching user info:', err);
+      }
+
+      // Fallback
+      document.getElementById('welcomeUserHeading').innerText = 'Welcome, Traffic Officer';
+      document.getElementById('accName').innerText = 'Traffic Officer';
+      document.getElementById('accEmail').innerText = 'officer@traffic.gov.pk';
+    });
+
+    function handleLogout() {
+      localStorage.removeItem('currentUser');
+      window.location.href = '/login';
+    }
+  </script>
+</body>
+</html>

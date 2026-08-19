@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traffic Challan Reports - Traffic Challan System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  
+  <style>
+    .rep-hero {
+      background-color: var(--color-primary);
+      padding: 4rem 1.5rem;
+      text-align: center;
+      color: #FFFFFF;
+      margin-bottom: 2.5rem;
+    }
+    .rep-hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.75rem;
+    }
+    .rep-hero-sub {
+      font-size: 1.05rem;
+      color: #CBD5E1;
+    }
+    .rep-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem 2rem;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 2.25rem;
+    }
+    .rep-section-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      text-align: center;
+      color: #0F172A;
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar (Deep Navy #0F172A) -->
+  <header class="navbar">
+    <a href="/dashboard" class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-traffic-light"></i>
+      </div>
+      <div>
+        <div class="brand-title">Smart Traffic Challan System</div>
+        <div class="brand-subtitle">AI Violation Surveillance</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="/dashboard" class="nav-item">Dashboard</a>
+      <a href="/challans" class="nav-item">Challan History</a>
+      <a href="/generate-challan" class="nav-item">+ Generate Challan</a>
+      <a href="/login" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    </nav>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="rep-hero">
+    <h1 class="rep-hero-title">Traffic Challan Reports</h1>
+    <p class="rep-hero-sub">View and analyze your challan records</p>
+  </section>
+
+  <!-- Main Content -->
+  <main class="container" style="max-width: 1000px; padding-bottom: 4rem;">
+    
+    <!-- 4 Top KPI Cards (Screenshot 29) -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon blue">
+          <i class="fa-solid fa-file-invoice"></i>
+        </div>
+        <div>
+          <div class="metric-label">Total Challans</div>
+          <div class="metric-value" id="repTotalChallans">0</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon gold">
+          <i class="fa-solid fa-money-bill-wave"></i>
+        </div>
+        <div>
+          <div class="metric-label">Total Fine</div>
+          <div class="metric-value" id="repTotalFine">Rs. 0</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon green">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div>
+          <div class="metric-label">Paid Fine</div>
+          <div class="metric-value" id="repPaidFine" style="color: var(--color-success);">Rs. 0</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon red">
+          <i class="fa-solid fa-circle-exclamation"></i>
+        </div>
+        <div>
+          <div class="metric-label">Unpaid Fine</div>
+          <div class="metric-value" id="repUnpaidFine" style="color: var(--color-danger);">Rs. 0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Challan Status -->
+    <div class="rep-card" style="text-align: center;">
+      <h2 class="rep-section-title">Challan Status</h2>
+      <div style="font-size: 1.05rem; color: #1E293B; display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;">
+        <div>Paid Challans: <strong id="repPaidCount" style="color: #16A34A; font-size: 1.25rem;">0</strong></div>
+        <div>Unpaid Challans: <strong id="repUnpaidCount" style="color: #DC2626; font-size: 1.25rem;">0</strong></div>
+      </div>
+    </div>
+
+    <!-- Section: Violation Summary -->
+    <div class="rep-card">
+      <h2 class="rep-section-title">Violation Summary</h2>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Violation</th>
+              <th style="text-align: right;">Number of Challans</th>
+            </tr>
+          </thead>
+          <tbody id="repViolationTbody">
+            <tr><td colspan="2" style="text-align: center; padding: 1.5rem; color: #64748B;">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section: Recent Challans -->
+    <div class="rep-card">
+      <h2 class="rep-section-title">Recent Challans</h2>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Vehicle</th>
+              <th>Violation</th>
+              <th>Fine</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="repRecentTbody">
+            <tr><td colspan="6" style="text-align: center; padding: 1.5rem; color: #64748B;">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section: Report Export -->
+    <div class="rep-card" style="text-align: center;">
+      <h2 class="rep-section-title">Report Export</h2>
+      <p style="color: #64748B; font-size: 0.95rem; margin-bottom: 1.5rem;">Download your complete challan report in CSV / Excel format.</p>
+      <a href="/api/reports/csv" class="btn btn-primary" style="padding: 12px 32px; font-size: 1rem;">
+        <i class="fa-solid fa-file-excel"></i> Download CSV Report
+      </a>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    © 2026 Smart Traffic Challan System | Final Year Project
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', loadReportsData);
+
+    async function loadReportsData() {
+      try {
+        const res = await fetch('/api/reports/summary');
+        const data = await res.json();
+
+        document.getElementById('repTotalChallans').innerText = data.total_challans;
+        document.getElementById('repTotalFine').innerText = `Rs. ${Number(data.total_fine).toLocaleString()}`;
+        document.getElementById('repPaidFine').innerText = `Rs. ${Number(data.paid_fine).toLocaleString()}`;
+        document.getElementById('repUnpaidFine').innerText = `Rs. ${Number(data.unpaid_fine).toLocaleString()}`;
+
+        document.getElementById('repPaidCount').innerText = data.paid_challans;
+        document.getElementById('repUnpaidCount').innerText = data.unpaid_challans;
+
+        const vTbody = document.getElementById('repViolationTbody');
+        if (data.violation_summary && data.violation_summary.length > 0) {
+          vTbody.innerHTML = data.violation_summary.map(v => `
+            <tr>
+              <td style="font-weight: 600; color: #1E293B;">${v.violation_name}</td>
+              <td style="text-align: right; font-weight: 800; color: #0F172A;">${v.count}</td>
+            </tr>
+          `).join('');
+        } else {
+          vTbody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #64748B; padding: 1rem;">No violations recorded.</td></tr>';
+        }
+
+        const rTbody = document.getElementById('repRecentTbody');
+        if (data.recent_challans && data.recent_challans.length > 0) {
+          rTbody.innerHTML = data.recent_challans.map(r => `
+            <tr>
+              <td style="font-weight: 700;">#${r.id}</td>
+              <td style="font-weight: 800; color: #0F172A;">
+                <span class="plate-badge">${r.vehicle}</span>
+              </td>
+              <td style="color: #1E293B; font-weight: 600;">${r.violation}</td>
+              <td style="font-weight: 800; color: #0F172A;">Rs. ${Number(r.fine).toLocaleString()}</td>
+              <td><span class="status-pill pending">${r.status || 'Unpaid'}</span></td>
+              <td style="font-size: 0.8rem; color: #64748B; white-space: nowrap;">${r.date}</td>
+            </tr>
+          `).join('');
+        } else {
+          rTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748B; padding: 1rem;">No recent challans.</td></tr>';
+        }
+
+      } catch (err) {
+        console.error('Error loading reports:', err);
+      }
+    }
+  </script>
+</body>
+</html>

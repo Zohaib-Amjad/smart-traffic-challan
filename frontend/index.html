@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Traffic Challan System - Automatic Traffic Challan System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  
+  <style>
+    .upload-section {
+      max-width: 780px;
+      margin: -2.75rem auto 3rem auto;
+      position: relative;
+      z-index: 10;
+      padding: 0 1rem;
+    }
+    .upload-dropzone {
+      border: 2px dashed #2563EB;
+      background: #F8FAFC;
+      border-radius: var(--radius-md);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+    .upload-dropzone:hover {
+      background: #EFF6FF;
+      border-color: #1D4ED8;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.75rem;
+      margin-bottom: 3.5rem;
+    }
+    .feature-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem 1.75rem;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      transition: all 0.2s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: #CBD5E1;
+    }
+    .feature-icon {
+      font-size: 2.25rem;
+      margin-bottom: 1.25rem;
+      display: inline-block;
+    }
+    .feature-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 0.9rem;
+      color: #64748B;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar (Deep Navy #0F172A) -->
+  <header class="navbar">
+    <a href="/" class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-traffic-light"></i>
+      </div>
+      <div>
+        <div class="brand-title">Smart Traffic Challan System</div>
+        <div class="brand-subtitle">AI Violation Surveillance</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="/" class="nav-item active">Home</a>
+      <a href="/login" class="nav-item">Login</a>
+      <a href="/register" class="nav-item">Register</a>
+      <a href="/dashboard" class="nav-item">Dashboard</a>
+    </nav>
+  </header>
+
+  <!-- Hero Banner (Deep Navy #0F172A) -->
+  <section class="hero-banner">
+    <h1 class="hero-title">Automatic Traffic Challan<br>System</h1>
+    <p class="hero-subtitle">
+      Smart and secure traffic challan management system for vehicle monitoring and violation detection.
+    </p>
+    <div class="hero-btns">
+      <a href="/login" class="btn btn-primary" style="padding: 12px 34px; font-size: 1rem;">Login</a>
+      <a href="/register" class="btn btn-success" style="padding: 12px 34px; font-size: 1rem;">Register</a>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <main class="container">
+    
+    <!-- Upload Vehicle Image Section -->
+    <div class="upload-section">
+      <div class="card" style="text-align: center; padding: 2.5rem 2rem; box-shadow: var(--shadow-lg);">
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: #0F172A; margin-bottom: 8px;">Upload Vehicle Image</h2>
+        <p style="color: #64748B; font-size: 0.92rem; max-width: 550px; margin: 0 auto;">
+          Upload a vehicle image to detect the number plate and generate traffic challan automatically.
+        </p>
+
+        <form id="homeUploadForm" onsubmit="handleHomeUpload(event)">
+          <div class="upload-dropzone">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: #2563EB;"></i>
+            <input type="file" id="homeImageInput" accept="image/*" required style="font-size: 0.9rem; color: #1E293B; cursor: pointer;">
+          </div>
+          <button type="submit" id="btnHomeUpload" class="btn btn-primary" style="padding: 12px 36px; font-size: 1rem; width: 100%; max-width: 240px;">
+            <i class="fa-solid fa-bolt"></i> Upload Image
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 3 Features Grid (Quick Access Cards) -->
+    <section class="features-grid">
+      <!-- Feature 1: Vehicle Registration -->
+      <a href="/vehicles" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
+        <div class="feature-icon">🚗</div>
+        <h3 class="feature-title">Vehicle Registration</h3>
+        <p class="feature-desc">Register and manage vehicle information securely with real-time verification.</p>
+      </a>
+
+      <!-- Feature 2: Number Plate Recognition -->
+      <a href="/number-plate" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
+        <div class="feature-icon">📷</div>
+        <h3 class="feature-title">Number Plate Recognition</h3>
+        <p class="feature-desc">Detect vehicle number plates instantly using Computer Vision & OCR.</p>
+      </a>
+
+      <!-- Feature 3: Challan Management -->
+      <a href="/challans" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
+        <div class="feature-icon">📄</div>
+        <h3 class="feature-title">Challan Management</h3>
+        <p class="feature-desc">Generate, inspect, and export official digital traffic violation challans.</p>
+      </a>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    © 2026 Smart Traffic Challan System | Final Year Project
+  </footer>
+
+  <script>
+    async function handleHomeUpload(e) {
+      e.preventDefault();
+      const input = document.getElementById('homeImageInput');
+      if (!input.files || !input.files[0]) {
+        alert('Please choose an image file first.');
+        return;
+      }
+
+      const btn = document.getElementById('btnHomeUpload');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing OCR...';
+
+      const formData = new FormData();
+      formData.append('file', input.files[0]);
+
+      try {
+        const res = await fetch('/api/simulate/process_image', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+          sessionStorage.setItem('lastDetectedPlate', data.plate_number);
+          sessionStorage.setItem('lastPreviewImg', data.pipeline_stages.original_image);
+          window.location.href = '/number-plate';
+        } else {
+          alert('Could not detect number plate.');
+        }
+      } catch (err) {
+        alert('Error processing image: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Upload Image';
+      }
+    }
+  </script>
+</body>
+</html>

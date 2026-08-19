@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number Plate Recognition - Smart Traffic Challan System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  
+  <style>
+    .npr-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      border-top: 4px solid var(--color-secondary);
+    }
+    .result-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar (Deep Navy #0F172A) -->
+  <header class="navbar">
+    <a href="/dashboard" class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-traffic-light"></i>
+      </div>
+      <div>
+        <div class="brand-title">Smart Traffic Challan System</div>
+        <div class="brand-subtitle">AI Violation Surveillance</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="/dashboard" class="nav-item">Dashboard</a>
+      <a href="/vehicles" id="navVehicles" class="nav-item">Vehicles</a>
+      <a href="#" id="navTryAgain" class="nav-item" style="display: none;" onclick="resetNprView()"><i class="fa-solid fa-rotate-left"></i> Try Again</a>
+      <a href="/login" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container" style="padding-top: 3.5rem; padding-bottom: 4rem;">
+    
+    <!-- Upload State -->
+    <div id="nprUploadSection" class="npr-card">
+      <h2 style="font-size: 1.55rem; font-weight: 800; color: #0F172A; margin-bottom: 8px;">Number Plate Recognition</h2>
+      <p style="color: #64748B; font-size: 0.92rem; margin-bottom: 1.75rem;">
+        Upload a vehicle image to detect its number plate using Computer Vision & OCR.
+      </p>
+
+      <form id="nprForm" onsubmit="handleNprUpload(event)">
+        <div style="text-align: left; margin-bottom: 1.5rem;">
+          <label class="form-label">Select Vehicle Image</label>
+          <input type="file" id="nprImageInput" class="text-input" accept="image/*" required style="cursor: pointer;">
+        </div>
+
+        <button type="submit" id="btnNprUpload" class="btn btn-primary" style="padding: 11px 32px; font-size: 1rem; width: 100%; max-width: 220px;">
+          <i class="fa-solid fa-camera"></i> Upload Image
+        </button>
+      </form>
+    </div>
+
+    <!-- Result State -->
+    <div id="nprResultSection" class="npr-card" style="display: none;">
+      <h2 style="font-size: 1.55rem; font-weight: 800; color: #0F172A; margin-bottom: 1.5rem;">Number Plate Recognition Result</h2>
+
+      <!-- Vehicle Image Preview -->
+      <div style="margin-bottom: 1.5rem;">
+        <img id="nprPreviewImg" src="" alt="Detected Vehicle" style="max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border: 1px solid #CBD5E1; max-height: 240px; object-fit: contain; background: #0F172A;">
+      </div>
+
+      <!-- Detected Text Box -->
+      <div class="result-box">
+        <div style="font-size: 0.88rem; font-weight: 700; color: #1E293B; margin-bottom: 6px;">
+          Detected Number Plate / Text:
+        </div>
+        <div id="nprDetectedText" style="font-size: 1.4rem; font-weight: 800; color: #2563EB; font-family: 'Consolas', monospace;">
+          --
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="margin-top: 1.75rem; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+        <a id="btnProceedChallan" href="/generate-challan" class="btn btn-primary" style="padding: 10px 22px;">
+          <i class="fa-solid fa-file-invoice"></i> Generate Challan for this Vehicle
+        </a>
+        <button class="btn btn-secondary" onclick="resetNprView()" style="padding: 10px 20px;">
+          Try Again
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    © 2026 Smart Traffic Challan System | Final Year Project
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cachedPlate = sessionStorage.getItem('lastDetectedPlate');
+      const cachedImg = sessionStorage.getItem('lastPreviewImg');
+      if (cachedPlate && cachedImg) {
+        showResult(cachedPlate, cachedImg);
+        sessionStorage.removeItem('lastDetectedPlate');
+        sessionStorage.removeItem('lastPreviewImg');
+      }
+    });
+
+    function showResult(plate, imgUrl) {
+      document.getElementById('nprUploadSection').style.display = 'none';
+      document.getElementById('nprResultSection').style.display = 'block';
+      document.getElementById('navTryAgain').style.display = 'inline-flex';
+      document.getElementById('navVehicles').style.display = 'none';
+
+      document.getElementById('nprPreviewImg').src = imgUrl;
+      document.getElementById('nprDetectedText').innerText = plate || 'No number plate text detected.';
+      document.getElementById('btnProceedChallan').href = `/generate-challan?plate=${encodeURIComponent(plate || '')}`;
+    }
+
+    function resetNprView() {
+      document.getElementById('nprUploadSection').style.display = 'block';
+      document.getElementById('nprResultSection').style.display = 'none';
+      document.getElementById('navTryAgain').style.display = 'none';
+      document.getElementById('navVehicles').style.display = 'inline-flex';
+      document.getElementById('nprForm').reset();
+    }
+
+    async function handleNprUpload(e) {
+      e.preventDefault();
+      const input = document.getElementById('nprImageInput');
+      if (!input.files || !input.files[0]) {
+        alert('Please choose an image file first.');
+        return;
+      }
+
+      const btn = document.getElementById('btnNprUpload');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing OCR...';
+
+      const formData = new FormData();
+      formData.append('file', input.files[0]);
+
+      try {
+        const res = await fetch('/api/simulate/process_image', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+          showResult(data.plate_number, data.pipeline_stages.original_image);
+        } else {
+          showResult('No number plate text detected.', URL.createObjectURL(input.files[0]));
+        }
+      } catch (err) {
+        alert('Error detecting plate: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-camera"></i> Upload Image';
+      }
+    }
+  </script>
+</body>
+</html>

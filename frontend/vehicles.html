@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Vehicles - Smart Traffic Challan System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  
+  <style>
+    .vehicle-display-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.75rem;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      max-width: 500px;
+      margin: 0 auto 1.5rem auto;
+      transition: all 0.2s ease;
+    }
+    .vehicle-display-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .v-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .v-field {
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #1E293B;
+    }
+    .v-label {
+      font-weight: 700;
+      color: #0F172A;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar (Deep Navy #0F172A) -->
+  <header class="navbar">
+    <a href="/dashboard" class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-traffic-light"></i>
+      </div>
+      <div>
+        <div class="brand-title">Smart Traffic Challan System</div>
+        <div class="brand-subtitle">AI Violation Surveillance</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="/dashboard" class="nav-item">Dashboard</a>
+      <a href="#" id="navMyVehicles" class="nav-item active" onclick="showVehicleView('list')">My Vehicles</a>
+      <a href="#" id="navAddVehicle" class="nav-item" onclick="showVehicleView('add')">+ Add Vehicle</a>
+      <a href="/login" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container" style="max-width: 800px; padding-top: 2.5rem; padding-bottom: 4rem;">
+    
+    <!-- View 1: My Vehicles List -->
+    <div id="vehicleListView">
+      <div class="card" style="padding: 2.5rem 2rem; box-shadow: var(--shadow-lg); margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 12px;">
+          <h2 style="font-size: 1.6rem; font-weight: 800; color: #0F172A;">My Vehicles</h2>
+          <button class="btn btn-primary" onclick="showVehicleView('add')">
+            <i class="fa-solid fa-plus"></i> Add Vehicle
+          </button>
+        </div>
+
+        <div id="vehiclesContainer" style="margin-top: 1.5rem;">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- View 2: Register Vehicle Form -->
+    <div id="vehicleAddView" style="display: none;">
+      <div class="card" style="padding: 2.5rem 2rem; box-shadow: var(--shadow-lg); max-width: 550px; margin: 0 auto; border-top: 4px solid var(--color-secondary);">
+        <h2 style="font-size: 1.5rem; font-weight: 800; text-align: center; color: #0F172A; margin-bottom: 1.75rem;">Register Vehicle</h2>
+
+        <form id="addVehicleForm" onsubmit="handleAddVehicle(event)">
+          <!-- Vehicle Number -->
+          <div class="form-group">
+            <label class="form-label">Vehicle Number</label>
+            <input type="text" id="vNumber" class="text-input" placeholder="ABC-123" required>
+          </div>
+
+          <!-- Vehicle Type Dropdown -->
+          <div class="form-group">
+            <label class="form-label">Vehicle Type</label>
+            <select id="vType" class="select-input" required>
+              <option value="" disabled selected>Select Vehicle</option>
+              <option value="Car">Car</option>
+              <option value="Motorcycle">Motorcycle</option>
+              <option value="Truck">Truck</option>
+              <option value="Bus">Bus</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <!-- Owner Name -->
+          <div class="form-group">
+            <label class="form-label">Owner Name</label>
+            <input type="text" id="vOwner" class="text-input" placeholder="e.g. Ahmed Khan" required>
+          </div>
+
+          <!-- Vehicle Model -->
+          <div class="form-group">
+            <label class="form-label">Vehicle Model</label>
+            <input type="text" id="vModel" class="text-input" placeholder="e.g. Corolla" required>
+          </div>
+
+          <!-- Vehicle Color -->
+          <div class="form-group" style="margin-bottom: 1.75rem;">
+            <label class="form-label">Vehicle Color</label>
+            <input type="text" id="vColor" class="text-input" placeholder="e.g. White">
+          </div>
+
+          <!-- Register Vehicle Button -->
+          <button type="submit" id="btnSaveVehicle" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 1rem; margin-bottom: 1rem;">
+            Register Vehicle
+          </button>
+
+          <button type="button" class="btn btn-secondary" onclick="showVehicleView('list')" style="width: 100%; justify-content: center; padding: 10px;">
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    © 2026 Smart Traffic Challan System | Final Year Project
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.location.pathname.includes('/add')) {
+        showVehicleView('add');
+      } else {
+        loadVehicles();
+      }
+    });
+
+    function showVehicleView(view) {
+      if (view === 'add') {
+        document.getElementById('vehicleListView').style.display = 'none';
+        document.getElementById('vehicleAddView').style.display = 'block';
+        document.getElementById('navAddVehicle').classList.add('active');
+        document.getElementById('navMyVehicles').classList.remove('active');
+      } else {
+        document.getElementById('vehicleListView').style.display = 'block';
+        document.getElementById('vehicleAddView').style.display = 'none';
+        document.getElementById('navMyVehicles').classList.add('active');
+        document.getElementById('navAddVehicle').classList.remove('active');
+        loadVehicles();
+      }
+    }
+
+    async function loadVehicles() {
+      const container = document.getElementById('vehiclesContainer');
+      try {
+        const res = await fetch('/api/vehicles');
+        const data = await res.json();
+
+        if (!data.vehicles || data.vehicles.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 2rem 1rem;">
+              <p style="font-size: 1.05rem; color: #64748B; margin-bottom: 1.5rem;">No vehicles registered yet.</p>
+              <button class="btn btn-primary" onclick="showVehicleView('add')" style="padding: 11px 24px; font-weight: 700;">
+                Add Your First Vehicle
+              </button>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = data.vehicles.map(v => `
+          <div class="vehicle-display-card">
+            <div class="v-title">🚗 ${v.plate_number}</div>
+            <div class="v-field"><span class="v-label">Type:</span> ${v.vehicle_type || 'Car'}</div>
+            <div class="v-field"><span class="v-label">Owner:</span> ${v.owner_name}</div>
+            <div class="v-field"><span class="v-label">Model:</span> ${v.vehicle_model}</div>
+            <div class="v-field"><span class="v-label">Color:</span> ${v.vehicle_color || 'White'}</div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        container.innerHTML = `<div style="color: red; text-align: center;">Error loading vehicles: ${err.message}</div>`;
+      }
+    }
+
+    async function handleAddVehicle(e) {
+      e.preventDefault();
+      const plate_number = document.getElementById('vNumber').value;
+      const vehicle_type = document.getElementById('vType').value;
+      const owner_name = document.getElementById('vOwner').value;
+      const vehicle_model = document.getElementById('vModel').value;
+      const vehicle_color = document.getElementById('vColor').value;
+
+      const btn = document.getElementById('btnSaveVehicle');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+      try {
+        const res = await fetch('/api/vehicles/add', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ plate_number, vehicle_type, owner_name, vehicle_model, vehicle_color })
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('addVehicleForm').reset();
+          showVehicleView('list');
+        } else {
+          alert('Could not add vehicle.');
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Register Vehicle';
+      }
+    }
+  </script>
+</body>
+</html>

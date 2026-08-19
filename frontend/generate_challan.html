@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Challan - Traffic Challan System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  
+  <style>
+    .gen-hero {
+      background-color: var(--color-primary);
+      padding: 4rem 1.5rem;
+      text-align: center;
+      color: #FFFFFF;
+      margin-bottom: 2.5rem;
+    }
+    .gen-hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.75rem;
+    }
+    .gen-hero-sub {
+      font-size: 1.05rem;
+      color: #CBD5E1;
+    }
+    .gen-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem;
+      max-width: 600px;
+      margin: 0 auto 3.5rem auto;
+      box-shadow: var(--shadow-card);
+      border-top: 4px solid var(--color-secondary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar (Deep Navy #0F172A) -->
+  <header class="navbar">
+    <a href="/dashboard" class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-traffic-light"></i>
+      </div>
+      <div>
+        <div class="brand-title">Smart Traffic Challan System</div>
+        <div class="brand-subtitle">AI Violation Surveillance</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="/dashboard" class="nav-item">Dashboard</a>
+      <a href="/challans" class="nav-item">Challan History</a>
+      <a href="/reports" class="nav-item">Reports</a>
+      <a href="/login" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    </nav>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="gen-hero">
+    <h1 class="gen-hero-title">Generate Traffic Challan</h1>
+    <p class="gen-hero-sub">Create a new traffic violation challan</p>
+  </section>
+
+  <!-- Main Form Container -->
+  <main class="container">
+    <div class="gen-card">
+      <h2 style="font-size: 1.4rem; font-weight: 800; text-align: center; color: #0F172A; margin-bottom: 2rem;">
+        Challan Information
+      </h2>
+
+      <form id="genChallanForm" onsubmit="handleGenerateChallan(event)">
+        <!-- Vehicle Number -->
+        <div class="form-group">
+          <label class="form-label">Vehicle Number</label>
+          <input type="text" id="chVehicleNumber" class="text-input" placeholder="e.g. 234 or LEA-21-4589" required>
+        </div>
+
+        <!-- Traffic Violation Dropdown -->
+        <div class="form-group">
+          <label class="form-label">Traffic Violation</label>
+          <select id="chViolation" class="select-input" required>
+            <option value="Wrong Parking - Rs. 2000" selected>Wrong Parking - Rs. 2000</option>
+            <option value="Signal Violation - Rs. 3000">Signal Violation - Rs. 3000</option>
+            <option value="Over Speeding - Rs. 2000">Over Speeding - Rs. 2000</option>
+            <option value="Wrong Way / Illegal U-Turn - Rs. 3000">Wrong Way / Illegal U-Turn - Rs. 3000</option>
+            <option value="Riding Without Helmet - Rs. 1000">Riding Without Helmet - Rs. 1000</option>
+          </select>
+        </div>
+
+        <!-- Location -->
+        <div class="form-group" style="margin-bottom: 2rem;">
+          <label class="form-label">Location</label>
+          <input type="text" id="chLocation" class="text-input" placeholder="e.g. lahore" value="lahore" required>
+        </div>
+
+        <!-- Generate Button -->
+        <button type="submit" id="btnGenChallan" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 1rem;">
+          <i class="fa-solid fa-file-circle-plus"></i> Generate Challan
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    © 2026 Smart Traffic Challan System | Final Year Project
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const plateParam = urlParams.get('plate');
+      if (plateParam) {
+        document.getElementById('chVehicleNumber').value = plateParam;
+      }
+    });
+
+    async function handleGenerateChallan(e) {
+      e.preventDefault();
+      const vehicle_number = document.getElementById('chVehicleNumber').value;
+      const violation_name = document.getElementById('chViolation').value;
+      const location = document.getElementById('chLocation').value;
+
+      const btn = document.getElementById('btnGenChallan');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating Challan...';
+
+      try {
+        const res = await fetch('/api/challans/generate', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ vehicle_number, violation_name, location })
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.location.href = `/challan/${data.id}`;
+        } else {
+          alert('Could not generate challan.');
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Generate Challan';
+      }
+    }
+  </script>
+</body>
+</html>
