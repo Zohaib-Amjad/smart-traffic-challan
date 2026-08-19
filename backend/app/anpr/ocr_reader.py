@@ -1,135 +1,129 @@
-import cv2
 import re
+import cv2
 import numpy as np
 
-# Global OCR readers
+# Optional Neural EasyOCR engine
 _easyocr_reader = None
-_tesseract_available = None
-
-def check_tesseract_availability():
-    global _tesseract_available
-    if _tesseract_available is None:
-        try:
-            import pytesseract
-            # Test pytesseract version or configuration
-            _ = pytesseract.get_tesseract_version()
-            _tesseract_available = True
-            print("[OCR] Tesseract OCR is available and active.")
-        except Exception:
-            _tesseract_available = False
-            print("[OCR] Tesseract binary not found in PATH; utilizing high-speed EasyOCR / Neural OCR engine.")
-    return _tesseract_available
-
 def get_easyocr_reader():
     global _easyocr_reader
     if _easyocr_reader is None:
         try:
             import easyocr
-            # Load English reader without GPU requirement for maximum compatibility
-            _easyocr_reader = easyocr.Reader(['en'], gpu=False)
-            print("[OCR] EasyOCR engine initialized successfully.")
+            # Load English and number recognition in memory
+            _easyocr_reader = easyocr.Reader(['en'], gpu=False, verbose=False)
         except Exception as e:
-            print(f"[OCR] EasyOCR load warning: {e}")
-            _easyocr_reader = None
-    return _easyocr_reader
+            print(f"[OCR] EasyOCR initialization notice: {e}")
+            _easyocr_reader = False
+    return _easyocr_reader if _easyocr_reader is not False else None
 
-def preprocess_plate_image(plate_img):
+def preprocess_plate_image(image):
     """
-    Image preprocessing stage for Number Plate Character Extraction:
-    - Grayscale conversion
-    - Bilateral noise filtering (edge-preserving)
-    - Contrast enhancement & Otsu Adaptive Binarization
+    Step 4: Image Pre-processing for Optical Character Recognition (OCR).
+    Converts to grayscale, removes noise via bilateral filtering, applies adaptive 
+    Otsu thresholding, and morphological opening to isolate alphanumeric characters.
     """
-    if plate_img is None or plate_img.size == 0:
+    if image is None or image.size == 0:
         return None
         
-    h, w = plate_img.shape[:2]
-    if h < 60:
-        scale = 60.0 / h
-        plate_img = cv2.resize(plate_img, (int(w * scale), 60), interpolation=cv2.INTER_CUBIC)
+    if len(image.shape) == 3:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = image.copy()
         
-    gray = cv2.cvtColor(plate_img, cv2.COLOR_BGR2GRAY)
+    # Resize to standardized height for optimal OCR glyph reading
+    h, w = gray.shape[:2]
+    if h > 0:
+        scale = 100.0 / h
+        new_w = max(1, int(w * scale))
+        gray = cv2.resize(gray, (new_w, 100), interpolation=cv2.INTER_CUBIC)
+        
+    # Contrast Limited Adaptive Histogram Equalization (CLAHE)
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(gray)
     
-    # 1. Bilateral filter to smooth texture while keeping character edges crisp
-    blurred = cv2.bilateralFilter(gray, 11, 17, 17)
+    # Bilateral noise filter
+    filtered = cv2.bilateralFilter(enhanced, 11, 17, 17)
     
-    # 2. Otsu thresholding
-    _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    # Otsu binary thresholding
+    _, thresh = cv2.threshold(filtered, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     
-    return thresh
+    # Morphological clean up
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+    cleaned = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
+    
+    return cleaned
 
 def clean_and_verify_plate_data(raw_text: str) -> dict:
     """
-    Data Cleaning and Verification (Requirement #5):
-    - Strips invalid symbols, whitespaces, and punctuation.
-    - Resolves common OCR character ambiguities (e.g. 'O' vs '0', 'I'/'l' vs '1').
-    - Verifies format against standard vehicle registration syntax (e.g. LEA-21-4589, ICT-AB-567).
+    Step 5: Data Cleaning and Verification.
+    - Strips unwanted non-alphanumeric symbols and noise.
+    - Standardizes uppercase formatting.
+    - Verifies format against standard vehicle registration syntax.
     """
     if not raw_text:
-        return {"plate": "UNKNOWN", "is_valid": False, "cleaned": "", "province": "N/A"}
+        return {"plate": "", "is_valid": False, "province": "Unknown"}
         
-    # 1. Clean characters (keep uppercase alphanumerics and hyphens)
-    cleaned = re.sub(r'[^A-Z0-9\-]', '', raw_text.upper().strip())
-    # Remove multiple consecutive hyphens
-    cleaned = re.sub(r'-+', '-', cleaned).strip('-')
+    cleaned = re.sub(r'[^A-Z0-9\s\-]', '', raw_text.upper()).strip()
+    cleaned = re.sub(r'\s+', ' ', cleaned)
     
-    if not cleaned or len(cleaned) < 3:
-        return {"plate": "UNKNOWN", "is_valid": False, "cleaned": cleaned, "province": "N/A"}
+    province = "Punjab"
+    if any(p in cleaned for p in ["ICT", "ISB", "ISLAMABAD"]):
+        province = "Islamabad"
+    elif any(p in cleaned for p in ["KHI", "SINDH", "KARACHI"]):
+        province = "Sindh"
+    elif any(p in cleaned for p in ["PEW", "KPK", "PESHAWAR"]):
+        province = "KPK"
+    elif any(p in cleaned for p in ["QTA", "BALOCHISTAN"]):
+        province = "Balochistan"
         
-    # 2. Format validation & normalization
-    # Check for known Pakistani province prefixes
-    provinces = {
-        "LEA": "Punjab", "LHE": "Punjab", "LHR": "Punjab", "MN": "Punjab", "FD": "Punjab", "FSD": "Punjab", "MUL": "Punjab", "RWP": "Punjab", "BWN": "Punjab",
-        "ICT": "Islamabad", "ISB": "Islamabad", "PS": "Islamabad",
-        "KHI": "Sindh", "HYD": "Sindh",
-        "PEW": "KPK", "PES": "KPK", "ABT": "KPK",
-        "QTA": "Balochistan",
-        "AJK": "Azad Kashmir"
-    }
+    tokens = cleaned.replace('-', ' ').split()
+    tokens = [t for t in tokens if len(t) > 0 and t not in ["PAKISTAN", "PUNJAB", "SINDH", "KPK", "ISLAMABAD"]]
     
-    matched_province = "General"
-    for prefix, prov in provinces.items():
-        if cleaned.startswith(prefix):
-            matched_province = prov
-            break
-            
-    is_valid = len(cleaned) >= 4 and any(char.isdigit() for char in cleaned)
+    final_plate = " ".join(tokens) if tokens else cleaned
+    
+    is_valid = bool(len(final_plate) >= 3 and any(c.isdigit() for c in final_plate))
     
     return {
-        "plate": cleaned,
+        "plate": final_plate if is_valid else (final_plate or ""),
+        "raw": raw_text,
         "is_valid": is_valid,
-        "cleaned": cleaned,
-        "province": matched_province
+        "province": province
     }
 
 def extract_plate_number(plate_crop) -> dict:
     """
-    Extracts number plate characters using Tesseract OCR with EasyOCR fallback,
-    followed by Data Cleaning & Verification.
+    Step 4: OCR Text Extraction.
+    Uses Tesseract OCR with EasyOCR fallback.
+    Returns empty/invalid if no alphanumeric plate text is present in the image.
     """
     if plate_crop is None or plate_crop.size == 0:
-        return {"plate": "UNKNOWN", "confidence": 0.0, "is_valid": False, "province": "N/A"}
+        return {
+            "plate": "",
+            "confidence": 0.0,
+            "is_valid": False,
+            "province": "Unknown",
+            "engine": "None"
+        }
         
+    # Preprocess crop
     preprocessed = preprocess_plate_image(plate_crop)
     
-    # 1. Attempt Tesseract OCR if available
-    if check_tesseract_availability():
-        try:
-            import pytesseract
-            # Tesseract config: single line alphanumeric
-            custom_config = r'--oem 3 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-'
-            tess_text = pytesseract.image_to_string(preprocessed, config=custom_config)
-            cleaned_res = clean_and_verify_plate_data(tess_text)
-            if cleaned_res["is_valid"]:
-                return {
-                    "plate": cleaned_res["plate"],
-                    "confidence": 0.93,
-                    "is_valid": True,
-                    "province": cleaned_res["province"],
-                    "engine": "Tesseract OCR"
-                }
-        except Exception as e:
-            print(f"[OCR] Tesseract extraction notice: {e}")
+    # 1. Attempt Tesseract OCR
+    try:
+        import pytesseract
+        custom_config = r'--oem 3 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789- '
+        tess_text = pytesseract.image_to_string(preprocessed if preprocessed is not None else plate_crop, config=custom_config)
+        cleaned_res = clean_and_verify_plate_data(tess_text)
+        if cleaned_res["is_valid"] and len(cleaned_res["plate"]) >= 3:
+            return {
+                "plate": cleaned_res["plate"],
+                "confidence": 0.93,
+                "is_valid": True,
+                "province": cleaned_res["province"],
+                "engine": "Tesseract OCR"
+            }
+    except Exception as e:
+        pass
 
     # 2. Attempt EasyOCR
     reader = get_easyocr_reader()
@@ -140,31 +134,47 @@ def extract_plate_number(plate_crop) -> dict:
                 texts = []
                 confidences = []
                 for bbox, text, conf in results:
-                    sanitized = re.sub(r'[^A-Z0-9\-]', '', text.upper())
+                    sanitized = re.sub(r'[^A-Z0-9\- ]', '', text.upper()).strip()
                     if sanitized and len(sanitized) >= 2:
                         texts.append(sanitized)
                         confidences.append(conf)
                         
                 if texts:
-                    full_raw = "-".join(texts) if len(texts) > 1 else texts[0]
+                    full_raw = " ".join(texts)
                     cleaned_res = clean_and_verify_plate_data(full_raw)
-                    avg_conf = sum(confidences) / len(confidences)
-                    return {
-                        "plate": cleaned_res["plate"],
-                        "confidence": round(avg_conf, 2),
-                        "is_valid": cleaned_res["is_valid"],
-                        "province": cleaned_res["province"],
-                        "engine": "EasyOCR / Neural OCR"
-                    }
+                    if cleaned_res["is_valid"] or len(cleaned_res["plate"]) >= 2:
+                        avg_conf = sum(confidences) / len(confidences)
+                        return {
+                            "plate": cleaned_res["plate"],
+                            "confidence": round(avg_conf, 2),
+                            "is_valid": cleaned_res["is_valid"],
+                            "province": cleaned_res["province"],
+                            "engine": "EasyOCR / Neural OCR"
+                        }
         except Exception as e:
-            print(f"[OCR] EasyOCR extraction error: {e}")
+            pass
 
-    # 3. Fallback normalized result for testing frames
-    fallback = clean_and_verify_plate_data("LEA-21-4589")
+    # 3. Direct whole crop check with Tesseract full text
+    try:
+        import pytesseract
+        tess_raw = pytesseract.image_to_string(plate_crop)
+        cleaned_res = clean_and_verify_plate_data(tess_raw)
+        if cleaned_res["is_valid"] and len(cleaned_res["plate"]) >= 2:
+            return {
+                "plate": cleaned_res["plate"],
+                "confidence": 0.85,
+                "is_valid": True,
+                "province": cleaned_res["province"],
+                "engine": "Tesseract OCR"
+            }
+    except Exception:
+        pass
+
+    # 4. If genuinely no text found, return NO detection (NO hardcoded fallback)
     return {
-        "plate": fallback["plate"],
-        "confidence": 0.90,
-        "is_valid": True,
-        "province": fallback["province"],
-        "engine": "Computer Vision OCR"
+        "plate": "",
+        "confidence": 0.0,
+        "is_valid": False,
+        "province": "Unknown",
+        "engine": "None"
     }

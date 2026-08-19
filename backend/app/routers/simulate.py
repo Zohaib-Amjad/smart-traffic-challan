@@ -1,29 +1,27 @@
 import os
 import cv2
-import uuid
 import base64
 import numpy as np
 import tempfile
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from pydantic import BaseModel
+from typing import Optional
 
-from app.config import EVIDENCE_DIR, UPLOADS_DIR
 from app.anpr.detector import VehiclePlateDetector
 from app.anpr.ocr_reader import extract_plate_number, preprocess_plate_image, clean_and_verify_plate_data
-from app.anpr.violation_rules import check_and_create_violations
 from app.anpr.tracker import VehicleTracker
+from app.anpr.violation_rules import check_and_create_violations
+from app.config import EVIDENCE_DIR
 
-router = APIRouter(prefix="/api/simulate", tags=["Simulation & Input Processing"])
+router = APIRouter(prefix="/api/simulate", tags=["Pipeline Processor & Simulation"])
 
 detector = VehiclePlateDetector()
-demo_tracker = VehicleTracker(cooldown_seconds=0)
+demo_tracker = VehicleTracker()
 
-def mat_to_base64(img):
-    """Encodes OpenCV image to base64 data URI."""
-    if img is None or img.size == 0:
+def mat_to_base64(image_mat):
+    if image_mat is None or image_mat.size == 0:
         return ""
-    _, buf = cv2.imencode('.jpg', img, [int(cv2.IMWRITE_JPEG_QUALITY), 85])
-    return "data:image/jpeg;base64," + base64.b64encode(buf).decode('utf-8')
+    _, buffer = cv2.imencode('.jpg', image_mat)
+    return "data:image/jpeg;base64," + base64.b64encode(buffer).decode('utf-8')
 
 @router.post("/process_image")
 async def process_test_image(
@@ -55,33 +53,39 @@ async def process_test_image(
     
     # 2. Vehicle & Plate Detection
     detections = detector.process_frame(frame)
-    
-    plate_text = "LEA-21-4589"
-    confidence = 0.94
-    plate_crop = None
     annotated_frame = frame.copy()
     
-    if detections:
-        det = detections[0]
-        plate_text = det["plate_number"]
-        confidence = det["confidence"]
-        plate_crop = det["plate_crop"]
-        px, py, pw, ph = det["plate_bbox"]
-        vx, vy, vw, vh = det["vehicle_bbox"]
-        
-        cv2.rectangle(annotated_frame, (vx, vy), (vx+vw, vy+vh), (0, 255, 0), 2)
-        cv2.rectangle(annotated_frame, (px, py), (px+pw, py+ph), (0, 0, 255), 2)
-        cv2.putText(annotated_frame, f"PLATE: {plate_text} ({int(confidence*100)}%)",
-                    (px, max(20, py-8)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
-    else:
-        # Fallback crop for arbitrary test graphics
-        cw, ch = int(w * 0.35), int(h * 0.15)
-        cx, cy = int(w * 0.32), int(h * 0.6)
-        plate_crop = frame[cy:cy+ch, cx:cx+cw]
-        cv2.rectangle(annotated_frame, (cx, cy), (cx+cw, cy+ch), (0, 0, 255), 2)
-        cv2.putText(annotated_frame, f"PLATE: {plate_text} (94%)", (cx, cy-8),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
-                    
+    # Check if a valid plate was found
+    if not detections or not detections[0].get("plate_number"):
+        # NO PLATE DETECTED: Return empty real result (NO hardcoded fake plate)
+        return {
+            "success": False,
+            "plate_number": "No number plate text detected.",
+            "is_valid": False,
+            "province": "Unknown",
+            "confidence": 0.0,
+            "pipeline_stages": {
+                "original_image": mat_to_base64(frame),
+                "edge_detection": mat_to_base64(cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)),
+                "plate_crop": "",
+                "binary_threshold": "",
+                "ai_annotated_frame": mat_to_base64(annotated_frame)
+            },
+            "violation_result": None
+        }
+
+    det = detections[0]
+    plate_text = det["plate_number"]
+    confidence = det["confidence"]
+    plate_crop = det["plate_crop"]
+    px, py, pw, ph = det["plate_bbox"]
+    vx, vy, vw, vh = det["vehicle_bbox"]
+    
+    cv2.rectangle(annotated_frame, (vx, vy), (vx+vw, vy+vh), (0, 255, 0), 2)
+    cv2.rectangle(annotated_frame, (px, py), (px+pw, py+ph), (0, 0, 255), 2)
+    cv2.putText(annotated_frame, f"PLATE: {plate_text} ({int(confidence*100)}%)",
+                (px, max(20, py-8)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+                
     # 3. Data Cleaning and Verification
     cleaned_info = clean_and_verify_plate_data(plate_text)
     
@@ -90,8 +94,8 @@ async def process_test_image(
     
     # 5. Violation Check & Automatic Challan Generation
     mock_detection = [{
-        "vehicle_bbox": (int(w*0.2), int(h*0.2), int(w*0.6), int(h*0.6)),
-        "plate_bbox": (int(w*0.32), int(h*0.6), int(w*0.35), int(h*0.15)),
+        "vehicle_bbox": (vx, vy, vw, vh),
+        "plate_bbox": (px, py, pw, ph),
         "plate_crop": plate_crop,
         "plate_number": cleaned_info["plate"],
         "confidence": confidence,
@@ -104,7 +108,7 @@ async def process_test_image(
     cam_info = {
         "id": 1,
         "name": "Kalma Chowk Intersect #1",
-        "location": "Ferozepur Road, Lahore",
+        "location": "lahore",
         "speed_limit": 60,
         "signal_state": "RED" if violation_type == "V-RED-LIGHT" else "GREEN"
     }
@@ -135,73 +139,65 @@ async def process_test_video(
 ):
     """
     Input Stage (Requirement #1): Upload Video Input (.mp4, .avi, .mov).
-    Processes video stream frame-by-frame:
-    - Tracks vehicles across video frames
-    - Localizes license plates
-    - Runs OCR & Data Verification
-    - Identifies traffic violations & issues E-Challans automatically into SQLite
+    Processes video stream frame-by-frame.
     """
-    temp_dir = tempfile.gettempdir()
-    temp_video_path = os.path.join(temp_dir, f"upload_{uuid.uuid4().hex[:8]}.mp4")
-    
-    # Save uploaded video to temp
-    contents = await file.read()
-    with open(temp_video_path, "wb") as f:
-        f.write(contents)
-        
-    cap = cv2.VideoCapture(temp_video_path)
+    suffix = os.path.splitext(file.filename)[1] or ".mp4"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(await file.read())
+        tmp_path = tmp.name
+
+    cap = cv2.VideoCapture(tmp_path)
     if not cap.isOpened():
-        if os.path.exists(temp_video_path):
-            os.remove(temp_video_path)
-        raise HTTPException(status_code=400, detail="Could not open video stream.")
-        
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    fps = int(cap.get(cv2.CAP_PROP_FPS)) or 25
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise HTTPException(status_code=400, detail="Could not open uploaded video stream.")
+
+    fps = cap.get(cv2.CAP_PROP_FPS) or 25
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) or 100
     
-    video_tracker = VehicleTracker(cooldown_seconds=10)
-    detected_plates = []
+    video_tracker = VehicleTracker()
+    detected_vehicles = []
     generated_violations = []
     
     cam_info = {
         "id": 1,
-        "name": "Uploaded Video Surveillance Cam",
-        "location": "Automated Uploaded Video Feed",
+        "name": "Live Video Feed Camera",
+        "location": "lahore",
         "speed_limit": speed_limit,
         "signal_state": signal_state.upper()
     }
     
     frame_idx = 0
-    # Sample 1 frame every 5 frames for high speed processing
+    sample_annotated_frame = None
+    
     while cap.isOpened() and frame_idx < min(300, total_frames):
         ret, frame = cap.read()
         if not ret:
             break
             
-        if frame_idx % 5 == 0:
-            detections = detector.process_frame(frame)
-            if detections:
-                tracked = video_tracker.update(detections)
-                violations = check_and_create_violations(frame, tracked, cam_info, video_tracker)
-                for v in violations:
-                    generated_violations.append(v)
-                for d in detections:
-                    if d["plate_number"] != "UNKNOWN" and d["plate_number"] not in detected_plates:
-                        detected_plates.append(d["plate_number"])
-                        
         frame_idx += 1
-        
-    cap.release()
-    if os.path.exists(temp_video_path):
-        try:
-            os.remove(temp_video_path)
-        except Exception:
-            pass
+        # Process every 5th frame for performance
+        if frame_idx % 5 != 0:
+            continue
             
+        detections = detector.process_frame(frame)
+        if detections:
+            tracked = video_tracker.update(detections)
+            v_list = check_and_create_violations(frame, tracked, cam_info, video_tracker)
+            if v_list:
+                generated_violations.extend(v_list)
+            if sample_annotated_frame is None:
+                sample_annotated_frame = frame.copy()
+
+    cap.release()
+    if os.path.exists(tmp_path):
+        os.remove(tmp_path)
+
     return {
         "success": True,
-        "total_frames_processed": frame_idx,
-        "vehicles_identified": len(detected_plates),
-        "plates_recognized": detected_plates,
-        "violations_generated_count": len(generated_violations),
-        "challans": generated_violations
+        "frames_processed": frame_idx,
+        "vehicles_tracked_count": len(video_tracker.tracked_vehicles),
+        "violations_detected_count": len(generated_violations),
+        "violations": generated_violations[:10],
+        "preview_annotated_frame": mat_to_base64(sample_annotated_frame) if sample_annotated_frame is not None else ""
     }

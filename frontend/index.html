@@ -190,13 +190,9 @@
           body: formData
         });
         const data = await res.json();
-        if (data.success) {
-          sessionStorage.setItem('lastDetectedPlate', data.plate_number);
-          sessionStorage.setItem('lastPreviewImg', data.pipeline_stages.original_image);
-          window.location.href = '/number-plate';
-        } else {
-          alert('Could not detect number plate.');
-        }
+        sessionStorage.setItem('lastDetectedPlate', data.success ? data.plate_number : 'No number plate text detected.');
+        sessionStorage.setItem('lastPreviewImg', data.pipeline_stages ? data.pipeline_stages.original_image : '');
+        window.location.href = '/number-plate';
       } catch (err) {
         alert('Error processing image: ' + err.message);
       } finally {

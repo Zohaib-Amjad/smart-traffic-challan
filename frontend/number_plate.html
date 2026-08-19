@@ -129,15 +129,26 @@
       }
     });
 
-    function showResult(plate, imgUrl) {
+    function showResult(plate, imgUrl, isValid) {
       document.getElementById('nprUploadSection').style.display = 'none';
       document.getElementById('nprResultSection').style.display = 'block';
       document.getElementById('navTryAgain').style.display = 'inline-flex';
       document.getElementById('navVehicles').style.display = 'none';
 
       document.getElementById('nprPreviewImg').src = imgUrl;
-      document.getElementById('nprDetectedText').innerText = plate || 'No number plate text detected.';
-      document.getElementById('btnProceedChallan').href = `/generate-challan?plate=${encodeURIComponent(plate || '')}`;
+      const detectedEl = document.getElementById('nprDetectedText');
+      const proceedBtn = document.getElementById('btnProceedChallan');
+
+      if (isValid && plate && plate !== 'No number plate text detected.') {
+        detectedEl.innerText = plate;
+        detectedEl.style.color = '#2563EB';
+        proceedBtn.style.display = 'inline-flex';
+        proceedBtn.href = `/generate-challan?plate=${encodeURIComponent(plate)}`;
+      } else {
+        detectedEl.innerText = 'No number plate text detected.';
+        detectedEl.style.color = '#DC2626';
+        proceedBtn.style.display = 'none';
+      }
     }
 
     function resetNprView() {
@@ -169,13 +180,13 @@
           body: formData
         });
         const data = await res.json();
-        if (data.success) {
-          showResult(data.plate_number, data.pipeline_stages.original_image);
+        if (data.success && data.plate_number && data.plate_number !== 'No number plate text detected.') {
+          showResult(data.plate_number, data.pipeline_stages.original_image, true);
         } else {
-          showResult('No number plate text detected.', URL.createObjectURL(input.files[0]));
+          showResult('No number plate text detected.', data.pipeline_stages ? data.pipeline_stages.original_image : URL.createObjectURL(input.files[0]), false);
         }
       } catch (err) {
-        alert('Error detecting plate: ' + err.message);
+        showResult('No number plate text detected.', URL.createObjectURL(input.files[0]), false);
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-camera"></i> Upload Image';
