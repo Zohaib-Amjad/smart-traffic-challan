@@ -15,6 +15,8 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="/static/css/styles.css">
+  <script src="/static/js/auth.js"></script>
+  <script>requireAuth();</script>
   
   <style>
     .npr-card {
@@ -55,7 +57,7 @@
       <a href="/dashboard" class="nav-item">Dashboard</a>
       <a href="/vehicles" id="navVehicles" class="nav-item">Vehicles</a>
       <a href="#" id="navTryAgain" class="nav-item" style="display: none;" onclick="resetNprView()"><i class="fa-solid fa-rotate-left"></i> Try Again</a>
-      <a href="/login" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
@@ -93,10 +95,27 @@
       <!-- Detected Text Box -->
       <div class="result-box">
         <div style="font-size: 0.88rem; font-weight: 700; color: #1E293B; margin-bottom: 6px;">
-          Detected Number Plate / Text:
+          Detected Number Plate:
         </div>
-        <div id="nprDetectedText" style="font-size: 1.4rem; font-weight: 800; color: #2563EB; font-family: 'Consolas', monospace;">
+        <div id="nprDetectedText" style="font-size: 1.5rem; font-weight: 800; color: #2563EB; font-family: 'Consolas', monospace; letter-spacing: 1px;">
           --
+        </div>
+      </div>
+
+      <!-- Owner & Vehicle Details Card (Fetched from SQLite) -->
+      <div id="nprOwnerDetailsCard" style="display: none; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: var(--radius-md); padding: 1.25rem; margin-top: 1.25rem; text-align: left;">
+        <div style="font-weight: 800; color: #0F172A; font-size: 1.05rem; margin-bottom: 0.75rem; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+          <span><i class="fa-solid fa-id-card" style="color: #2563EB; margin-right: 6px;"></i> Registered Owner Information</span>
+          <span id="nprTaxBadge" class="status-pill paid" style="font-size: 0.75rem;">Tax Paid</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.9rem;">
+          <div><strong style="color: #64748B;">Owner Name:</strong> <span id="nprOwnerName" style="color: #0F172A; font-weight: 700;">--</span></div>
+          <div><strong style="color: #64748B;">CNIC:</strong> <span id="nprOwnerCnic" style="color: #0F172A;">--</span></div>
+          <div><strong style="color: #64748B;">Vehicle:</strong> <span id="nprVehicleModel" style="color: #0F172A;">--</span></div>
+          <div><strong style="color: #64748B;">Contact:</strong> <span id="nprOwnerPhone" style="color: #0F172A;">--</span></div>
+        </div>
+        <div style="margin-top: 8px; font-size: 0.88rem; color: #64748B;">
+          <strong>Address:</strong> <span id="nprOwnerAddress" style="color: #334155;">--</span>
         </div>
       </div>
 
@@ -123,13 +142,13 @@
       const cachedPlate = sessionStorage.getItem('lastDetectedPlate');
       const cachedImg = sessionStorage.getItem('lastPreviewImg');
       if (cachedPlate && cachedImg) {
-        showResult(cachedPlate, cachedImg);
+        showResult(cachedPlate, cachedImg, true);
         sessionStorage.removeItem('lastDetectedPlate');
         sessionStorage.removeItem('lastPreviewImg');
       }
     });
 
-    function showResult(plate, imgUrl, isValid) {
+    async function showResult(plate, imgUrl, isValid) {
       document.getElementById('nprUploadSection').style.display = 'none';
       document.getElementById('nprResultSection').style.display = 'block';
       document.getElementById('navTryAgain').style.display = 'inline-flex';
@@ -138,16 +157,38 @@
       document.getElementById('nprPreviewImg').src = imgUrl;
       const detectedEl = document.getElementById('nprDetectedText');
       const proceedBtn = document.getElementById('btnProceedChallan');
+      const ownerCard = document.getElementById('nprOwnerDetailsCard');
 
       if (isValid && plate && plate !== 'No number plate text detected.') {
         detectedEl.innerText = plate;
         detectedEl.style.color = '#2563EB';
         proceedBtn.style.display = 'inline-flex';
         proceedBtn.href = `/generate-challan?plate=${encodeURIComponent(plate)}`;
+
+        // Fetch owner details from SQLite backend
+        try {
+          const res = await fetch(`/api/vehicles/${encodeURIComponent(plate.trim().toUpperCase())}`);
+          if (res.ok) {
+            const v = await res.json();
+            document.getElementById('nprOwnerName').innerText = v.owner_name || 'N/A';
+            document.getElementById('nprOwnerCnic').innerText = v.owner_cnic || 'N/A';
+            document.getElementById('nprVehicleModel').innerText = `${v.vehicle_make || ''} ${v.vehicle_model || ''} (${v.vehicle_color || ''})`;
+            document.getElementById('nprOwnerPhone').innerText = v.owner_phone || 'N/A';
+            document.getElementById('nprOwnerAddress').innerText = v.owner_address || 'Address on record';
+            document.getElementById('nprTaxBadge').innerText = (v.tax_status || 'Paid');
+            ownerCard.style.display = 'block';
+          } else {
+            ownerCard.style.display = 'none';
+          }
+        } catch (e) {
+          ownerCard.style.display = 'none';
+        }
+
       } else {
         detectedEl.innerText = 'No number plate text detected.';
         detectedEl.style.color = '#DC2626';
         proceedBtn.style.display = 'none';
+        ownerCard.style.display = 'none';
       }
     }
 

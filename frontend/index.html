@@ -96,9 +96,8 @@
 
     <nav class="nav-links">
       <a href="/" class="nav-item active">Home</a>
-      <a href="/login" class="nav-item">Login</a>
+      <a href="/login" class="nav-item">Sign in</a>
       <a href="/register" class="nav-item">Register</a>
-      <a href="/dashboard" class="nav-item">Dashboard</a>
     </nav>
   </header>
 
@@ -117,44 +116,24 @@
   <!-- Main Container -->
   <main class="container">
     
-    <!-- Upload Vehicle Image Section -->
-    <div class="upload-section">
-      <div class="card" style="text-align: center; padding: 2.5rem 2rem; box-shadow: var(--shadow-lg);">
-        <h2 style="font-size: 1.5rem; font-weight: 800; color: #0F172A; margin-bottom: 8px;">Upload Vehicle Image</h2>
-        <p style="color: #64748B; font-size: 0.92rem; max-width: 550px; margin: 0 auto;">
-          Upload a vehicle image to detect the number plate and generate traffic challan automatically.
-        </p>
-
-        <form id="homeUploadForm" onsubmit="handleHomeUpload(event)">
-          <div class="upload-dropzone">
-            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: #2563EB;"></i>
-            <input type="file" id="homeImageInput" accept="image/*" required style="font-size: 0.9rem; color: #1E293B; cursor: pointer;">
-          </div>
-          <button type="submit" id="btnHomeUpload" class="btn btn-primary" style="padding: 12px 36px; font-size: 1rem; width: 100%; max-width: 240px;">
-            <i class="fa-solid fa-bolt"></i> Upload Image
-          </button>
-        </form>
-      </div>
-    </div>
-
     <!-- 3 Features Grid (Quick Access Cards) -->
     <section class="features-grid">
       <!-- Feature 1: Vehicle Registration -->
-      <a href="/vehicles" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
+      <a href="/login?next=%2Fvehicles" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
         <div class="feature-icon">🚗</div>
         <h3 class="feature-title">Vehicle Registration</h3>
         <p class="feature-desc">Register and manage vehicle information securely with real-time verification.</p>
       </a>
 
       <!-- Feature 2: Number Plate Recognition -->
-      <a href="/number-plate" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
+      <a href="/login?next=%2Fnumber-plate" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
         <div class="feature-icon">📷</div>
         <h3 class="feature-title">Number Plate Recognition</h3>
         <p class="feature-desc">Detect vehicle number plates instantly using Computer Vision & OCR.</p>
       </a>
 
       <!-- Feature 3: Challan Management -->
-      <a href="/challans" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
+      <a href="/login?next=%2Fchallans" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
         <div class="feature-icon">📄</div>
         <h3 class="feature-title">Challan Management</h3>
         <p class="feature-desc">Generate, inspect, and export official digital traffic violation challans.</p>
@@ -168,38 +147,5 @@
     © 2026 Smart Traffic Challan System | Final Year Project
   </footer>
 
-  <script>
-    async function handleHomeUpload(e) {
-      e.preventDefault();
-      const input = document.getElementById('homeImageInput');
-      if (!input.files || !input.files[0]) {
-        alert('Please choose an image file first.');
-        return;
-      }
-
-      const btn = document.getElementById('btnHomeUpload');
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing OCR...';
-
-      const formData = new FormData();
-      formData.append('file', input.files[0]);
-
-      try {
-        const res = await fetch('/api/simulate/process_image', {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-        sessionStorage.setItem('lastDetectedPlate', data.success ? data.plate_number : 'No number plate text detected.');
-        sessionStorage.setItem('lastPreviewImg', data.pipeline_stages ? data.pipeline_stages.original_image : '');
-        window.location.href = '/number-plate';
-      } catch (err) {
-        alert('Error processing image: ' + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Upload Image';
-      }
-    }
-  </script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 import re
 import cv2
 import numpy as np
+import os
+import shutil
 
 # Optional Neural EasyOCR engine
 _easyocr_reader = None
@@ -108,20 +110,45 @@ def extract_plate_number(plate_crop) -> dict:
     # Preprocess crop
     preprocessed = preprocess_plate_image(plate_crop)
     
-    # 1. Attempt Tesseract OCR
+    # 1. Attempt Tesseract OCR with layouts suitable for one- and two-line plates.
     try:
         import pytesseract
-        custom_config = r'--oem 3 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789- '
-        tess_text = pytesseract.image_to_string(preprocessed if preprocessed is not None else plate_crop, config=custom_config)
-        cleaned_res = clean_and_verify_plate_data(tess_text)
-        if cleaned_res["is_valid"] and len(cleaned_res["plate"]) >= 3:
-            return {
-                "plate": cleaned_res["plate"],
-                "confidence": 0.93,
-                "is_valid": True,
-                "province": cleaned_res["province"],
-                "engine": "Tesseract OCR"
-            }
+        if not shutil.which("tesseract"):
+            for path in (
+                r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+                r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+            ):
+                if os.path.exists(path):
+                    pytesseract.pytesseract.tesseract_cmd = path
+                    break
+
+        if shutil.which("tesseract") or os.path.exists(pytesseract.pytesseract.tesseract_cmd):
+            ocr_images = [plate_crop]
+            if preprocessed is not None:
+                ocr_images.append(preprocessed)
+            for angle in (-15, 15):
+                height, width = plate_crop.shape[:2]
+                center = (width / 2, height / 2)
+                matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+                rotated = cv2.warpAffine(plate_crop, matrix, (width, height), borderMode=cv2.BORDER_REPLICATE)
+                ocr_images.append(rotated)
+                rotated_preprocessed = preprocess_plate_image(rotated)
+                if rotated_preprocessed is not None:
+                    ocr_images.append(rotated_preprocessed)
+
+            for image in ocr_images:
+                for psm in (6, 11, 12, 13, 7):
+                    custom_config = f'--oem 3 --psm {psm} -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789- '
+                    tess_text = pytesseract.image_to_string(image, config=custom_config)
+                    cleaned_res = clean_and_verify_plate_data(tess_text)
+                    if cleaned_res["is_valid"] and len(cleaned_res["plate"]) >= 3:
+                        return {
+                            "plate": cleaned_res["plate"],
+                            "confidence": 0.93,
+                            "is_valid": True,
+                            "province": cleaned_res["province"],
+                            "engine": "Tesseract OCR"
+                        }
     except Exception as e:
         pass
 
@@ -154,23 +181,7 @@ def extract_plate_number(plate_crop) -> dict:
         except Exception as e:
             pass
 
-    # 3. Direct whole crop check with Tesseract full text
-    try:
-        import pytesseract
-        tess_raw = pytesseract.image_to_string(plate_crop)
-        cleaned_res = clean_and_verify_plate_data(tess_raw)
-        if cleaned_res["is_valid"] and len(cleaned_res["plate"]) >= 2:
-            return {
-                "plate": cleaned_res["plate"],
-                "confidence": 0.85,
-                "is_valid": True,
-                "province": cleaned_res["province"],
-                "engine": "Tesseract OCR"
-            }
-    except Exception:
-        pass
-
-    # 4. If genuinely no text found, return NO detection (NO hardcoded fallback)
+    # 3. If genuinely no text found, return NO detection (NO hardcoded fallback)
     return {
         "plate": "",
         "confidence": 0.0,

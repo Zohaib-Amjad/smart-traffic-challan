@@ -15,6 +15,8 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="/static/css/styles.css">
+  <script src="/static/js/auth.js"></script>
+  <script>requireAuth();</script>
   
   <style>
     .rep-hero {
@@ -69,7 +71,7 @@
       <a href="/dashboard" class="nav-item">Dashboard</a>
       <a href="/challans" class="nav-item">Challan History</a>
       <a href="/generate-challan" class="nav-item">+ Generate Challan</a>
-      <a href="/login" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 

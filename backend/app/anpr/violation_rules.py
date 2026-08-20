@@ -79,7 +79,9 @@ def check_and_create_violations(frame, detections, camera_info, tracker):
                 else:
                     cv2.imwrite(plate_path, evidence_frame)
                 
-            now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            now_dt = datetime.datetime.now()
+            now_str = now_dt.strftime("%Y-%m-%d %H:%M:%S")
+            due_str = (now_dt + datetime.timedelta(days=15)).strftime("%Y-%m-%d")
             
             # Insert into database
             conn = sqlite3.connect(str(DB_PATH))
@@ -99,12 +101,12 @@ def check_and_create_violations(frame, detections, camera_info, tracker):
             
             cursor.execute("""
             INSERT INTO challans 
-            (challan_no, plate_number, camera_id, camera_name, location, violation_code, violation_name, fine_amount, speed_detected, speed_limit, evidence_image, plate_crop, status, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)
+            (challan_no, plate_number, camera_id, camera_name, location, violation_code, violation_name, fine_amount, speed_detected, speed_limit, evidence_image, plate_crop, status, created_at, due_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Unpaid', ?, ?)
             """, (
                 challan_uuid, plate_number, camera_id, camera_name, location,
                 violation_type, violation_name, fine_amount, speed, speed_limit,
-                evidence_filename, plate_crop_filename, now_str
+                evidence_filename, plate_crop_filename, now_str, due_str
             ))
             
             # Log event

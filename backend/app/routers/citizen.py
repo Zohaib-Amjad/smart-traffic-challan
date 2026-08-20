@@ -37,6 +37,17 @@ def search_citizen_records(query: str):
     LIMIT 1
     """, (f"%{cleaned_q}%", f"%{cleaned_q}%"))
     veh = cursor.fetchone()
+
+    if not veh:
+        cursor.execute("""
+        SELECT plate_number FROM challans
+        WHERE UPPER(challan_no) = UPPER(?)
+        LIMIT 1
+        """, (cleaned_q,))
+        matching_challan = cursor.fetchone()
+        if matching_challan:
+            cursor.execute("SELECT * FROM vehicles WHERE plate_number = ? LIMIT 1", (matching_challan["plate_number"],))
+            veh = cursor.fetchone()
     
     plate_to_search = veh["plate_number"] if veh else cleaned_q.upper()
     
@@ -51,8 +62,8 @@ def search_citizen_records(query: str):
     conn.close()
     
     challans = [dict(r) for r in challan_rows]
-    total_pending = sum(c["fine_amount"] for c in challans if c["status"] == "PENDING")
-    total_paid = sum(c["fine_amount"] for c in challans if c["status"] == "PAID")
+    total_pending = sum(c["fine_amount"] for c in challans if c["status"].upper() not in ["PAID"])
+    total_paid = sum(c["fine_amount"] for c in challans if c["status"].upper() == "PAID")
     
     return {
         "found": bool(veh or challans),
@@ -60,8 +71,8 @@ def search_citizen_records(query: str):
         "challans": challans,
         "summary": {
             "total_challans": len(challans),
-            "pending_count": sum(1 for c in challans if c["status"] == "PENDING"),
-            "paid_count": sum(1 for c in challans if c["status"] == "PAID"),
+            "pending_count": sum(1 for c in challans if c["status"].upper() not in ["PAID"]),
+            "paid_count": sum(1 for c in challans if c["status"].upper() == "PAID"),
             "total_pending_amount": total_pending,
             "total_paid_amount": total_paid
         }
@@ -82,7 +93,7 @@ def pay_challan(req: PaymentRequest):
         conn.close()
         raise HTTPException(status_code=404, detail="Challan not found")
         
-    if ch["status"] == "PAID":
+    if ch["status"].upper() == "PAID":
         conn.close()
         return {"status": "already_paid", "message": "This challan has already been paid."}
         
@@ -91,7 +102,7 @@ def pay_challan(req: PaymentRequest):
     
     cursor.execute("""
     UPDATE challans 
-    SET status = 'PAID', paid_at = ?, payment_method = ?, payment_ref = ?
+    SET status = 'Paid', paid_at = ?, payment_method = ?, payment_ref = ?
     WHERE challan_no = ?
     """, (now_str, req.payment_method, tx_ref, req.challan_no))
     

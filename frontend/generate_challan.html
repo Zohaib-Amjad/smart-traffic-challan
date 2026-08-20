@@ -15,6 +15,8 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="/static/css/styles.css">
+  <script src="/static/js/auth.js"></script>
+  <script>requireAuth();</script>
   
   <style>
     .gen-hero {
@@ -64,7 +66,7 @@
       <a href="/dashboard" class="nav-item">Dashboard</a>
       <a href="/challans" class="nav-item">Challan History</a>
       <a href="/reports" class="nav-item">Reports</a>
-      <a href="/login" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
@@ -77,38 +79,70 @@
   <!-- Main Form Container -->
   <main class="container">
     <div class="gen-card">
-      <h2 style="font-size: 1.4rem; font-weight: 800; text-align: center; color: #0F172A; margin-bottom: 2rem;">
+      <h2 style="font-size: 1.4rem; font-weight: 800; text-align: center; color: #0F172A; margin-bottom: 1.5rem;">
         Challan Information
       </h2>
 
       <form id="genChallanForm" onsubmit="handleGenerateChallan(event)">
         <!-- Vehicle Number -->
         <div class="form-group">
-          <label class="form-label">Vehicle Number</label>
-          <input type="text" id="chVehicleNumber" class="text-input" placeholder="e.g. 234 or LEA-21-4589" required>
+          <label class="form-label">Vehicle Registration Number (Plate)</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="chVehicleNumber" class="text-input" placeholder="e.g. LEA-21-4589 or 123" required oninput="lookupOwnerInfo()">
+            <button type="button" class="btn btn-secondary" onclick="lookupOwnerInfo()" style="white-space: nowrap;">
+              <i class="fa-solid fa-search"></i> Check Owner
+            </button>
+          </div>
+        </div>
+
+        <!-- Live Owner Info Box -->
+        <div id="chOwnerPreview" style="display: none; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 1.25rem; font-size: 0.88rem;">
+          <div style="font-weight: 700; color: #2563EB; margin-bottom: 4px;">
+            <i class="fa-solid fa-circle-check"></i> Registered Vehicle Found:
+          </div>
+          <div style="color: #0F172A;"><strong style="color: #64748B;">Owner:</strong> <span id="chOwnerName">--</span> | <strong style="color: #64748B;">CNIC:</strong> <span id="chOwnerCnic">--</span></div>
+          <div style="color: #0F172A; margin-top: 2px;"><strong style="color: #64748B;">Model:</strong> <span id="chVehicleModel">--</span> | <strong style="color: #64748B;">Phone:</strong> <span id="chOwnerPhone">--</span></div>
         </div>
 
         <!-- Traffic Violation Dropdown -->
         <div class="form-group">
           <label class="form-label">Traffic Violation</label>
-          <select id="chViolation" class="select-input" required>
-            <option value="Wrong Parking - Rs. 2000" selected>Wrong Parking - Rs. 2000</option>
-            <option value="Signal Violation - Rs. 3000">Signal Violation - Rs. 3000</option>
-            <option value="Over Speeding - Rs. 2000">Over Speeding - Rs. 2000</option>
-            <option value="Wrong Way / Illegal U-Turn - Rs. 3000">Wrong Way / Illegal U-Turn - Rs. 3000</option>
-            <option value="Riding Without Helmet - Rs. 1000">Riding Without Helmet - Rs. 1000</option>
+          <select id="chViolation" class="select-input" required onchange="updateChallanPreview()">
+            <!-- Loaded dynamically from SQLite tariffs -->
+            <option value="Red Light Signal Jumping - Rs. 2500" data-fine="2500">Red Light Signal Jumping - Rs. 2,500</option>
+            <option value="Over-Speeding Violation - Rs. 2000" data-fine="2000">Over-Speeding Violation - Rs. 2,000</option>
+            <option value="Signal Violation - Rs. 3000" data-fine="3000">Signal Violation - Rs. 3,000</option>
+            <option value="One-Way / Wrong-Way Driving - Rs. 3000" data-fine="3000">One-Way / Wrong-Way Driving - Rs. 3,000</option>
+            <option value="Illegal Parking in No-Parking Zone - Rs. 2000" data-fine="2000">Illegal Parking in No-Parking Zone - Rs. 2,000</option>
+            <option value="Riding Without Safety Helmet - Rs. 1000" data-fine="1000">Riding Without Safety Helmet - Rs. 1,000</option>
+            <option value="Triple Riding on Motorcycle - Rs. 1500" data-fine="1500">Triple Riding on Motorcycle - Rs. 1,500</option>
+            <option value="Mobile Phone Usage While Driving - Rs. 2000" data-fine="2000">Mobile Phone Usage While Driving - Rs. 2,000</option>
+            <option value="Lane Straddling / Illegal Lane Change - Rs. 1000" data-fine="1000">Lane Straddling / Illegal Lane Change - Rs. 1,000</option>
+            <option value="Prohibited Tinted / Black Windows - Rs. 2000" data-fine="2000">Prohibited Tinted / Black Windows - Rs. 2,000</option>
           </select>
         </div>
 
         <!-- Location -->
-        <div class="form-group" style="margin-bottom: 2rem;">
-          <label class="form-label">Location</label>
-          <input type="text" id="chLocation" class="text-input" placeholder="e.g. lahore" value="lahore" required>
+        <div class="form-group">
+          <label class="form-label">Violation Location</label>
+          <input type="text" id="chLocation" class="text-input" placeholder="e.g. Kalma Chowk, Lahore" value="Lahore - Kalma Chowk" required>
+        </div>
+
+        <!-- Challan Details Preview Box (Fine & Expiry Date) -->
+        <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: #1E40AF; text-transform: uppercase;">Payment Due / Expiry Date</div>
+            <div id="chPreviewDueDate" style="font-size: 0.95rem; font-weight: 800; color: #1E3A8A;">15 Days from Today</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.78rem; font-weight: 700; color: #1E40AF; text-transform: uppercase;">Fine Payable</div>
+            <div id="chPreviewFine" style="font-size: 1.25rem; font-weight: 800; color: #1D4ED8;">Rs. 2,500</div>
+          </div>
         </div>
 
         <!-- Generate Button -->
         <button type="submit" id="btnGenChallan" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 1rem;">
-          <i class="fa-solid fa-file-circle-plus"></i> Generate Challan
+          <i class="fa-solid fa-file-circle-plus"></i> Issue & Generate Challan
         </button>
       </form>
     </div>
@@ -120,13 +154,76 @@
   </footer>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Calculate due date (15 days from now)
+      const now = new Date();
+      const dueDate = new Date();
+      dueDate.setDate(now.getDate() + 15);
+      document.getElementById('chPreviewDueDate').innerText = dueDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      // Load tariffs from backend if available
+      try {
+        const res = await fetch('/api/challans/tariffs/list');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.tariffs && data.tariffs.length > 0) {
+            const select = document.getElementById('chViolation');
+            select.innerHTML = data.tariffs.map(t => 
+              `<option value="${t.title} - Rs. ${t.fine_amount}" data-fine="${t.fine_amount}">${t.title} - Rs. ${Number(t.fine_amount).toLocaleString()}</option>`
+            ).join('');
+          }
+        }
+      } catch (e) {
+        console.log('Tariffs fallback loaded.');
+      }
+
+      updateChallanPreview();
+
       const urlParams = new URLSearchParams(window.location.search);
       const plateParam = urlParams.get('plate');
       if (plateParam) {
         document.getElementById('chVehicleNumber').value = plateParam;
+        lookupOwnerInfo();
       }
     });
+
+    function updateChallanPreview() {
+      const select = document.getElementById('chViolation');
+      const selectedOpt = select.options[select.selectedIndex];
+      const fine = selectedOpt ? selectedOpt.getAttribute('data-fine') : '2500';
+      if (fine) {
+        document.getElementById('chPreviewFine').innerText = `Rs. ${Number(fine).toLocaleString()}`;
+      }
+    }
+
+    let lookupTimeout = null;
+    function lookupOwnerInfo() {
+      clearTimeout(lookupTimeout);
+      lookupTimeout = setTimeout(async () => {
+        const plate = document.getElementById('chVehicleNumber').value.trim().toUpperCase();
+        const previewBox = document.getElementById('chOwnerPreview');
+        if (plate.length < 2) {
+          previewBox.style.display = 'none';
+          return;
+        }
+
+        try {
+          const res = await fetch(`/api/vehicles/${encodeURIComponent(plate)}`);
+          if (res.ok) {
+            const v = await res.json();
+            document.getElementById('chOwnerName').innerText = v.owner_name || 'N/A';
+            document.getElementById('chOwnerCnic').innerText = v.owner_cnic || 'N/A';
+            document.getElementById('chVehicleModel').innerText = `${v.vehicle_make || ''} ${v.vehicle_model || ''} (${v.vehicle_color || ''})`;
+            document.getElementById('chOwnerPhone').innerText = v.owner_phone || 'N/A';
+            previewBox.style.display = 'block';
+          } else {
+            previewBox.style.display = 'none';
+          }
+        } catch (e) {
+          previewBox.style.display = 'none';
+        }
+      }, 300);
+    }
 
     async function handleGenerateChallan(e) {
       e.preventDefault();
@@ -154,7 +251,7 @@
         alert('Network error: ' + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = 'Generate Challan';
+        btn.innerHTML = '<i class="fa-solid fa-file-circle-plus"></i> Issue & Generate Challan';
       }
     }
   </script>

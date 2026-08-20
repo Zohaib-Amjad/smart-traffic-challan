@@ -92,6 +92,7 @@ def init_db():
         pdf_path TEXT,
         status TEXT DEFAULT 'Unpaid', -- Unpaid, Paid, Disputed
         created_at TEXT NOT NULL,
+        due_date TEXT,
         paid_at TEXT,
         payment_method TEXT,
         payment_ref TEXT,
@@ -109,6 +110,17 @@ def init_db():
         timestamp TEXT NOT NULL
     );
     """)
+
+    # Safe migration for existing DB files (add due_date column if missing)
+    try:
+        cursor.execute("ALTER TABLE challans ADD COLUMN due_date TEXT")
+    except sqlite3.OperationalError:
+        pass  # column already exists
+
+    # Create Indexes for fast lookup by plate number and challan number
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_vehicles_plate ON vehicles(plate_number);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_challans_plate ON challans(plate_number);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_challans_no ON challans(challan_no);")
     
     conn.commit()
     conn.close()

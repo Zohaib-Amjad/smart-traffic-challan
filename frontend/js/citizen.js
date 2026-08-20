@@ -80,9 +80,11 @@ function renderCitizenChallans(challans) {
   }
 
   container.innerHTML = challans.map(ch => {
-    const isPending = ch.status === 'PENDING';
+    const statusLower = (ch.status || '').toLowerCase();
+    const isPending = statusLower !== 'paid';
     const evidenceImg = ch.evidence_image ? `/evidence/${ch.evidence_image}` : '';
-    const plateImg = ch.plate_crop ? `/evidence/${ch.plate_crop}` : '';
+    const statusLabel = ch.status || 'Unpaid';
+    const statusClass = isPending ? 'pending' : 'paid';
 
     return `
       <div class="card" style="border-left: 4px solid ${isPending ? '#ef4444' : '#10b981'};">
@@ -90,12 +92,13 @@ function renderCitizenChallans(challans) {
           <div>
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
               <b style="font-family: monospace; color: #38bdf8; font-size: 1rem;">${ch.challan_no}</b>
-              <span class="status-pill ${ch.status.toLowerCase()}">${ch.status}</span>
+              <span class="status-pill ${statusClass}">${statusLabel.toUpperCase()}</span>
             </div>
             <h4 style="font-size: 1.05rem; font-weight: 700; color: #f8fafc;">${ch.violation_name}</h4>
             <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
-              <i class="fa-solid fa-location-dot"></i> ${ch.location} (${ch.camera_name}) • <i class="fa-solid fa-calendar"></i> ${ch.created_at}
+              <i class="fa-solid fa-location-dot"></i> ${ch.location || 'N/A'} ${ch.camera_name ? '(' + ch.camera_name + ')' : ''} &bull; <i class="fa-solid fa-calendar"></i> ${ch.created_at}
             </div>
+            ${ch.due_date ? `<div style="font-size: 0.78rem; color: #F59E0B; margin-top: 2px;"><i class="fa-solid fa-clock"></i> <b>Payment Due:</b> ${ch.due_date}</div>` : ''}
           </div>
           <div style="text-align: right;">
             <div style="font-size: 0.75rem; color: var(--text-muted);">FINE AMOUNT</div>
@@ -111,7 +114,7 @@ function renderCitizenChallans(challans) {
             <img src="${evidenceImg}" style="width: 140px; height: 75px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color);" alt="Evidence">
             <div style="font-size: 0.78rem; color: var(--text-muted);">
               <div><b>Surveillance Proof Snapshot</b></div>
-              <div>Camera: ${ch.camera_name}</div>
+              <div>Camera: ${ch.camera_name || 'Traffic Camera'}</div>
               <div>Speed Recorded: ${ch.speed_detected} km/h (Limit: ${ch.speed_limit} km/h)</div>
             </div>
           </div>
@@ -124,7 +127,7 @@ function renderCitizenChallans(challans) {
           </div>
           <div style="display: flex; gap: 8px;">
             <a href="/api/challans/${ch.challan_no}/pdf" target="_blank" class="btn btn-sm btn-secondary">
-              <i class="fa-solid fa-file-pdf"></i> Download PDF
+              <i class="fa-solid fa-file-pdf"></i> PDF
             </a>
             ${isPending ? `
               <button class="btn btn-sm btn-secondary" onclick="openDisputeModal('${ch.challan_no}')">

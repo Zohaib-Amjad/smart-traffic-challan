@@ -15,6 +15,8 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="/static/css/styles.css">
+  <script src="/static/js/auth.js"></script>
+  <script>requireAuth();</script>
   
   <style>
     .vehicle-display-card {
@@ -71,7 +73,7 @@
       <a href="/dashboard" class="nav-item">Dashboard</a>
       <a href="#" id="navMyVehicles" class="nav-item active" onclick="showVehicleView('list')">My Vehicles</a>
       <a href="#" id="navAddVehicle" class="nav-item" onclick="showVehicleView('add')">+ Add Vehicle</a>
-      <a href="/login" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
@@ -96,50 +98,84 @@
 
     <!-- View 2: Register Vehicle Form -->
     <div id="vehicleAddView" style="display: none;">
-      <div class="card" style="padding: 2.5rem 2rem; box-shadow: var(--shadow-lg); max-width: 550px; margin: 0 auto; border-top: 4px solid var(--color-secondary);">
+      <div class="card" style="padding: 2.5rem 2rem; box-shadow: var(--shadow-lg); max-width: 600px; margin: 0 auto; border-top: 4px solid var(--color-secondary);">
         <h2 style="font-size: 1.5rem; font-weight: 800; text-align: center; color: #0F172A; margin-bottom: 1.75rem;">Register Vehicle</h2>
 
         <form id="addVehicleForm" onsubmit="handleAddVehicle(event)">
-          <!-- Vehicle Number -->
-          <div class="form-group">
-            <label class="form-label">Vehicle Number</label>
-            <input type="text" id="vNumber" class="text-input" placeholder="ABC-123" required>
-          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem;">
+            <!-- Vehicle Number -->
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label">Vehicle Registration Plate No.</label>
+              <input type="text" id="vNumber" class="text-input" placeholder="e.g. LHE-22-1234 or LEA-21-4589" required style="text-transform: uppercase;">
+            </div>
 
-          <!-- Vehicle Type Dropdown -->
-          <div class="form-group">
-            <label class="form-label">Vehicle Type</label>
-            <select id="vType" class="select-input" required>
-              <option value="" disabled selected>Select Vehicle</option>
-              <option value="Car">Car</option>
-              <option value="Motorcycle">Motorcycle</option>
-              <option value="Truck">Truck</option>
-              <option value="Bus">Bus</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
+            <!-- Vehicle Type Dropdown -->
+            <div class="form-group">
+              <label class="form-label">Vehicle Type</label>
+              <select id="vType" class="select-input" required>
+                <option value="" disabled selected>Select Vehicle</option>
+                <option value="Car">Car / Sedan</option>
+                <option value="SUV">SUV / Jeep</option>
+                <option value="Hatchback">Hatchback</option>
+                <option value="Motorcycle">Motorcycle / Bike</option>
+                <option value="Truck">Truck / Pickup</option>
+                <option value="Bus">Bus / Van</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
 
-          <!-- Owner Name -->
-          <div class="form-group">
-            <label class="form-label">Owner Name</label>
-            <input type="text" id="vOwner" class="text-input" placeholder="e.g. Ahmed Khan" required>
-          </div>
+            <!-- Vehicle Make -->
+            <div class="form-group">
+              <label class="form-label">Vehicle Make (Brand)</label>
+              <input type="text" id="vMake" class="text-input" placeholder="e.g. Honda, Toyota, Suzuki">
+            </div>
 
-          <!-- Vehicle Model -->
-          <div class="form-group">
-            <label class="form-label">Vehicle Model</label>
-            <input type="text" id="vModel" class="text-input" placeholder="e.g. Corolla" required>
-          </div>
+            <!-- Vehicle Model -->
+            <div class="form-group">
+              <label class="form-label">Vehicle Model</label>
+              <input type="text" id="vModel" class="text-input" placeholder="e.g. Civic 2021" required>
+            </div>
 
-          <!-- Vehicle Color -->
-          <div class="form-group" style="margin-bottom: 1.75rem;">
-            <label class="form-label">Vehicle Color</label>
-            <input type="text" id="vColor" class="text-input" placeholder="e.g. White">
+            <!-- Vehicle Color -->
+            <div class="form-group">
+              <label class="form-label">Vehicle Color</label>
+              <input type="text" id="vColor" class="text-input" placeholder="e.g. Crystal Black">
+            </div>
+
+            <!-- Owner Name -->
+            <div class="form-group">
+              <label class="form-label">Owner Full Name</label>
+              <input type="text" id="vOwner" class="text-input" placeholder="e.g. Ahmed Khan" required>
+            </div>
+
+            <!-- Owner CNIC -->
+            <div class="form-group">
+              <label class="form-label">Owner CNIC No.</label>
+              <input type="text" id="vCnic" class="text-input" placeholder="e.g. 35202-1234567-1">
+            </div>
+
+            <!-- Owner Phone -->
+            <div class="form-group">
+              <label class="form-label">Owner Contact Number</label>
+              <input type="text" id="vPhone" class="text-input" placeholder="e.g. +92 300 1234567">
+            </div>
+
+            <!-- Owner Email -->
+            <div class="form-group">
+              <label class="form-label">Owner Email (Optional)</label>
+              <input type="email" id="vEmail" class="text-input" placeholder="e.g. ahmed@gmail.com">
+            </div>
+
+            <!-- Owner Address -->
+            <div class="form-group" style="grid-column: 1 / -1; margin-bottom: 1.75rem;">
+              <label class="form-label">Registered Address</label>
+              <input type="text" id="vAddress" class="text-input" placeholder="e.g. House 45-B, DHA, Lahore">
+            </div>
           </div>
 
           <!-- Register Vehicle Button -->
           <button type="submit" id="btnSaveVehicle" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 1rem; margin-bottom: 1rem;">
-            Register Vehicle
+            <i class="fa-solid fa-car"></i> Register Vehicle
           </button>
 
           <button type="button" class="btn btn-secondary" onclick="showVehicleView('list')" style="width: 100%; justify-content: center; padding: 10px;">
@@ -201,10 +237,20 @@
         container.innerHTML = data.vehicles.map(v => `
           <div class="vehicle-display-card">
             <div class="v-title">🚗 ${v.plate_number}</div>
-            <div class="v-field"><span class="v-label">Type:</span> ${v.vehicle_type || 'Car'}</div>
             <div class="v-field"><span class="v-label">Owner:</span> ${v.owner_name}</div>
-            <div class="v-field"><span class="v-label">Model:</span> ${v.vehicle_model}</div>
-            <div class="v-field"><span class="v-label">Color:</span> ${v.vehicle_color || 'White'}</div>
+            <div class="v-field"><span class="v-label">CNIC:</span> ${v.owner_cnic || 'N/A'}</div>
+            <div class="v-field"><span class="v-label">Contact:</span> ${v.owner_phone || 'N/A'}</div>
+            <div class="v-field"><span class="v-label">Vehicle:</span> ${v.vehicle_make || ''} ${v.vehicle_model} (${v.vehicle_color || 'White'})</div>
+            <div class="v-field"><span class="v-label">Type:</span> ${v.vehicle_type || 'Car'}</div>
+            <div class="v-field"><span class="v-label">Address:</span> ${v.owner_address || 'N/A'}</div>
+            <div style="margin-top: 10px; display: flex; gap: 8px; justify-content: center;">
+              <a href="/generate-challan?plate=${v.plate_number}" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-file-invoice"></i> Issue Challan
+              </a>
+              <a href="/citizen.html?challan=${v.plate_number}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-magnifying-glass"></i> View Fines
+              </a>
+            </div>
           </div>
         `).join('');
 
@@ -217,9 +263,14 @@
       e.preventDefault();
       const plate_number = document.getElementById('vNumber').value;
       const vehicle_type = document.getElementById('vType').value;
+      const vehicle_make = document.getElementById('vMake').value;
       const owner_name = document.getElementById('vOwner').value;
       const vehicle_model = document.getElementById('vModel').value;
       const vehicle_color = document.getElementById('vColor').value;
+      const owner_cnic = document.getElementById('vCnic').value;
+      const owner_phone = document.getElementById('vPhone').value;
+      const owner_email = document.getElementById('vEmail').value;
+      const owner_address = document.getElementById('vAddress').value;
 
       const btn = document.getElementById('btnSaveVehicle');
       btn.disabled = true;
@@ -229,7 +280,10 @@
         const res = await fetch('/api/vehicles/add', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ plate_number, vehicle_type, owner_name, vehicle_model, vehicle_color })
+          body: JSON.stringify({
+            plate_number, vehicle_type, vehicle_make, owner_name, vehicle_model,
+            vehicle_color, owner_cnic, owner_phone, owner_email, owner_address
+          })
         });
         const data = await res.json();
         if (data.success) {
@@ -242,7 +296,7 @@
         alert('Network error: ' + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = 'Register Vehicle';
+        btn.innerHTML = '<i class="fa-solid fa-car"></i> Register Vehicle';
       }
     }
   </script>

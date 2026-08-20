@@ -17,8 +17,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend ./backend
 COPY frontend ./frontend
 
-# Hugging Face default port is 7860
-EXPOSE 7860
+# Render provides the runtime port through the PORT environment variable.
+EXPOSE 10000
 
 # Run FastAPI server
-CMD ["uvicorn", "app.main:app", "--app-dir", "backend", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["sh", "-c", "uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port ${PORT:-7860}"]

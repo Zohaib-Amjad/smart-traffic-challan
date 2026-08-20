@@ -15,6 +15,8 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="/static/css/styles.css">
+  <script src="/static/js/auth.js"></script>
+  <script>requireAuth();</script>
   
   <style>
     .challan-ticket-card {
@@ -146,7 +148,7 @@
     <nav class="nav-links">
       <a href="/dashboard" class="nav-item">Dashboard</a>
       <a href="/challans" class="nav-item">Challan History</a>
-      <a href="/login" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
@@ -167,55 +169,82 @@
       <div class="ticket-grid">
         <!-- Vehicle Number -->
         <div class="ticket-box">
-          <div class="ticket-box-label">Vehicle Number</div>
-          <div id="tkVehicleNumber" class="ticket-box-val">--</div>
+          <div class="ticket-box-label">Vehicle Registration Number</div>
+          <div id="tkVehicleNumber" class="ticket-box-val" style="color: #2563EB;">--</div>
         </div>
 
         <!-- Traffic Violation -->
         <div class="ticket-box">
-          <div class="ticket-box-label">Traffic Violation</div>
-          <div id="tkViolation" class="ticket-box-val">--</div>
+          <div class="ticket-box-label">Traffic Violation Type</div>
+          <div id="tkViolation" class="ticket-box-val" style="color: #DC2626; font-size: 1.1rem;">--</div>
         </div>
 
         <!-- Location -->
         <div class="ticket-box">
-          <div class="ticket-box-label">Location</div>
-          <div id="tkLocation" class="ticket-box-val">--</div>
+          <div class="ticket-box-label">Surveillance Location</div>
+          <div id="tkLocation" class="ticket-box-val" style="font-size: 1.05rem;">--</div>
         </div>
 
-        <!-- Date & Time -->
+        <!-- Issue Date & Time -->
         <div class="ticket-box">
-          <div class="ticket-box-label">Date & Time</div>
+          <div class="ticket-box-label">Notice Date & Time</div>
           <div id="tkDateTime" class="ticket-box-val" style="font-size: 1.05rem;">--</div>
         </div>
       </div>
 
-      <!-- Payment Status Box -->
-      <div class="ticket-box" style="margin-bottom: 1.5rem; max-width: 320px;">
-        <div class="ticket-box-label">Payment Status</div>
-        <div>
-          <span id="tkStatusBadge" class="status-pill pending" style="font-size: 0.85rem; padding: 4px 12px;">Unpaid</span>
+      <!-- Owner & Vehicle Information Box -->
+      <div class="ticket-box" style="margin-bottom: 1.25rem; background: #FFFFFF; border-left: 4px solid #2563EB;">
+        <div class="ticket-box-label" style="color: #2563EB; font-size: 0.85rem;"><i class="fa-solid fa-user-shield"></i> Registered Owner Record</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.92rem; margin-top: 6px;">
+          <div><strong>Owner:</strong> <span id="tkOwnerName">--</span></div>
+          <div><strong>CNIC:</strong> <span id="tkOwnerCnic">--</span></div>
+          <div><strong>Vehicle:</strong> <span id="tkVehicleDesc">--</span></div>
+          <div><strong>Contact:</strong> <span id="tkOwnerPhone">--</span></div>
+        </div>
+        <div style="font-size: 0.88rem; margin-top: 6px; color: #64748B;">
+          <strong>Address:</strong> <span id="tkOwnerAddress">--</span>
+        </div>
+      </div>
+
+      <!-- Payment Status & Expiry Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
+        <div class="ticket-box">
+          <div class="ticket-box-label">Payment Status</div>
+          <div style="margin-top: 4px;">
+            <span id="tkStatusBadge" class="status-pill pending" style="font-size: 0.95rem; padding: 5px 16px;">Unpaid</span>
+          </div>
+        </div>
+
+        <div class="ticket-box" style="border-left: 4px solid #F59E0B;">
+          <div class="ticket-box-label" style="color: #D97706;">Payment Due / Expiry Date</div>
+          <div id="tkDueDate" class="ticket-box-val" style="color: #B45309; font-size: 1.15rem;">--</div>
         </div>
       </div>
 
       <!-- Total Fine Amount Box -->
       <div class="fine-total-box">
-        <div class="fine-total-label">Total Fine Amount</div>
+        <div class="fine-total-label">Total Fine Payable</div>
         <div id="tkFineAmount" class="fine-total-val">Rs. 0</div>
       </div>
 
       <!-- Notice Subtext -->
       <div style="text-align: center; color: #64748B; font-size: 0.88rem; margin-top: 1.5rem; line-height: 1.6;">
-        Please pay the challan within the specified time.<br>
-        <strong style="color: #0F172A;">Traffic Challan System</strong>
+        Failure to pay within 15 days from issue date may result in vehicle registration suspension.<br>
+        <strong style="color: #0F172A;">Traffic Surveillance & Enforcement Division</strong>
       </div>
 
       <!-- Action Buttons -->
       <div class="ticket-actions">
-        <button class="btn btn-primary" onclick="window.print()" style="padding: 10px 24px;">
-          <i class="fa-solid fa-print"></i> Print Challan
+        <button id="btnMarkPaid" class="btn btn-success" onclick="markAsPaid()" style="padding: 10px 22px; background: #16A34A; color: white;">
+          <i class="fa-solid fa-check-circle"></i> Mark as Paid (Simulate)
         </button>
-        <a href="/challans" class="btn btn-dark" style="padding: 10px 24px;">
+        <a id="btnPdfDownload" href="#" target="_blank" class="btn btn-primary" style="padding: 10px 22px;">
+          <i class="fa-solid fa-file-pdf"></i> Download PDF
+        </a>
+        <button class="btn btn-secondary" onclick="window.print()" style="padding: 10px 20px;">
+          <i class="fa-solid fa-print"></i> Print
+        </button>
+        <a href="/challans" class="btn btn-dark" style="padding: 10px 20px;">
           ← Back to History
         </a>
       </div>
@@ -229,6 +258,9 @@
   </footer>
 
   <script>
+    let currentChallanNo = '';
+    let currentChallanId = '';
+
     document.addEventListener('DOMContentLoaded', async () => {
       const pathParts = window.location.pathname.split('/');
       let challanId = pathParts[pathParts.length - 1];
@@ -237,25 +269,43 @@
         challanId = urlParams.get('id') || '1';
       }
 
+      currentChallanId = challanId;
+
       try {
         const res = await fetch(`/api/challans/${challanId}`);
         if (!res.ok) throw new Error('Challan not found');
         const ch = await res.json();
 
-        document.getElementById('tkChallanId').innerText = `Challan ID: #${ch.id || challanId}`;
+        currentChallanNo = ch.challan_no || '';
+
+        document.getElementById('tkChallanId').innerText = `Challan Ticket: #${ch.challan_no || ch.id}`;
         document.getElementById('tkVehicleNumber').innerText = ch.plate_number;
         document.getElementById('tkViolation').innerText = ch.violation_name;
-        document.getElementById('tkLocation').innerText = ch.location || 'lahore';
+        document.getElementById('tkLocation').innerText = ch.location || 'Lahore';
         document.getElementById('tkDateTime').innerText = ch.created_at;
+        document.getElementById('tkDueDate').innerText = ch.due_date || 'Within 15 Days';
         document.getElementById('tkFineAmount').innerText = `Rs. ${Number(ch.fine_amount).toLocaleString()}`;
 
+        // Owner details
+        document.getElementById('tkOwnerName').innerText = ch.owner_name || 'Unverified Citizen';
+        document.getElementById('tkOwnerCnic').innerText = ch.owner_cnic || 'N/A';
+        document.getElementById('tkVehicleDesc').innerText = `${ch.vehicle_make || ''} ${ch.vehicle_model || 'Vehicle'} (${ch.vehicle_color || 'White'})`;
+        document.getElementById('tkOwnerPhone').innerText = ch.owner_phone || 'N/A';
+        document.getElementById('tkOwnerAddress').innerText = ch.owner_address || 'Address on record';
+
+        // PDF Link
+        document.getElementById('btnPdfDownload').href = `/api/challans/${ch.challan_no}/pdf`;
+
         const badge = document.getElementById('tkStatusBadge');
+        const payBtn = document.getElementById('btnMarkPaid');
         if (ch.status && ch.status.toLowerCase() === 'paid') {
-          badge.innerText = 'Paid';
+          badge.innerText = 'PAID';
           badge.className = 'status-pill paid';
+          payBtn.style.display = 'none';
         } else {
-          badge.innerText = 'Unpaid';
+          badge.innerText = 'UNPAID';
           badge.className = 'status-pill pending';
+          payBtn.style.display = 'inline-flex';
         }
 
       } catch (err) {
@@ -267,6 +317,26 @@
         `;
       }
     });
+
+    async function markAsPaid() {
+      if (!confirm('Mark this challan as Paid?')) return;
+      try {
+        const res = await fetch(`/api/challans/${currentChallanId}/status`, {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ status: 'Paid', payment_method: 'Online Banking', payment_ref: 'SIM-PAY-' + Date.now().toString().slice(-6) })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Challan marked as Paid successfully!');
+          window.location.reload();
+        } else {
+          alert('Error updating status.');
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    }
   </script>
 </body>
 </html>

@@ -36,7 +36,7 @@ class VehiclePlateDetector:
             if len(approx) == 4:
                 x, y, cw, ch = cv2.boundingRect(approx)
                 aspect_ratio = cw / float(ch)
-                if 1.8 <= aspect_ratio <= 5.5 and (cw * ch) > 800 and cw < (w * 0.9):
+                if 0.8 <= aspect_ratio <= 8.0 and (cw * ch) > 800 and cw < (w * 0.95):
                     plate_crop = image[y:y+ch, x:x+cw]
                     plate_candidates.append({
                         "bbox": (x, y, cw, ch),

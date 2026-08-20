@@ -15,6 +15,8 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="/static/css/styles.css">
+  <script src="/static/js/auth.js"></script>
+  <script>requireAuth();</script>
   
   <style>
     .hist-hero {
@@ -54,7 +56,7 @@
       <a href="/dashboard" class="nav-item">Dashboard</a>
       <a href="/generate-challan" class="nav-item">+ Generate Challan</a>
       <a href="/reports" class="nav-item">Reports</a>
-      <a href="/login" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
@@ -91,19 +93,20 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Vehicle Number</th>
+              <th>Ticket #</th>
+              <th>Plate Number</th>
+              <th>Owner Name</th>
               <th>Violation</th>
               <th>Fine</th>
-              <th>Location</th>
               <th>Status</th>
-              <th>Date</th>
-              <th>Action</th>
+              <th>Issue Date</th>
+              <th>Due Date</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="myChallansTbody">
             <tr>
-              <td colspan="8" style="text-align: center; padding: 2rem; color: #64748B;">
+              <td colspan="9" style="text-align: center; padding: 2rem; color: #64748B;">
                 <i class="fa-solid fa-spinner fa-spin"></i> Loading challans history...
               </td>
             </tr>
@@ -129,38 +132,60 @@
         const data = await res.json();
 
         if (!data.items || data.items.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: #64748B;">No challans found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 2rem; color: #64748B;">No challans found.</td></tr>';
           return;
         }
 
         tbody.innerHTML = data.items.map(ch => {
           const isPaid = (ch.status && ch.status.toLowerCase() === 'paid');
           return `
-            <tr>
-              <td style="font-weight: 700;">#${ch.id}</td>
+            <tr id="row-${ch.id}">
+              <td style="font-weight: 700; font-size: 0.88rem;">${ch.challan_no || '#' + ch.id}</td>
               <td style="font-weight: 800; color: #0F172A;">
                 <span class="plate-badge">${ch.plate_number}</span>
               </td>
+              <td style="color: #334155; font-size: 0.9rem;">${ch.owner_name || 'Registered Owner'}</td>
               <td style="color: #1E293B; font-weight: 600;">${ch.violation_name}</td>
               <td style="font-weight: 800; color: #0F172A;">Rs. ${Number(ch.fine_amount).toLocaleString()}</td>
-              <td style="color: #64748B;">${ch.location || 'lahore'}</td>
               <td>
                 <span class="status-pill ${isPaid ? 'paid' : 'pending'}">
                   ${isPaid ? 'Paid' : 'Unpaid'}
                 </span>
               </td>
               <td style="font-size: 0.8rem; color: #64748B; white-space: nowrap;">${ch.created_at}</td>
+              <td style="font-size: 0.82rem; color: #B45309; font-weight: 700; white-space: nowrap;">${ch.due_date || '15 Days'}</td>
               <td>
-                <a href="/challan/${ch.id}" class="btn btn-primary btn-sm">
-                  View
-                </a>
+                <div style="display: flex; gap: 6px;">
+                  <a href="/challan/${ch.id}" class="btn btn-primary btn-sm" title="View Details">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                  <button class="btn btn-sm" onclick="handleDeleteChallan(${ch.id})" style="background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA;" title="Delete Record">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           `;
         }).join('');
 
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red; padding: 1.5rem;">Error loading challans: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: red; padding: 1.5rem;">Error loading challans: ${err.message}</td></tr>`;
+      }
+    }
+
+    async function handleDeleteChallan(id) {
+      if (!confirm('Are you sure you want to delete this challan record?')) return;
+      try {
+        const res = await fetch(`/api/challans/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          const row = document.getElementById(`row-${id}`);
+          if (row) row.remove();
+        } else {
+          alert('Could not delete record.');
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
       }
     }
   </script>

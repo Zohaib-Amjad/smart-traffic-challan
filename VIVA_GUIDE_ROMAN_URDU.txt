@@ -1,0 +1,526 @@
+SMART TRAFFIC CHALLAN SYSTEM
+VIVA GUIDE - ROMAN URDU
+
+============================================================
+1. PROJECT KA BASIC IDEA
+============================================================
+
+Hamara project Smart Traffic Challan and ANPR System hai.
+ANPR ka matlab Automatic Number Plate Recognition hai.
+
+Is system ka purpose:
+- Vehicle image ya video lena.
+- Vehicle aur number plate detect karna.
+- OCR se plate number read karna.
+- Database se vehicle owner details match karna.
+- Traffic violations detect karna.
+- Automatic e-challan generate karna.
+- Evidence image aur PDF save karna.
+- Citizen ko challan search aur payment facility dena.
+- Reports aur analytics provide karna.
+
+============================================================
+2. COMPLETE USER FLOW
+============================================================
+
+STEP 1: LANDING PAGE
+URL: /
+
+Landing page public hai. Yahan Login aur Register options hotay hain.
+Vehicle Registration, Number Plate aur Challan cards protected hain.
+Agar user login nahi hai aur in cards par click kare, to login page par
+redirect hota hai.
+
+STEP 2: REGISTRATION
+URL: /register
+
+User Full Name, Email aur Password enter karta hai.
+Frontend request bhejta hai:
+POST /api/auth/register
+
+Backend:
+1. Email ko lowercase karta hai.
+2. User ko SQLite users table mein save karta hai.
+3. Duplicate email par error deta hai.
+4. Registration ke baad user login page par redirect hota hai.
+
+STEP 3: LOGIN
+URL: /login
+
+Frontend request:
+POST /api/auth/login
+
+Backend email aur password verify karta hai.
+Successful login par user data browser localStorage mein save hota hai.
+User dashboard par redirect hota hai.
+Agar user kisi protected page se aya tha to login ke baad usi page par
+wapas jata hai.
+
+Example:
+/login?next=/vehicles
+
+Login ke baad:
+/vehicles
+
+STEP 4: AUTHENTICATION GUARD
+
+Protected pages:
+- /dashboard
+- /vehicles
+- /number-plate
+- /generate-challan
+- /challans
+- /reports
+- /simulate.html
+
+frontend/js/auth.js ka requireAuth function localStorage mein currentUser
+check karta hai. User login na ho to login page par redirect hota hai.
+Logout par currentUser remove hota hai aur login page open hota hai.
+
+Note: Current version frontend localStorage based authentication use karti
+hai. Production ke liye JWT/session authentication aur password hashing
+add karni chahiye.
+
+============================================================
+3. DASHBOARD FLOW
+============================================================
+
+URL: /dashboard
+
+Dashboard par ye modules hotay hain:
+1. Vehicle Management
+2. Number Plate Recognition
+3. Challan Management
+4. Reports
+5. Account Information
+
+Dashboard APIs:
+GET /api/analytics/dashboard
+GET /api/challans
+GET /api/stream/live_alert
+
+Dashboard par total challans, revenue, pending revenue, recent violations,
+charts aur live alerts show hotay hain.
+
+============================================================
+4. VEHICLE REGISTRATION FLOW
+============================================================
+
+URL: /vehicles
+
+Officer ye details enter karta hai:
+- Plate number
+- Owner name
+- CNIC
+- Phone
+- Email
+- Address
+- Vehicle make
+- Model
+- Color
+- Vehicle type
+
+APIs:
+GET    /api/vehicles
+GET    /api/vehicles/{plate_number}
+POST   /api/vehicles/add
+PUT    /api/vehicles/{plate_number}
+DELETE /api/vehicles/{plate_number}
+
+Plate number unique hota hai. Same plate dobara add ho to existing record
+update ho jata hai.
+
+============================================================
+5. IMAGE ANPR FLOW
+============================================================
+
+URL: /number-plate
+API: POST /api/simulate/process_image
+
+STAGE 1: IMAGE INPUT
+Uploaded image backend receive karta hai aur OpenCV se decode hoti hai.
+
+STAGE 2: PREPROCESSING
+- Grayscale conversion
+- Bilateral filtering
+- Canny edge detection
+
+STAGE 3: PLATE DETECTION
+backend/app/anpr/detector.py mein:
+- Haar Cascade
+- Contour detection
+- Polygon approximation
+- Aspect ratio filtering
+
+use hota hai. Plate ko ROI yani Region of Interest ke taur par crop kiya
+jata hai.
+
+STAGE 4: OCR
+backend/app/anpr/ocr_reader.py mein:
+- Tesseract OCR through pytesseract
+- EasyOCR fallback
+
+use hota hai. Different PSM modes aur slight rotation tilted ya two-line
+plates ke liye try hoti hai.
+
+STAGE 5: TEXT CLEANING
+OCR output se special characters aur extra spaces remove hotay hain.
+Text uppercase hota hai. Province identify hota hai aur plate validity
+check hoti hai.
+
+STAGE 6: OWNER MATCHING
+Detected plate ke against vehicle API call hoti hai:
+GET /api/vehicles/{plate_number}
+
+Agar plate database mein ho to owner details show hoti hain.
+
+STAGE 7: CHALLAN
+Valid detection aur violation hone par challan automatically create hota hai.
+
+============================================================
+6. VIDEO PROCESSING FLOW
+============================================================
+
+URL: /simulate.html
+API: POST /api/simulate/process_video
+
+1. Video temporary file mein save hoti hai.
+2. OpenCV VideoCapture se video read hoti hai.
+3. Performance ke liye har fifth frame process hota hai.
+4. Plate detection aur OCR hoti hai.
+5. Vehicle tracker track ID assign karta hai.
+6. Violation rules execute hotay hain.
+7. Results return hotay hain.
+8. Temporary video delete hoti hai.
+
+============================================================
+7. VEHICLE TRACKING
+============================================================
+
+File: backend/app/anpr/tracker.py
+
+Tracker vehicle ka center point calculate karta hai aur nearest previous
+vehicle ke saath match karta hai.
+
+Tracker features:
+- Track ID
+- Centroid distance matching
+- Estimated speed
+- Exponential smoothing
+- Speed limit clamp
+- Duplicate challan prevention
+- 30 seconds cooldown
+
+============================================================
+8. VIOLATION RULES
+============================================================
+
+File: backend/app/anpr/violation_rules.py
+
+RED LIGHT VIOLATION:
+Agar signal RED ho aur vehicle virtual stop line cross kare to violation
+create hoti hai.
+Fine: PKR 2,500
+
+OVER-SPEEDING:
+Agar vehicle speed speed limit se 5 km/h se zyada ho to violation create
+hoti hai.
+Fine: PKR 2,000
+
+MANUAL VIOLATIONS:
+- Wrong way
+- Illegal parking
+- No helmet
+- Triple riding
+- Mobile phone usage
+- Illegal lane change
+- Tinted windows
+
+============================================================
+9. EVIDENCE SAVING
+============================================================
+
+Violation ke waqt system:
+1. Annotated evidence frame banata hai.
+2. Vehicle bounding box draw karta hai.
+3. Plate bounding box draw karta hai.
+4. Plate number aur violation text add karta hai.
+5. Evidence image save karta hai.
+6. Plate crop save karta hai.
+
+Folders:
+backend/uploads/evidence/
+backend/uploads/challans_pdf/
+
+============================================================
+10. CHALLAN GENERATION
+============================================================
+
+Automatic challan database mein save hota hai.
+Challan fields:
+- Challan number
+- Plate number
+- Violation name and code
+- Fine amount
+- Location
+- Camera
+- Speed detected
+- Evidence image
+- Plate crop
+- Status
+- Due date
+- Payment details
+
+APIs:
+GET    /api/challans
+GET    /api/challans/{challan_id_or_no}
+POST   /api/challans/generate
+PATCH  /api/challans/{challan_id_or_no}/status
+DELETE /api/challans/{challan_id_or_no}
+GET    /api/challans/export/csv
+
+============================================================
+11. PDF GENERATION
+============================================================
+
+File: backend/app/services/pdf_generator.py
+
+Technologies:
+- ReportLab
+- QRCode
+- Pillow
+
+PDF mein police department heading, challan number, QR code, fine,
+owner details, vehicle details, violation, location, camera aur evidence
+images include hoti hain.
+
+PDF API:
+GET /api/challans/{challan_no}/pdf
+
+============================================================
+12. CITIZEN PORTAL
+============================================================
+
+URL: /citizen.html
+
+Citizen login ke baghair plate number, CNIC ya challan number se record
+search kar sakta hai.
+
+API:
+GET /api/citizen/search?query=LEA-21-4589
+
+Portal show karta hai:
+- Vehicle owner
+- Vehicle model
+- Tax status
+- Challan history
+- Fine amount
+- Evidence image
+- Due date
+- PDF challan
+
+============================================================
+13. ONLINE PAYMENT FLOW
+============================================================
+
+Citizen pending challan ke liye JazzCash, EasyPaisa ya Debit Card select
+kar sakta hai.
+
+API:
+POST /api/citizen/pay
+
+System:
+1. Challan find karta hai.
+2. Already paid status check karta hai.
+3. Status Paid karta hai.
+4. Payment reference generate karta hai.
+5. system_logs mein event save karta hai.
+6. Updated PDF generate karta hai.
+7. Receipt return karta hai.
+
+Important: Current payment actual gateway nahi hai. Ye simulated payment hai.
+
+============================================================
+14. REPORTS FLOW
+============================================================
+
+URL: /reports
+
+APIs:
+GET /api/reports/summary
+GET /api/reports/csv
+
+Reports mein total challans, total fine, paid fine, unpaid fine, paid aur
+unpaid count, violation summary aur recent challans show hotay hain.
+CSV report Excel-compatible hoti hai.
+
+============================================================
+15. LIVE STREAM MODULE
+============================================================
+
+File: backend/app/routers/stream.py
+
+APIs:
+GET  /api/stream/video_feed
+GET  /api/stream/live_alert
+POST /api/stream/set_signal/{state}
+POST /api/stream/set_speed_limit/{limit}
+POST /api/stream/select_camera/{camera_id}
+
+System simulated traffic camera feed generate karta hai.
+Signal, speed limit aur camera controls available hain.
+Current version real CCTV se connected nahi hai.
+
+============================================================
+16. DATABASE TABLES
+============================================================
+
+Database file:
+backend/traffic_challan.db
+
+USERS:
+id, name, email, password, role, created_at
+
+VEHICLES:
+plate_number, owner_name, CNIC, phone, email, address, make, model,
+color, vehicle type, registration date, tax status
+
+CAMERAS:
+code, name, location, speed limit, signal state, active status, latitude,
+longitude
+
+VIOLATION_TARIFFS:
+code, title, description, fine amount, points
+
+CHALLANS:
+challan number, plate, camera, location, violation, fine, speed, evidence,
+PDF path, status, due date, paid time, payment method, payment reference
+
+SYSTEM_LOGS:
+event type, description, timestamp
+
+============================================================
+17. TECHNOLOGY STACK
+============================================================
+
+BACKEND:
+- Python 3.10/3.11
+- FastAPI
+- Uvicorn
+- Pydantic
+- REST APIs
+- SQLite
+- Python Multipart
+
+COMPUTER VISION:
+- OpenCV
+- NumPy
+- Haar Cascade
+- Contour detection
+- Canny edge detection
+- Bilateral filter
+- Thresholding
+- Bounding boxes
+
+OCR:
+- Tesseract OCR
+- pytesseract
+- EasyOCR
+- Pillow
+
+DOCUMENTS:
+- ReportLab
+- QRCode
+- Pillow
+
+FRONTEND:
+- HTML5
+- CSS3
+- JavaScript
+- Chart.js
+- Font Awesome
+- Google Fonts
+- Fetch API
+- LocalStorage
+- SessionStorage
+
+DEPLOYMENT:
+- Docker
+- Python slim image
+- Linux Tesseract package
+- Uvicorn
+- Dynamic PORT
+
+============================================================
+18. IMPORTANT VIVA QUESTIONS
+============================================================
+
+Q: FastAPI kyun use kiya?
+A: FastAPI high-performance Python framework hai, REST APIs aur automatic
+Swagger documentation provide karta hai.
+
+Q: SQLite kyun use ki?
+A: SQLite lightweight, serverless aur zero-configuration database hai.
+FYP/demo ke liye suitable hai.
+
+Q: OCR kya karta hai?
+A: OCR image ke characters ko machine-readable text mein convert karta hai.
+
+Q: OpenCV ka role kya hai?
+A: Image preprocessing, plate detection, video reading aur evidence
+annotation ke liye.
+
+Q: Haar Cascade kya hai?
+A: Pre-trained object detection classifier jo plate-like regions detect
+karta hai.
+
+Q: Tracker kyun use hota hai?
+A: Same vehicle ko multiple frames mein track karne, speed estimate karne
+aur duplicate challans rokne ke liye.
+
+Q: Red light violation kaise detect hoti hai?
+A: Signal RED ho aur vehicle virtual stop line cross kare to violation hoti hai.
+
+Q: Evidence kyun save karte hain?
+A: Challan verification, dispute handling aur legal record ke liye.
+
+Q: Payment real hai?
+A: Nahi, current version simulated payment use karti hai. Real gateway
+future enhancement hai.
+
+Q: Kya real AI model use hua?
+A: Current version hybrid computer vision system hai. OpenCV heuristics,
+Haar Cascade, OCR aur rule engine use hota hai. Production mein YOLO ya
+custom ANPR model add kiya ja sakta hai.
+
+============================================================
+19. PROJECT LIMITATIONS
+============================================================
+
+- Current CCTV feed simulated hai.
+- Payment gateway simulated hai.
+- Authentication localStorage based hai.
+- Passwords production mein hash hone chahiye.
+- SQLite cloud deployment ke liye ideal nahi.
+- Free hosting par uploaded files reset ho sakti hain.
+- OCR lighting, angle aur image quality se affect hota hai.
+- Speed estimation demo pixel movement par based hai.
+- Real deployment mein PostgreSQL, object storage, JWT aur real CCTV
+  integration add karni hogi.
+
+============================================================
+20. ONE-MINUTE VIVA SUMMARY
+============================================================
+
+Hamara Smart Traffic Challan System FastAPI, Python, OpenCV, OCR aur SQLite
+par based web application hai. Officer login ke baad vehicle register kar
+sakta hai, image ya video upload kar sakta hai. OpenCV image preprocessing
+aur plate detection karta hai, jabke Tesseract/EasyOCR number plate ka text
+extract karta hai. Extracted plate ko clean aur validate karke vehicle
+database se owner details match ki jati hain. Tracker video frames mein
+vehicle ko follow karta hai aur violation rules red-light crossing aur
+over-speeding check karte hain. Violation detect hone par system evidence
+image, plate crop, database record aur QR-enabled PDF challan generate karta
+hai. Citizen portal plate, CNIC ya challan number se record search kar sakta
+hai aur simulated payment kar sakta hai. Reports module total fines,
+paid/unpaid challans aur CSV export provide karta hai.

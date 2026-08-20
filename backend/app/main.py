@@ -96,6 +96,7 @@ def serve_challans():
 def serve_reports():
     return FileResponse(os.path.join(STATIC_DIR, "reports.html"))
 
+@app.get("/citizen")
 @app.get("/citizen.html")
 def serve_citizen():
     return FileResponse(os.path.join(STATIC_DIR, "citizen.html"))
