@@ -1,6 +1,20 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/static/(.*)", "destination": "/$1" }
+    { "source": "/static/(.*)", "destination": "/$1" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/vehicles", "destination": "/vehicles.html" },
+    { "source": "/vehicles/add", "destination": "/vehicles.html" },
+    { "source": "/challans", "destination": "/challans.html" },
+    { "source": "/challan/(.*)", "destination": "/challan_detail.html" },
+    { "source": "/generate-challan", "destination": "/generate_challan.html" },
+    { "source": "/generate_challan", "destination": "/generate_challan.html" },
+    { "source": "/reports", "destination": "/reports.html" },
+    { "source": "/number-plate", "destination": "/number_plate.html" },
+    { "source": "/number_plate", "destination": "/number_plate.html" },
+    { "source": "/traffic-rules", "destination": "/traffic-rules.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/register", "destination": "/register.html" },
+    { "source": "/citizen", "destination": "/number_plate.html" }
   ]
 }
