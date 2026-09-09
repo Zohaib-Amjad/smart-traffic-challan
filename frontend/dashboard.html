@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<!-- Officer dashboard: live metrics, camera controls, alerts, and challan table. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
   <title>Dashboard - Smart Traffic Challan System</title>
   
   <!-- Google Fonts -->
@@ -15,17 +17,41 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css">
-  <script src="/static/js/auth.js"></script>
+  <link rel="stylesheet" href="/static/css/styles.css?v=17">
+  <script src="/static/js/auth.js?v=17"></script>
   <script>requireAuth();</script>
   
   <style>
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .dashboard-page {
+      height: 100vh;
+      min-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dashboard-page .navbar {
+      position: sticky;
+      top: 0;
+      flex: 0 0 auto;
+      flex-wrap: nowrap;
+      z-index: 200;
+      overflow: visible;
+    }
+
     .dash-hero {
       background-color: var(--color-primary);
-      padding: 4rem 1.5rem;
+      padding: clamp(1.5rem, 4vh, 3rem) 1.5rem;
       text-align: center;
       color: #FFFFFF;
-      margin-bottom: 2.5rem;
+      margin-bottom: 0;
+      flex: 0 0 auto;
     }
     .dash-hero-title {
       font-size: 2.5rem;
@@ -39,22 +65,24 @@
     }
     .action-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.25rem;
+      width: 100%;
+      max-width: 1080px;
+      margin: 0 auto;
     }
     .action-card {
       background: #FFFFFF;
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
-      padding: 2.25rem 1.75rem;
+      padding: 1.25rem 1rem;
       text-align: center;
       box-shadow: var(--shadow-card);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      min-height: 240px;
+      min-height: 255px;
       transition: all 0.2s ease;
     }
     .action-card:hover {
@@ -62,11 +90,23 @@
       box-shadow: var(--shadow-md);
       border-color: #CBD5E1;
     }
+    .action-visual {
+      width: min(100%, 170px);
+      aspect-ratio: 16 / 8;
+      margin-bottom: 1rem;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      line-height: 1;
+      background: transparent;
+    }
     .action-icon-title {
       font-size: 1.15rem;
       font-weight: 800;
       color: #0F172A;
-      margin-bottom: 8px;
+      margin-bottom: 0.65rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -75,35 +115,135 @@
     .action-desc {
       font-size: 0.88rem;
       color: #64748B;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
       line-height: 1.5;
     }
-    .account-card {
-      background: #FFFFFF;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem 1.5rem;
-      box-shadow: var(--shadow-card);
-      margin-bottom: 3.5rem;
-      text-align: center;
+
+    .dashboard-page > main.container {
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      overflow: hidden;
     }
-    .account-inner {
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      border-radius: var(--radius-md);
-      padding: 1.5rem;
-      max-width: 600px;
-      margin: 1.25rem auto 0 auto;
+
+    .dashboard-page .app-footer {
+      flex: 0 0 auto;
+      padding: 0.7rem 1rem;
+    }
+
+    @media (max-width: 1050px) {
+      .action-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: 760px;
+      }
+
+      .action-card {
+        min-height: 205px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .dashboard-page .dash-hero {
+        padding: 1.25rem 1rem;
+      }
+
+      .dashboard-page .dash-hero-title {
+        font-size: 1.65rem;
+        margin-bottom: 0.35rem;
+      }
+
+      .dashboard-page .dash-hero-sub {
+        font-size: 0.8rem;
+      }
+
+      .dashboard-page > main.container {
+        padding: 0.75rem;
+      }
+
+      .action-grid {
+        gap: 0.65rem;
+      }
+
+      .action-card {
+        min-height: 185px;
+        padding: 0.8rem 0.55rem;
+      }
+
+      .action-visual {
+        width: 100%;
+        max-width: 105px;
+        margin-bottom: 0.45rem;
+        font-size: 2.5rem;
+      }
+
+      .action-icon-title {
+        font-size: 0.82rem;
+        line-height: 1.25;
+        margin-bottom: 0.35rem;
+      }
+
+      .action-desc {
+        font-size: 0.68rem;
+        line-height: 1.3;
+        margin-bottom: 0.65rem;
+      }
+
+      .dashboard-page .app-footer {
+        padding: 0.45rem 0.75rem;
+        font-size: 0.72rem;
+      }
+    }
+
+    @media (min-width: 601px) and (max-height: 720px) {
+      .dashboard-page .dash-hero {
+        padding-top: 1.25rem;
+        padding-bottom: 1.5rem;
+      }
+
+      .dashboard-page .dash-hero-title {
+        font-size: 2rem;
+        margin-bottom: 0.4rem;
+      }
+
+      .dashboard-page .dash-hero-sub {
+        font-size: 0.9rem;
+      }
+
+      .dashboard-page > main.container {
+        padding-top: 0.65rem;
+        padding-bottom: 0.65rem;
+      }
+
+      .action-card {
+        min-height: 215px;
+        padding-top: 0.85rem;
+        padding-bottom: 0.85rem;
+      }
+
+      .action-visual {
+        margin-bottom: 0.55rem;
+      }
+
+      .action-desc {
+        margin-bottom: 0.75rem;
+      }
+
+      .dashboard-page .app-footer {
+        padding-top: 0.45rem;
+        padding-bottom: 0.45rem;
+      }
     }
   </style>
 </head>
-<body>
+<body class="dashboard-page">
 
   <!-- Top Navbar (Deep Navy #0F172A) -->
   <header class="navbar">
-    <a href="/dashboard" class="brand">
+    <a href="/" class="brand">
       <div class="brand-icon">
-        <i class="fa-solid fa-traffic-light"></i>
+        <img src="/static/logo.png" alt="Smart Traffic Challan System logo">
       </div>
       <div>
         <div class="brand-title">Smart Traffic Challan System</div>
@@ -111,12 +251,23 @@
       </div>
     </a>
 
-    <nav class="nav-links">
-      <a href="/" class="nav-item">Home</a>
-      <a href="/dashboard" class="nav-item active">Dashboard</a>
-      <a href="/vehicles" class="nav-item">Vehicles</a>
-      <a href="/challans" class="nav-item">Challans</a>
-      <a href="#" onclick="handleLogout()" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    <nav class="nav-links" id="appNav" data-nav-mode="app" data-active="dashboard">
+      <div class="nav-cluster">
+        <div class="nav-group">
+          <a href="/dashboard" class="nav-item nav-parent" data-nav="dashboard"><img class="nav-parent-icon" src="/static/admin-control.svg?v=17" alt=""> Administrative Control</a>
+          <a href="/vehicles" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Vehicle Management</a>
+          <a href="/number-plate" class="nav-item" data-nav="number-plate"><i class="fa-solid fa-camera"></i> Number Plate Recognition</a>
+          <div class="nav-dropdown">
+            <button type="button" class="nav-item" data-nav="challans" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-file-lines"></i> Challan Management <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i></button>
+            <div class="nav-dropdown-menu">
+              <a href="/generate-challan" class="nav-item" data-nav="generate-challan">Generate Challan</a>
+              <a href="/challans" class="nav-item" data-nav="challan-history">Challan History</a>
+            </div>
+          </div>
+          <a href="/reports" class="nav-item" data-nav="reports"><i class="fa-solid fa-chart-column"></i> Reports</a>
+        </div>
+      </div>
+      <a href="#" class="nav-item nav-logout" onclick="logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
@@ -128,15 +279,14 @@
 
   <!-- Dashboard Container -->
   <main class="container">
-    
+
     <!-- 4 Hub Action Cards -->
     <div class="action-grid">
       <!-- Card 1: Vehicle Management -->
       <div class="action-card">
-        <div>
-          <div class="action-icon-title">🚗 Vehicle Management</div>
-          <p class="action-desc">Register and manage vehicle information and ownership records.</p>
-        </div>
+        <div class="action-visual" aria-hidden="true">🚗</div>
+        <div class="action-icon-title">Vehicle Management</div>
+        <p class="action-desc">Register and manage vehicle information and ownership records.</p>
         <a href="/vehicles" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; width: 100%; max-width: 200px;">
           Manage Vehicles
         </a>
@@ -144,10 +294,9 @@
 
       <!-- Card 2: Number Plate Recognition -->
       <div class="action-card">
-        <div>
-          <div class="action-icon-title">📷 Number Plate Recognition</div>
-          <p class="action-desc">Upload a vehicle image for automatic AI number plate detection.</p>
-        </div>
+        <div class="action-visual" aria-hidden="true">📷</div>
+        <div class="action-icon-title">Number Plate Recognition</div>
+        <p class="action-desc">Upload a vehicle image for automatic AI number plate detection.</p>
         <a href="/number-plate" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; width: 100%; max-width: 200px;">
           Upload Image
         </a>
@@ -155,10 +304,9 @@
 
       <!-- Card 3: Challan Management -->
       <div class="action-card">
-        <div>
-          <div class="action-icon-title">📄 Challan Management</div>
-          <p class="action-desc">Create and manage traffic violation tickets and records.</p>
-        </div>
+        <div class="action-visual" aria-hidden="true">📄</div>
+        <div class="action-icon-title">Challan Management</div>
+        <p class="action-desc">Create and manage traffic violation tickets and records.</p>
         <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 200px;">
           <a href="/generate-challan" class="btn btn-primary" style="justify-content: center; padding: 9px 16px; font-weight: 700;">
             Generate Challan
@@ -171,26 +319,12 @@
 
       <!-- Card 4: Reports -->
       <div class="action-card">
-        <div>
-          <div class="action-icon-title">📊 Reports</div>
-          <p class="action-desc">View traffic violation analytics and export official CSV reports.</p>
-        </div>
+        <div class="action-visual" aria-hidden="true">📊</div>
+        <div class="action-icon-title">Reports</div>
+        <p class="action-desc">View traffic violation analytics and export official CSV reports.</p>
         <a href="/reports" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; width: 100%; max-width: 200px;">
           Reports
         </a>
-      </div>
-    </div>
-
-    <!-- Account Information Card -->
-    <div class="account-card">
-      <h2 style="font-size: 1.35rem; font-weight: 800; color: #0F172A;">Account Information</h2>
-      <div class="account-inner">
-        <div style="margin-bottom: 8px; font-size: 0.95rem;">
-          <strong style="color: #1E293B;">Name:</strong> <span id="accName" style="color: #475569;">Traffic Officer</span>
-        </div>
-        <div style="font-size: 0.95rem;">
-          <strong style="color: #1E293B;">Email:</strong> <span id="accEmail" style="color: #475569;">officer@traffic.gov.pk</span>
-        </div>
       </div>
     </div>
 
@@ -205,8 +339,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       const user = getCurrentUser();
       document.getElementById('welcomeUserHeading').innerText = `Welcome, ${user.name}`;
-      document.getElementById('accName').innerText = user.name;
-      document.getElementById('accEmail').innerText = user.email;
     });
 
     function handleLogout() {

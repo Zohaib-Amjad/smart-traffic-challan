@@ -1,3 +1,4 @@
+/* Shared design system: colors, layout, navigation, forms, tables, and states. */
 /* ==========================================================================
    SMART TRAFFIC CHALLAN SYSTEM - OFFICIAL DESIGN SYSTEM & TOKENS
    Palette:
@@ -73,12 +74,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.85rem 2rem;
+  padding: 0.95rem 1.75rem;
   background-color: var(--color-primary);
   border-bottom: 2px solid var(--color-secondary);
   position: sticky;
   top: 0;
   z-index: 100;
+  min-height: 84px;
+  flex-wrap: nowrap;
+  gap: 16px;
+  overflow: visible;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.3);
 }
 
@@ -88,39 +93,78 @@ body {
   gap: 12px;
   text-decoration: none;
   color: var(--text-light);
+  flex: 0 0 auto;
+  min-width: max-content;
 }
 
 .brand-icon {
-  width: 36px;
-  height: 36px;
-  background: var(--color-secondary);
-  border-radius: var(--radius-md);
+  width: 58px;
+  height: 58px;
+  background: transparent;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
   color: #FFFFFF;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .brand-title {
-  font-size: 1.15rem;
+  font-size: 1.08rem;
   font-weight: 800;
   color: #FFFFFF;
   letter-spacing: -0.3px;
+  white-space: nowrap;
 }
 
 .brand-subtitle {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.8px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-left: auto;
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: visible;
+}
+
+.nav-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: safe flex-end;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: visible;
+}
+
+.nav-logout {
+  flex: 0 0 auto;
+  color: #94A3B8;
+  padding: 8px 12px;
+}
+
+.nav-logout:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .nav-item {
@@ -135,6 +179,184 @@ body {
   align-items: center;
   gap: 6px;
   border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.nav-item[hidden],
+.nav-dropdown[hidden],
+.nav-group[hidden] {
+  display: none !important;
+}
+
+.nav-group {
+  display: inline-flex;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  flex: 0 0 auto;
+  gap: 0;
+  padding: 0;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(147, 197, 253, 0.38);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 18px rgba(2, 6, 23, 0.28);
+  overflow: visible;
+}
+
+.nav-group > .nav-item.nav-parent {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  border-radius: 11px 0 0 11px;
+  background: linear-gradient(180deg, #2563EB 0%, #1E40AF 100%);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+  padding: 0 16px 0 12px;
+  line-height: 1.2;
+  border: 0;
+  box-shadow: inset -1px 0 0 rgba(15, 23, 42, 0.35);
+}
+
+.nav-parent-icon {
+  width: 15px;
+  height: 15px;
+  padding: 4px;
+  box-sizing: content-box;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+}
+
+.nav-children {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+  padding: 5px 6px;
+  background: rgba(2, 6, 23, 0.38);
+  border-radius: 0 11px 11px 0;
+}
+
+.nav-children > .nav-item,
+.nav-children > .nav-dropdown > .nav-item {
+  font-size: 0.78rem;
+  padding: 7px 11px;
+  line-height: 1.2;
+  border-radius: 8px;
+  background: transparent;
+  border-color: transparent;
+  color: #CBD5E1;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.nav-children > .nav-item:hover,
+.nav-children > .nav-dropdown > .nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+}
+
+.nav-group > .nav-item.nav-parent:hover {
+  background: linear-gradient(180deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+}
+
+.nav-children > .nav-item.active,
+.nav-children > .nav-item[aria-current="page"],
+.nav-children > .nav-dropdown > .nav-item.active,
+.nav-children > .nav-dropdown > .nav-item[aria-current="page"] {
+  background: #2563EB;
+  color: #FFFFFF;
+  border-color: transparent;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+}
+
+.nav-group > .nav-item.nav-parent.active,
+.nav-group > .nav-item.nav-parent[aria-current="page"] {
+  background: linear-gradient(180deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+}
+
+.nav-children > .nav-item.active:hover,
+.nav-children > .nav-item[aria-current="page"]:hover,
+.nav-children > .nav-dropdown > .nav-item.active:hover,
+.nav-children > .nav-dropdown > .nav-item[aria-current="page"]:hover {
+  background: #1D4ED8;
+  color: #FFFFFF;
+}
+
+.nav-group > .nav-item.nav-parent.active:hover,
+.nav-group > .nav-item.nav-parent[aria-current="page"]:hover {
+  background: linear-gradient(180deg, #60A5FA 0%, #2563EB 100%);
+  color: #FFFFFF;
+}
+
+.nav-dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.nav-dropdown > .nav-item {
+  cursor: pointer;
+}
+
+button.nav-item {
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: inherit;
+  cursor: pointer;
+  color: inherit;
+  background: transparent;
+}
+
+.nav-dropdown-menu {
+  display: none;
+  position: fixed;
+  min-width: 220px;
+  background: #0B1220;
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  border-radius: 10px;
+  padding: 6px;
+  z-index: 4000;
+  box-shadow: 0 14px 32px rgba(2, 6, 23, 0.45);
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-dropdown-menu::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -10px;
+  height: 10px;
+}
+
+.nav-dropdown.open .nav-dropdown-menu {
+  display: flex;
+}
+
+.nav-dropdown.open > .nav-item .fa-chevron-down {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown > .nav-item .fa-chevron-down {
+  transition: transform 0.15s ease;
+}
+
+.nav-dropdown-menu .nav-item {
+  width: 100%;
+  justify-content: flex-start;
+  color: #E2E8F0;
+}
+
+.nav-dropdown-menu .nav-item.active,
+.nav-dropdown-menu .nav-item[aria-current="page"] {
+  background: var(--color-secondary);
+  color: #FFFFFF;
 }
 
 .nav-item:hover {
@@ -488,17 +710,39 @@ body {
 /* ==========================================================================
    Responsive Breakpoints & Mobile Optimization
    ========================================================================== */
+@media (max-width: 1400px) {
+  .nav-children > .nav-item > i:first-child,
+  .nav-children > .nav-dropdown > .nav-item > i:first-child {
+    display: none;
+  }
+}
+
+@media (max-width: 1280px) {
+  .nav-children > .nav-item,
+  .nav-children > .nav-dropdown > .nav-item {
+    font-size: 0.74rem;
+    padding: 7px 8px;
+  }
+  .nav-item {
+    padding: 7px 10px;
+    font-size: 0.82rem;
+  }
+}
+
 @media (max-width: 900px) {
   .hero-title {
     font-size: 2rem;
   }
   .navbar {
-    padding: 0.75rem 1.25rem;
-    flex-wrap: wrap;
-    gap: 12px;
+    padding: 0.7rem 1rem;
+    flex-wrap: nowrap;
+    gap: 10px;
   }
   .nav-links {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+  }
+  .nav-group {
+    flex-wrap: nowrap;
   }
 }
 
@@ -521,6 +765,17 @@ body {
   .nav-item {
     padding: 6px 10px;
     font-size: 0.8rem;
+  }
+  .nav-dropdown-menu {
+    right: auto;
+    left: 0;
+  }
+  .brand-icon {
+    width: 46px;
+    height: 46px;
+  }
+  .nav-group-text {
+    display: none;
   }
   .metrics-grid {
     grid-template-columns: 1fr;

@@ -1,259 +1,374 @@
 <!DOCTYPE html>
+<!-- Challan ticket: Pakistani citation layout for screen and print. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
   <title>Traffic Challan - Traffic Violation Record</title>
-  
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
-  <!-- Custom Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css">
-  <script src="/static/js/auth.js"></script>
+  <link rel="stylesheet" href="/static/css/styles.css?v=19">
+  <script src="/static/js/auth.js?v=19"></script>
   <script>requireAuth();</script>
-  
   <style>
-    .challan-ticket-card {
+    .pk-page {
+      max-width: 920px;
+      margin: 1.5rem auto 3rem;
+      padding: 0 1rem;
+    }
+    .pk-sheet {
       background: #FFFFFF;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 3rem 2.5rem;
-      max-width: 800px;
-      margin: 2.5rem auto;
-      box-shadow: var(--shadow-lg);
-      border-top: 4px solid var(--color-primary);
+      color: #111;
+      border: 1px solid #111;
+      padding: 10px 12px 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      line-height: 1.35;
     }
-    .ticket-header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-      border-bottom: 1px solid #E2E8F0;
-      padding-bottom: 1.5rem;
-    }
-    .ticket-main-title {
-      font-size: 2.2rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      color: #0F172A;
-      margin-bottom: 6px;
-    }
-    .ticket-subtitle {
-      font-size: 0.95rem;
-      color: #64748B;
-      font-weight: 500;
-    }
-    .ticket-grid {
+    .pk-header {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-      margin-bottom: 1.5rem;
-    }
-    .ticket-box {
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
-    }
-    .ticket-box-label {
-      font-size: 0.8rem;
-      color: #64748B;
-      font-weight: 700;
+      grid-template-columns: 88px 1fr 88px;
+      align-items: center;
+      border: 1px solid #111;
+      padding: 8px 10px;
       margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      min-height: 78px;
     }
-    .ticket-box-val {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: #0F172A;
-    }
-    .fine-total-box {
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      border-radius: var(--radius-md);
-      padding: 2rem;
+    .pk-header-title {
       text-align: center;
-      margin: 1.5rem 0;
     }
-    .fine-total-label {
-      font-size: 0.88rem;
-      color: #64748B;
+    .pk-kicker {
+      font-size: 11px;
       font-weight: 700;
-      margin-bottom: 8px;
-      text-transform: uppercase;
+      margin-bottom: 2px;
     }
-    .fine-total-val {
-      font-size: 2.3rem;
+    .pk-title {
+      font-size: 18px;
       font-weight: 800;
-      color: #2563EB;
+      letter-spacing: 0.01em;
+    }
+    .pk-header-logo {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .pk-header-logo img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+    }
+    .pk-notice {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      border: 1px solid #111;
+      margin-bottom: 6px;
+    }
+    .pk-qr-col {
+      border-right: 1px solid #111;
+      padding: 10px 8px;
+      text-align: center;
+    }
+    .pk-office {
+      font-weight: 700;
+      font-size: 11px;
+      margin-bottom: 6px;
+    }
+    .pk-qr-col img {
+      width: 118px;
+      height: 118px;
+      display: block;
+      margin: 0 auto 6px;
+      border: 1px solid #ddd;
+    }
+    .pk-qr-caption {
+      font-size: 10px;
+    }
+    .pk-meta {
+      padding: 0;
+    }
+    .pk-meta-row {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      min-height: 100%;
+    }
+    .pk-kv {
+      padding: 8px 10px;
+      border-right: 1px solid #111;
+    }
+    .pk-kv p {
+      margin: 0 0 3px;
+    }
+    .pk-paid {
+      padding: 0;
+    }
+    .pk-paid table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    .pk-paid th, .pk-paid td {
+      border: 1px solid #111;
+      padding: 5px 6px;
+      text-align: left;
+    }
+    .pk-paid th {
+      background: #F3F4F6;
+      font-weight: 700;
+    }
+    .pk-details {
+      position: relative;
+      border: 1px solid #111;
+      margin-bottom: 8px;
+    }
+    .pk-details::before {
+      content: "";
+      position: absolute;
+      inset: 28px 0 0;
+      background: url("/static/logo.png") center / 180px no-repeat;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+    .pk-details-head {
+      text-align: center;
+      font-weight: 800;
+      background: #E5E7EB;
+      border-bottom: 1px solid #111;
+      padding: 5px;
+      position: relative;
+      z-index: 1;
+    }
+    .pk-grid {
+      width: 100%;
+      border-collapse: collapse;
+      position: relative;
+      z-index: 1;
+    }
+    .pk-grid td {
+      border: 1px solid #111;
+      padding: 6px 8px;
+      vertical-align: top;
+    }
+    .pk-lab {
+      font-weight: 700;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .pk-legal {
+      font-size: 11px;
+      padding: 4px 2px 10px;
+    }
+    .pk-legal p, .pk-legal li {
+      margin: 0 0 6px;
+    }
+    .pk-legal ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .pk-evidence {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      border: 1px solid #111;
+      padding: 6px;
+      margin-bottom: 8px;
+    }
+    .pk-evidence figure {
+      margin: 0;
+      border: 1px solid #111;
+      min-height: 110px;
+      background: #F8FAFC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .pk-evidence img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+    }
+    .pk-ph {
+      color: #64748B;
+      font-size: 11px;
+      text-align: center;
+      padding: 12px;
+    }
+    .pk-foot {
+      background: #9F1239;
+      color: #fff;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 10px;
+      margin: 0 -12px;
     }
     .ticket-actions {
       display: flex;
       justify-content: center;
       gap: 14px;
-      margin-top: 2rem;
+      margin-top: 1.25rem;
       flex-wrap: wrap;
     }
-
-    @media (max-width: 600px) {
-      .ticket-grid {
+    @media (max-width: 720px) {
+      .pk-header, .pk-notice, .pk-meta-row, .pk-evidence {
         grid-template-columns: 1fr;
       }
-      .challan-ticket-card {
-        padding: 1.5rem;
-      }
+      .pk-header { justify-items: center; }
+      .pk-qr-col, .pk-kv { border-right: none; border-bottom: 1px solid #111; }
     }
-
-    /* Print Preview Styles */
     @media print {
-      body {
-        background: #FFFFFF !important;
-      }
-      .navbar, .ticket-actions, .app-footer {
-        display: none !important;
-      }
-      .challan-ticket-card {
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        max-width: 100% !important;
-      }
-      .ticket-box, .fine-total-box {
-        background: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-      }
+      @page { size: A4; margin: 8mm; }
+      body { background: #fff !important; }
+      .navbar, .ticket-actions, .app-footer { display: none !important; }
+      .pk-page { max-width: none; margin: 0; padding: 0; }
+      .pk-sheet { border: 0; padding: 0; }
+      .pk-foot { margin: 0; }
     }
   </style>
 </head>
 <body>
-
-  <!-- Top Navbar (Deep Navy #0F172A) -->
   <header class="navbar">
-    <a href="/dashboard" class="brand">
+    <a href="/" class="brand">
       <div class="brand-icon">
-        <i class="fa-solid fa-traffic-light"></i>
+        <img src="/static/logo.png" alt="Smart Traffic Challan System logo">
       </div>
       <div>
         <div class="brand-title">Smart Traffic Challan System</div>
         <div class="brand-subtitle">AI Violation Surveillance</div>
       </div>
     </a>
-
-    <nav class="nav-links">
-      <a href="/dashboard" class="nav-item">Dashboard</a>
-      <a href="/challans" class="nav-item">Challan History</a>
-      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    <nav class="nav-links" id="appNav" data-nav-mode="app" data-active="challans">
+      <div class="nav-cluster">
+        <div class="nav-group">
+          <a href="/dashboard" class="nav-item nav-parent" data-nav="dashboard"><img class="nav-parent-icon" src="/static/admin-control.svg?v=19" alt=""> Administrative Control</a>
+          <a href="/vehicles" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Vehicle Management</a>
+          <a href="/number-plate" class="nav-item" data-nav="number-plate"><i class="fa-solid fa-camera"></i> Number Plate Recognition</a>
+          <div class="nav-dropdown">
+            <button type="button" class="nav-item" data-nav="challans" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-file-lines"></i> Challan Management <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i></button>
+            <div class="nav-dropdown-menu">
+              <a href="/generate-challan" class="nav-item" data-nav="generate-challan">Generate Challan</a>
+              <a href="/challans" class="nav-item" data-nav="challan-history">Challan History</a>
+            </div>
+          </div>
+          <a href="/reports" class="nav-item" data-nav="reports"><i class="fa-solid fa-chart-column"></i> Reports</a>
+        </div>
+      </div>
+      <a href="#" class="nav-item nav-logout" onclick="logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
-  <!-- Challan Container -->
-  <main class="container">
-    <div class="challan-ticket-card">
-      
-      <!-- Ticket Header -->
-      <div class="ticket-header">
-        <h1 class="ticket-main-title">TRAFFIC CHALLAN</h1>
-        <div class="ticket-subtitle">Official Traffic Violation Record</div>
-        <div id="tkChallanId" style="text-align: right; font-weight: 800; color: #1E293B; margin-top: 1rem; font-size: 1rem;">
-          Challan ID: #--
+  <main class="pk-page">
+    <div class="pk-sheet" id="challanSheet">
+      <div class="pk-header">
+        <div></div>
+        <div class="pk-header-title">
+          <div class="pk-kicker">Electronic Traffic Violation Notice</div>
+          <div class="pk-title">Smart Traffic Challan System</div>
+        </div>
+        <div class="pk-header-logo">
+          <img src="/static/logo.png" alt="Smart Traffic Challan System">
         </div>
       </div>
 
-      <!-- Details Boxes -->
-      <div class="ticket-grid">
-        <!-- Vehicle Number -->
-        <div class="ticket-box">
-          <div class="ticket-box-label">Vehicle Registration Number</div>
-          <div id="tkVehicleNumber" class="ticket-box-val" style="color: #2563EB;">--</div>
+      <div class="pk-notice">
+        <div class="pk-qr-col">
+          <div class="pk-office" id="tkOfficeLine">Smart Traffic Challan System<br>Punjab, Pakistan</div>
+          <img id="tkQr" alt="Challan QR code" src="">
+          <div class="pk-qr-caption">Please scan QR Code to view details.</div>
         </div>
-
-        <!-- Traffic Violation -->
-        <div class="ticket-box">
-          <div class="ticket-box-label">Traffic Violation Type</div>
-          <div id="tkViolation" class="ticket-box-val" style="color: #DC2626; font-size: 1.1rem;">--</div>
-        </div>
-
-        <!-- Location -->
-        <div class="ticket-box">
-          <div class="ticket-box-label">Surveillance Location</div>
-          <div id="tkLocation" class="ticket-box-val" style="font-size: 1.05rem;">--</div>
-        </div>
-
-        <!-- Issue Date & Time -->
-        <div class="ticket-box">
-          <div class="ticket-box-label">Notice Date & Time</div>
-          <div id="tkDateTime" class="ticket-box-val" style="font-size: 1.05rem;">--</div>
-        </div>
-      </div>
-
-      <!-- Owner & Vehicle Information Box -->
-      <div class="ticket-box" style="margin-bottom: 1.25rem; background: #FFFFFF; border-left: 4px solid #2563EB;">
-        <div class="ticket-box-label" style="color: #2563EB; font-size: 0.85rem;"><i class="fa-solid fa-user-shield"></i> Registered Owner Record</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.92rem; margin-top: 6px;">
-          <div><strong>Owner:</strong> <span id="tkOwnerName">--</span></div>
-          <div><strong>CNIC:</strong> <span id="tkOwnerCnic">--</span></div>
-          <div><strong>Vehicle:</strong> <span id="tkVehicleDesc">--</span></div>
-          <div><strong>Contact:</strong> <span id="tkOwnerPhone">--</span></div>
-        </div>
-        <div style="font-size: 0.88rem; margin-top: 6px; color: #64748B;">
-          <strong>Address:</strong> <span id="tkOwnerAddress">--</span>
-        </div>
-      </div>
-
-      <!-- Payment Status & Expiry Grid -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
-        <div class="ticket-box">
-          <div class="ticket-box-label">Payment Status</div>
-          <div style="margin-top: 4px;">
-            <span id="tkStatusBadge" class="status-pill pending" style="font-size: 0.95rem; padding: 5px 16px;">Unpaid</span>
+        <div class="pk-meta">
+          <div class="pk-meta-row">
+            <div class="pk-kv">
+              <p><b>Notice No:</b> <span id="tkNoticeNo">—</span></p>
+              <p><b>Number Plate:</b> <span id="tkPlate">—</span></p>
+              <p><b>Amount:</b> <span id="tkAmount">—</span></p>
+              <p><b>Black Points:</b> —</p>
+              <p><b>Issued Date:</b> <span id="tkIssued">—</span></p>
+              <p><b>Due Date:</b> <span id="tkDue">—</span></p>
+            </div>
+            <div class="pk-paid">
+              <table>
+                <thead>
+                  <tr><th colspan="3">Paid By</th></tr>
+                  <tr><th></th><th>Date</th><th>Amount</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Discounted</td><td id="tkDiscDate">—</td><td id="tkDiscAmt">—</td></tr>
+                  <tr><td>Standard</td><td id="tkStdDate">—</td><td id="tkStdAmt">—</td></tr>
+                  <tr><td>Penalty</td><td id="tkPenDate">—</td><td id="tkPenAmt">—</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-
-        <div class="ticket-box" style="border-left: 4px solid #F59E0B;">
-          <div class="ticket-box-label" style="color: #D97706;">Payment Due / Expiry Date</div>
-          <div id="tkDueDate" class="ticket-box-val" style="color: #B45309; font-size: 1.15rem;">--</div>
-        </div>
       </div>
 
-      <!-- Total Fine Amount Box -->
-      <div class="fine-total-box">
-        <div class="fine-total-label">Total Fine Payable</div>
-        <div id="tkFineAmount" class="fine-total-val">Rs. 0</div>
+      <div class="pk-details">
+        <div class="pk-details-head">Violation / Vehicle Details</div>
+        <table class="pk-grid">
+          <tr>
+            <td><span class="pk-lab">Date &amp; Time Of Offence</span><span id="tkOffenceAt">—</span></td>
+            <td><span class="pk-lab">Place Of Violation</span><span id="tkPlace">—</span></td>
+            <td><span class="pk-lab">Violation Type</span><span id="tkViolation">—</span></td>
+            <td><span class="pk-lab">Amount</span><span id="tkGridAmount">—</span></td>
+          </tr>
+          <tr>
+            <td colspan="2"><span class="pk-lab">Name</span><span id="tkOwnerName">—</span></td>
+            <td><span class="pk-lab">CNIC</span><span id="tkOwnerCnic">—</span></td>
+            <td><span class="pk-lab">License</span>—</td>
+          </tr>
+          <tr>
+            <td colspan="4"><span class="pk-lab">Address</span><span id="tkOwnerAddress">—</span></td>
+          </tr>
+          <tr>
+            <td><span class="pk-lab">Veh Reg Year</span><span id="tkRegYear">—</span></td>
+            <td><span class="pk-lab">Make</span><span id="tkMake">—</span></td>
+            <td><span class="pk-lab">Color</span><span id="tkColor">—</span></td>
+            <td colspan="1"><span class="pk-lab">Chassis No / Engine No</span>—</td>
+          </tr>
+        </table>
       </div>
 
-      <!-- Notice Subtext -->
-      <div style="text-align: center; color: #64748B; font-size: 0.88rem; margin-top: 1.5rem; line-height: 1.6;">
-        Failure to pay within 15 days from issue date may result in vehicle registration suspension.<br>
-        <strong style="color: #0F172A;">Traffic Surveillance & Enforcement Division</strong>
+      <div class="pk-legal">
+        <p>The images of the above-mentioned vehicle were captured, reviewed, and confirmed as a traffic violation under the Twelfth Schedule, Provincial Motor Vehicles Ordinance, 1965.</p>
+        <p><b>INSTRUCTIONS:</b> Pay this notice by the due date shown above. This is a demonstration e-challan for the Smart Traffic Challan System (FYP). Payment in this app is recorded with Mark as Paid (simulate).</p>
+        <p><b>VERIFICATION PROCESS:</b> For queries use helpline <span id="tkHotline">130</span>. Scan the QR code to open this ticket in the system.</p>
+        <p><b>TERMS &amp; CONDITIONS:</b></p>
+        <ul>
+          <li>Discounted amount applies if paid within 14 days of issue.</li>
+          <li>Standard amount applies if paid by the due date.</li>
+          <li>After the due date the payable amount may be doubled (penalty).</li>
+          <li>Failure to pay may lead to further enforcement action under the Motor Vehicles Ordinance (demo notice).</li>
+        </ul>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="ticket-actions">
-        <button id="btnMarkPaid" class="btn btn-success" onclick="markAsPaid()" style="padding: 10px 22px; background: #16A34A; color: white;">
-          <i class="fa-solid fa-check-circle"></i> Mark as Paid (Simulate)
-        </button>
-        <a id="btnPdfDownload" href="#" target="_blank" class="btn btn-primary" style="padding: 10px 22px;">
-          <i class="fa-solid fa-file-pdf"></i> Download PDF
-        </a>
-        <button class="btn btn-secondary" onclick="window.print()" style="padding: 10px 20px;">
-          <i class="fa-solid fa-print"></i> Print
-        </button>
-        <a href="/challans" class="btn btn-dark" style="padding: 10px 20px;">
-          ← Back to History
-        </a>
+      <div class="pk-evidence">
+        <figure id="evWide"><div class="pk-ph">Violation image</div></figure>
+        <figure id="evPlate"><div class="pk-ph">Plate crop</div></figure>
+        <figure id="evThird"><div class="pk-ph">Violation Image 3</div></figure>
       </div>
 
+      <div class="pk-foot">This challan can be paid at the issuing office. Mark as Paid in this system is a simulation.</div>
+    </div>
+
+    <div class="ticket-actions">
+      <button id="btnMarkPaid" class="btn btn-success" onclick="markAsPaid()" style="padding: 10px 22px; background: #16A34A; color: white;">
+        <i class="fa-solid fa-check-circle"></i> Mark as Paid (Simulate)
+      </button>
+      <a id="btnPdfDownload" href="#" target="_blank" class="btn btn-primary" style="padding: 10px 22px;">
+        <i class="fa-solid fa-file-pdf"></i> Download PDF
+      </a>
+      <button class="btn btn-secondary" onclick="window.print()" style="padding: 10px 20px;">
+        <i class="fa-solid fa-print"></i> Print
+      </button>
+      <a href="/challans" class="btn btn-dark" style="padding: 10px 20px;">← Back to History</a>
     </div>
   </main>
 
-  <!-- Footer -->
   <footer class="app-footer">
     © 2026 Smart Traffic Challan System | Final Year Project
   </footer>
@@ -262,70 +377,112 @@
     let currentChallanNo = '';
     let currentChallanId = '';
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      const pathParts = window.location.pathname.split('/');
-      let challanId = pathParts[pathParts.length - 1];
-      if (!challanId || isNaN(challanId)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        challanId = urlParams.get('id') || '1';
-      }
+    function dash(value) {
+      const text = (value == null ? '' : String(value)).trim();
+      return text || '—';
+    }
 
+    function money(amount) {
+      if (amount == null || amount === '' || Number.isNaN(Number(amount))) return '—';
+      return `Rs. ${Number(amount).toLocaleString()}/-`;
+    }
+
+    function addDays(isoDate, days) {
+      const base = isoDate ? new Date(isoDate.replace(' ', 'T')) : null;
+      if (!base || Number.isNaN(base.getTime())) return '—';
+      base.setDate(base.getDate() + days);
+      return formatShort(base);
+    }
+
+    function formatShort(dateOrIso) {
+      if (!dateOrIso) return '—';
+      const date = dateOrIso instanceof Date ? dateOrIso : new Date(String(dateOrIso).replace(' ', 'T'));
+      if (Number.isNaN(date.getTime())) {
+        const raw = String(dateOrIso).slice(0, 10);
+        return raw || '—';
+      }
+      return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-');
+    }
+
+    function setEvidence(el, src) {
+      if (!src) return;
+      el.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = 'Evidence';
+      el.appendChild(img);
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      let challanId = parts[parts.length - 1];
+      if (!challanId) {
+        challanId = new URLSearchParams(window.location.search).get('id') || '';
+      }
       currentChallanId = challanId;
 
       try {
-        const res = await fetch(`/api/challans/${challanId}`);
+        const res = await fetch(`/api/challans/${encodeURIComponent(challanId)}`);
         if (!res.ok) throw new Error('Challan not found');
         const ch = await res.json();
-
         currentChallanNo = ch.challan_no || '';
+        const amount = Number(ch.fine_amount);
+        const source = (ch.source || '').toLowerCase();
+        const registryKnown = source === 'user' || source === 'demo';
+        const make = registryKnown ? dash(ch.vehicle_make) : '—';
+        const color = registryKnown ? dash(ch.vehicle_color) : '—';
+        const regYear = (ch.registration_date || '').slice(0, 4) || '—';
 
-        document.getElementById('tkChallanId').innerText = `Challan Ticket: #${ch.challan_no || ch.id}`;
-        document.getElementById('tkVehicleNumber').innerText = ch.plate_number;
-        document.getElementById('tkViolation').innerText = ch.violation_name;
-        document.getElementById('tkLocation').innerText = ch.location || 'Lahore';
-        document.getElementById('tkDateTime').innerText = ch.created_at;
-        document.getElementById('tkDueDate').innerText = ch.due_date || 'Within 15 Days';
-        document.getElementById('tkFineAmount').innerText = `Rs. ${Number(ch.fine_amount).toLocaleString()}`;
+        document.getElementById('tkNoticeNo').innerText = dash(ch.challan_no);
+        document.getElementById('tkPlate').innerText = dash(ch.plate_number);
+        document.getElementById('tkAmount').innerText = money(amount);
+        document.getElementById('tkIssued').innerText = formatShort(ch.created_at);
+        document.getElementById('tkDue').innerText = formatShort(ch.due_date);
+        document.getElementById('tkOffenceAt').innerText = dash(ch.created_at);
+        document.getElementById('tkPlace').innerText = dash(ch.location);
+        document.getElementById('tkViolation').innerText = dash(ch.violation_name);
+        document.getElementById('tkGridAmount').innerText = money(amount);
+        document.getElementById('tkOwnerName').innerText = dash(ch.owner_name);
+        document.getElementById('tkOwnerCnic').innerText = dash(ch.owner_cnic);
+        document.getElementById('tkOwnerAddress').innerText = dash(ch.owner_address);
+        document.getElementById('tkRegYear').innerText = dash(regYear);
+        document.getElementById('tkMake').innerText = make;
+        document.getElementById('tkColor').innerText = color;
 
-        // Owner details
-        document.getElementById('tkOwnerName').innerText = ch.owner_name || 'Unverified Citizen';
-        document.getElementById('tkOwnerCnic').innerText = ch.owner_cnic || 'N/A';
-        document.getElementById('tkVehicleDesc').innerText = `${ch.vehicle_make || ''} ${ch.vehicle_model || 'Vehicle'} (${ch.vehicle_color || 'White'})`;
-        document.getElementById('tkOwnerPhone').innerText = ch.owner_phone || 'N/A';
-        document.getElementById('tkOwnerAddress').innerText = ch.owner_address || 'Address on record';
+        document.getElementById('tkDiscDate').innerText = addDays(ch.created_at, 14);
+        document.getElementById('tkStdDate').innerText = formatShort(ch.due_date);
+        document.getElementById('tkPenDate').innerText = 'After due date';
+        document.getElementById('tkDiscAmt').innerText = money(Math.round(amount / 2));
+        document.getElementById('tkStdAmt').innerText = money(amount);
+        document.getElementById('tkPenAmt').innerText = money(amount * 2);
 
-        // PDF Link
-        document.getElementById('btnPdfDownload').href = `/api/challans/${ch.challan_no}/pdf`;
+        if (currentChallanNo) {
+          document.getElementById('tkQr').src = `/api/challans/${encodeURIComponent(currentChallanNo)}/qr`;
+          document.getElementById('btnPdfDownload').href = `/api/challans/${encodeURIComponent(currentChallanNo)}/pdf`;
+        }
+        if (ch.evidence_image) setEvidence(document.getElementById('evWide'), `/evidence/${ch.evidence_image}`);
+        if (ch.plate_crop) setEvidence(document.getElementById('evPlate'), `/evidence/${ch.plate_crop}`);
 
-        const badge = document.getElementById('tkStatusBadge');
         const payBtn = document.getElementById('btnMarkPaid');
         if (ch.status && ch.status.toLowerCase() === 'paid') {
-          badge.innerText = 'PAID';
-          badge.className = 'status-pill paid';
           payBtn.style.display = 'none';
-        } else {
-          badge.innerText = 'UNPAID';
-          badge.className = 'status-pill pending';
-          payBtn.style.display = 'inline-flex';
         }
-
       } catch (err) {
-        document.querySelector('.challan-ticket-card').innerHTML = `
-          <div style="text-align: center; color: red; padding: 2rem;">
+        document.getElementById('challanSheet').innerHTML = `
+          <div style="text-align: center; color: #DC2626; padding: 2rem;">
             <h3>Challan record not found</h3>
             <a href="/challans" class="btn btn-secondary" style="margin-top: 1rem;">Back to Challans</a>
-          </div>
-        `;
+          </div>`;
       }
     });
 
     async function markAsPaid() {
       if (!confirm('Mark this challan as Paid?')) return;
       try {
-        const res = await fetch(`/api/challans/${currentChallanId}/status`, {
+        const res = await fetch(`/api/challans/${encodeURIComponent(currentChallanId)}/status`, {
           method: 'PATCH',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ status: 'Paid', payment_method: 'Online Banking', payment_ref: 'SIM-PAY-' + Date.now().toString().slice(-6) })
+          body: JSON.stringify({ status: 'Paid', payment_method: 'Counter / Cash', payment_ref: 'SIM-PAY-' + Date.now().toString().slice(-6) })
         });
         const data = await res.json();
         if (data.success) {

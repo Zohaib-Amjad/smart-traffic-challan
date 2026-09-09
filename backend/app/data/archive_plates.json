@@ -1,0 +1,4428 @@
+[
+  {
+    "image_name": "Cars0.png",
+    "plates": [
+      {
+        "text": "KEG10A2555L",
+        "xmin": 226,
+        "ymin": 125,
+        "xmax": 419,
+        "ymax": 173
+      }
+    ]
+  },
+  {
+    "image_name": "Cars1.png",
+    "plates": [
+      {
+        "text": "PGMN 1129",
+        "xmin": 134,
+        "ymin": 128,
+        "xmax": 262,
+        "ymax": 160
+      }
+    ]
+  },
+  {
+    "image_name": "Cars10.png",
+    "plates": [
+      {
+        "text": "24767",
+        "xmin": 140,
+        "ymin": 5,
+        "xmax": 303,
+        "ymax": 148
+      }
+    ]
+  },
+  {
+    "image_name": "Cars100.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars101.png",
+    "plates": [
+      {
+        "text": "THR 26BC55I 4",
+        "xmin": 167,
+        "ymin": 202,
+        "xmax": 240,
+        "ymax": 220
+      }
+    ]
+  },
+  {
+    "image_name": "Cars102.png",
+    "plates": [
+      {
+        "text": "6861136J",
+        "xmin": 66,
+        "ymin": 147,
+        "xmax": 322,
+        "ymax": 199
+      }
+    ]
+  },
+  {
+    "image_name": "Cars103.png",
+    "plates": [
+      {
+        "text": "SSPSO",
+        "xmin": 189,
+        "ymin": 116,
+        "xmax": 202,
+        "ymax": 121
+      }
+    ]
+  },
+  {
+    "image_name": "Cars104.png",
+    "plates": [
+      {
+        "text": "PNL6OLXBE",
+        "xmin": 195,
+        "ymin": 266,
+        "xmax": 244,
+        "ymax": 282
+      }
+    ]
+  },
+  {
+    "image_name": "Cars105.png",
+    "plates": [
+      {
+        "text": "SBAIZ34A",
+        "xmin": 152,
+        "ymin": 147,
+        "xmax": 206,
+        "ymax": 159
+      }
+    ]
+  },
+  {
+    "image_name": "Cars106.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars107.png",
+    "plates": [
+      {
+        "text": "MH 20B8G 20",
+        "xmin": 141,
+        "ymin": 113,
+        "xmax": 311,
+        "ymax": 164
+      }
+    ]
+  },
+  {
+    "image_name": "Cars108.png",
+    "plates": [
+      {
+        "text": "MHO 1AV 8866",
+        "xmin": 158,
+        "ymin": 216,
+        "xmax": 277,
+        "ymax": 248
+      }
+    ]
+  },
+  {
+    "image_name": "Cars109.png",
+    "plates": [
+      {
+        "text": "CZI7KOD",
+        "xmin": 115,
+        "ymin": 116,
+        "xmax": 278,
+        "ymax": 153
+      }
+    ]
+  },
+  {
+    "image_name": "Cars11.png",
+    "plates": [
+      {
+        "text": "WORSI6GK",
+        "xmin": 131,
+        "ymin": 206,
+        "xmax": 273,
+        "ymax": 234
+      }
+    ]
+  },
+  {
+    "image_name": "Cars110.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars111.png",
+    "plates": [
+      {
+        "text": "MH 20EE 7598",
+        "xmin": 319,
+        "ymin": 165,
+        "xmax": 478,
+        "ymax": 204
+      }
+    ]
+  },
+  {
+    "image_name": "Cars112.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars113.png",
+    "plates": [
+      {
+        "text": "AMPEACI",
+        "xmin": 151,
+        "ymin": 113,
+        "xmax": 306,
+        "ymax": 180
+      }
+    ]
+  },
+  {
+    "image_name": "Cars114.png",
+    "plates": [
+      {
+        "text": "AP29BRYE",
+        "xmin": 7,
+        "ymin": 16,
+        "xmax": 493,
+        "ymax": 256
+      }
+    ]
+  },
+  {
+    "image_name": "Cars115.png",
+    "plates": [
+      {
+        "text": "MS66YOBS",
+        "xmin": 315,
+        "ymin": 287,
+        "xmax": 407,
+        "ymax": 311
+      }
+    ]
+  },
+  {
+    "image_name": "Cars116.png",
+    "plates": [
+      {
+        "text": "MK 3532",
+        "xmin": 149,
+        "ymin": 218,
+        "xmax": 267,
+        "ymax": 247
+      }
+    ]
+  },
+  {
+    "image_name": "Cars117.png",
+    "plates": [
+      {
+        "text": "20152",
+        "xmin": 42,
+        "ymin": 126,
+        "xmax": 86,
+        "ymax": 137
+      }
+    ]
+  },
+  {
+    "image_name": "Cars118.png",
+    "plates": [
+      {
+        "text": "7JAG2UAR",
+        "xmin": 193,
+        "ymin": 165,
+        "xmax": 394,
+        "ymax": 217
+      }
+    ]
+  },
+  {
+    "image_name": "Cars119.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars12.png",
+    "plates": [
+      {
+        "text": "J 7HH12BG 7237",
+        "xmin": 122,
+        "ymin": 82,
+        "xmax": 277,
+        "ymax": 117
+      }
+    ]
+  },
+  {
+    "image_name": "Cars120.png",
+    "plates": [
+      {
+        "text": "B2226HML",
+        "xmin": 159,
+        "ymin": 178,
+        "xmax": 250,
+        "ymax": 200
+      }
+    ]
+  },
+  {
+    "image_name": "Cars121.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars122.png",
+    "plates": [
+      {
+        "text": "EMANISAL",
+        "xmin": 195,
+        "ymin": 147,
+        "xmax": 254,
+        "ymax": 169
+      }
+    ]
+  },
+  {
+    "image_name": "Cars123.png",
+    "plates": [
+      {
+        "text": "HR 26BC 5514",
+        "xmin": 159,
+        "ymin": 221,
+        "xmax": 237,
+        "ymax": 242
+      }
+    ]
+  },
+  {
+    "image_name": "Cars124.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars125.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars126.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars127.png",
+    "plates": [
+      {
+        "text": "TS 0",
+        "xmin": 360,
+        "ymin": 166,
+        "xmax": 383,
+        "ymax": 181
+      }
+    ]
+  },
+  {
+    "image_name": "Cars128.png",
+    "plates": [
+      {
+        "text": "OX65AND",
+        "xmin": 112,
+        "ymin": 65,
+        "xmax": 306,
+        "ymax": 173
+      }
+    ]
+  },
+  {
+    "image_name": "Cars129.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars13.png",
+    "plates": [
+      {
+        "text": "BURUL 6",
+        "xmin": 191,
+        "ymin": 147,
+        "xmax": 242,
+        "ymax": 169
+      }
+    ]
+  },
+  {
+    "image_name": "Cars130.png",
+    "plates": [
+      {
+        "text": "NNHR 26BR 9044",
+        "xmin": 91,
+        "ymin": 110,
+        "xmax": 166,
+        "ymax": 140
+      }
+    ]
+  },
+  {
+    "image_name": "Cars131.png",
+    "plates": [
+      {
+        "text": "AP 29BV 257",
+        "xmin": 19,
+        "ymin": 29,
+        "xmax": 497,
+        "ymax": 245
+      }
+    ]
+  },
+  {
+    "image_name": "Cars132.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars133.png",
+    "plates": [
+      {
+        "text": "12084",
+        "xmin": 247,
+        "ymin": 185,
+        "xmax": 375,
+        "ymax": 223
+      }
+    ]
+  },
+  {
+    "image_name": "Cars134.png",
+    "plates": [
+      {
+        "text": "USTLCJ",
+        "xmin": 76,
+        "ymin": 151,
+        "xmax": 133,
+        "ymax": 174
+      }
+    ]
+  },
+  {
+    "image_name": "Cars135.png",
+    "plates": [
+      {
+        "text": "TRS",
+        "xmin": 260,
+        "ymin": 184,
+        "xmax": 319,
+        "ymax": 211
+      }
+    ]
+  },
+  {
+    "image_name": "Cars136.png",
+    "plates": [
+      {
+        "text": "LU 19474",
+        "xmin": 164,
+        "ymin": 104,
+        "xmax": 245,
+        "ymax": 119
+      }
+    ]
+  },
+  {
+    "image_name": "Cars137.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars138.png",
+    "plates": [
+      {
+        "text": "WTNIO 2",
+        "xmin": 153,
+        "ymin": 141,
+        "xmax": 254,
+        "ymax": 185
+      }
+    ]
+  },
+  {
+    "image_name": "Cars139.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars14.png",
+    "plates": [
+      {
+        "text": "BALR 486",
+        "xmin": 94,
+        "ymin": 118,
+        "xmax": 274,
+        "ymax": 163
+      }
+    ]
+  },
+  {
+    "image_name": "Cars140.png",
+    "plates": [
+      {
+        "text": "SOCHO 1ANOOO 1",
+        "xmin": 283,
+        "ymin": 239,
+        "xmax": 424,
+        "ymax": 286
+      }
+    ]
+  },
+  {
+    "image_name": "Cars141.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars142.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars143.png",
+    "plates": [
+      {
+        "text": "BEUS 348",
+        "xmin": 93,
+        "ymin": 196,
+        "xmax": 130,
+        "ymax": 207
+      },
+      {
+        "text": "19NZ10171",
+        "xmin": 316,
+        "ymin": 195,
+        "xmax": 349,
+        "ymax": 205
+      }
+    ]
+  },
+  {
+    "image_name": "Cars144.png",
+    "plates": [
+      {
+        "text": "PEN",
+        "xmin": 101,
+        "ymin": 114,
+        "xmax": 215,
+        "ymax": 154
+      }
+    ]
+  },
+  {
+    "image_name": "Cars145.png",
+    "plates": [
+      {
+        "text": "SSCHO 1ANO 001",
+        "xmin": 282,
+        "ymin": 236,
+        "xmax": 422,
+        "ymax": 283
+      }
+    ]
+  },
+  {
+    "image_name": "Cars146.png",
+    "plates": [
+      {
+        "text": "COE",
+        "xmin": 143,
+        "ymin": 263,
+        "xmax": 170,
+        "ymax": 271
+      }
+    ]
+  },
+  {
+    "image_name": "Cars147.png",
+    "plates": [
+      {
+        "text": "WPKEG 40A 2555",
+        "xmin": 226,
+        "ymin": 125,
+        "xmax": 420,
+        "ymax": 169
+      }
+    ]
+  },
+  {
+    "image_name": "Cars148.png",
+    "plates": [
+      {
+        "text": "MH01BB550CY",
+        "xmin": 135,
+        "ymin": 134,
+        "xmax": 218,
+        "ymax": 158
+      }
+    ]
+  },
+  {
+    "image_name": "Cars149.png",
+    "plates": [
+      {
+        "text": "1V16263",
+        "xmin": 212,
+        "ymin": 182,
+        "xmax": 245,
+        "ymax": 203
+      }
+    ]
+  },
+  {
+    "image_name": "Cars15.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars150.png",
+    "plates": [
+      {
+        "text": "KDL8CX4850SS",
+        "xmin": 122,
+        "ymin": 198,
+        "xmax": 262,
+        "ymax": 232
+      }
+    ]
+  },
+  {
+    "image_name": "Cars151.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars152.png",
+    "plates": [
+      {
+        "text": "SEDL49AK49E",
+        "xmin": 92,
+        "ymin": 258,
+        "xmax": 199,
+        "ymax": 284
+      }
+    ]
+  },
+  {
+    "image_name": "Cars153.png",
+    "plates": [
+      {
+        "text": "MH208G20SS",
+        "xmin": 146,
+        "ymin": 118,
+        "xmax": 311,
+        "ymax": 170
+      }
+    ]
+  },
+  {
+    "image_name": "Cars154.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars155.png",
+    "plates": [
+      {
+        "text": "SMCB 0255",
+        "xmin": 150,
+        "ymin": 177,
+        "xmax": 203,
+        "ymax": 190
+      }
+    ]
+  },
+  {
+    "image_name": "Cars156.png",
+    "plates": [
+      {
+        "text": "1PRIVATE",
+        "xmin": 114,
+        "ymin": 78,
+        "xmax": 230,
+        "ymax": 102
+      }
+    ]
+  },
+  {
+    "image_name": "Cars157.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars158.png",
+    "plates": [
+      {
+        "text": "PA0I7A695293CENTROAMERICA",
+        "xmin": 97,
+        "ymin": 118,
+        "xmax": 296,
+        "ymax": 210
+      }
+    ]
+  },
+  {
+    "image_name": "Cars159.png",
+    "plates": [
+      {
+        "text": "P 0L7CN 56179",
+        "xmin": 149,
+        "ymin": 184,
+        "xmax": 261,
+        "ymax": 211
+      }
+    ]
+  },
+  {
+    "image_name": "Cars16.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars160.png",
+    "plates": [
+      {
+        "text": "WOTPLATECOM",
+        "xmin": 209,
+        "ymin": 137,
+        "xmax": 281,
+        "ymax": 174
+      }
+    ]
+  },
+  {
+    "image_name": "Cars161.png",
+    "plates": [
+      {
+        "text": "JMEG6YOBE",
+        "xmin": 312,
+        "ymin": 283,
+        "xmax": 406,
+        "ymax": 311
+      }
+    ]
+  },
+  {
+    "image_name": "Cars162.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars163.png",
+    "plates": [
+      {
+        "text": "AULR33TEE",
+        "xmin": 220,
+        "ymin": 173,
+        "xmax": 360,
+        "ymax": 200
+      }
+    ]
+  },
+  {
+    "image_name": "Cars164.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars165.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars166.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars167.png",
+    "plates": [
+      {
+        "text": "P 15LK 10898",
+        "xmin": 176,
+        "ymin": 254,
+        "xmax": 327,
+        "ymax": 285
+      }
+    ]
+  },
+  {
+    "image_name": "Cars168.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars169.png",
+    "plates": [
+      {
+        "text": "APRATE",
+        "xmin": 114,
+        "ymin": 79,
+        "xmax": 229,
+        "ymax": 101
+      }
+    ]
+  },
+  {
+    "image_name": "Cars17.png",
+    "plates": [
+      {
+        "text": "YSK 213",
+        "xmin": 306,
+        "ymin": 188,
+        "xmax": 351,
+        "ymax": 205
+      }
+    ]
+  },
+  {
+    "image_name": "Cars170.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars171.png",
+    "plates": [
+      {
+        "text": "BUR 216",
+        "xmin": 192,
+        "ymin": 146,
+        "xmax": 242,
+        "ymax": 167
+      }
+    ]
+  },
+  {
+    "image_name": "Cars172.png",
+    "plates": [
+      {
+        "text": "C09EEEEEEEEE",
+        "xmin": 173,
+        "ymin": 209,
+        "xmax": 301,
+        "ymax": 239
+      }
+    ]
+  },
+  {
+    "image_name": "Cars173.png",
+    "plates": [
+      {
+        "text": "9051",
+        "xmin": 170,
+        "ymin": 118,
+        "xmax": 252,
+        "ymax": 163
+      }
+    ]
+  },
+  {
+    "image_name": "Cars174.png",
+    "plates": [
+      {
+        "text": "LCS",
+        "xmin": 283,
+        "ymin": 159,
+        "xmax": 306,
+        "ymax": 168
+      }
+    ]
+  },
+  {
+    "image_name": "Cars175.png",
+    "plates": [
+      {
+        "text": "AZA",
+        "xmin": 295,
+        "ymin": 237,
+        "xmax": 456,
+        "ymax": 367
+      }
+    ]
+  },
+  {
+    "image_name": "Cars176.png",
+    "plates": [
+      {
+        "text": "F20M",
+        "xmin": 72,
+        "ymin": 67,
+        "xmax": 308,
+        "ymax": 185
+      }
+    ]
+  },
+  {
+    "image_name": "Cars177.png",
+    "plates": [
+      {
+        "text": "ZGOODF",
+        "xmin": 149,
+        "ymin": 166,
+        "xmax": 272,
+        "ymax": 193
+      }
+    ]
+  },
+  {
+    "image_name": "Cars178.png",
+    "plates": [
+      {
+        "text": "S 290",
+        "xmin": 126,
+        "ymin": 180,
+        "xmax": 173,
+        "ymax": 205
+      }
+    ]
+  },
+  {
+    "image_name": "Cars179.png",
+    "plates": [
+      {
+        "text": "SZH 590",
+        "xmin": 72,
+        "ymin": 160,
+        "xmax": 132,
+        "ymax": 197
+      }
+    ]
+  },
+  {
+    "image_name": "Cars18.png",
+    "plates": [
+      {
+        "text": "MEGE6YOB",
+        "xmin": 313,
+        "ymin": 286,
+        "xmax": 405,
+        "ymax": 311
+      }
+    ]
+  },
+  {
+    "image_name": "Cars180.png",
+    "plates": [
+      {
+        "text": "WPEACLN",
+        "xmin": 151,
+        "ymin": 115,
+        "xmax": 304,
+        "ymax": 187
+      }
+    ]
+  },
+  {
+    "image_name": "Cars181.png",
+    "plates": [
+      {
+        "text": "FJHIHAD",
+        "xmin": 69,
+        "ymin": 195,
+        "xmax": 128,
+        "ymax": 209
+      }
+    ]
+  },
+  {
+    "image_name": "Cars182.png",
+    "plates": [
+      {
+        "text": "VI2LAF",
+        "xmin": 168,
+        "ymin": 139,
+        "xmax": 247,
+        "ymax": 159
+      }
+    ]
+  },
+  {
+    "image_name": "Cars183.png",
+    "plates": [
+      {
+        "text": "BRIT 0001",
+        "xmin": 97,
+        "ymin": 138,
+        "xmax": 234,
+        "ymax": 170
+      }
+    ]
+  },
+  {
+    "image_name": "Cars184.png",
+    "plates": [
+      {
+        "text": "SWFT",
+        "xmin": 163,
+        "ymin": 146,
+        "xmax": 212,
+        "ymax": 159
+      }
+    ]
+  },
+  {
+    "image_name": "Cars185.png",
+    "plates": [
+      {
+        "text": "J 260",
+        "xmin": 154,
+        "ymin": 147,
+        "xmax": 293,
+        "ymax": 194
+      }
+    ]
+  },
+  {
+    "image_name": "Cars186.png",
+    "plates": [
+      {
+        "text": "E 26SPF 4",
+        "xmin": 175,
+        "ymin": 152,
+        "xmax": 242,
+        "ymax": 175
+      }
+    ]
+  },
+  {
+    "image_name": "Cars187.png",
+    "plates": [
+      {
+        "text": "TALR 466",
+        "xmin": 96,
+        "ymin": 116,
+        "xmax": 287,
+        "ymax": 155
+      }
+    ]
+  },
+  {
+    "image_name": "Cars188.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars189.png",
+    "plates": [
+      {
+        "text": "SSCHO 1ANO 001",
+        "xmin": 285,
+        "ymin": 241,
+        "xmax": 423,
+        "ymax": 286
+      }
+    ]
+  },
+  {
+    "image_name": "Cars19.png",
+    "plates": [
+      {
+        "text": "AFR 2011",
+        "xmin": 148,
+        "ymin": 195,
+        "xmax": 221,
+        "ymax": 232
+      }
+    ]
+  },
+  {
+    "image_name": "Cars190.png",
+    "plates": [
+      {
+        "text": "RKLS 4A 26709",
+        "xmin": 149,
+        "ymin": 210,
+        "xmax": 245,
+        "ymax": 235
+      }
+    ]
+  },
+  {
+    "image_name": "Cars191.png",
+    "plates": [
+      {
+        "text": "ANGB 380",
+        "xmin": 96,
+        "ymin": 189,
+        "xmax": 199,
+        "ymax": 217
+      }
+    ]
+  },
+  {
+    "image_name": "Cars192.png",
+    "plates": [
+      {
+        "text": "8E4GLEB",
+        "xmin": 108,
+        "ymin": 150,
+        "xmax": 211,
+        "ymax": 173
+      }
+    ]
+  },
+  {
+    "image_name": "Cars193.png",
+    "plates": [
+      {
+        "text": "63VSM",
+        "xmin": 306,
+        "ymin": 193,
+        "xmax": 344,
+        "ymax": 214
+      }
+    ]
+  },
+  {
+    "image_name": "Cars194.png",
+    "plates": [
+      {
+        "text": "2102O768I",
+        "xmin": 267,
+        "ymin": 170,
+        "xmax": 316,
+        "ymax": 183
+      }
+    ]
+  },
+  {
+    "image_name": "Cars195.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars196.png",
+    "plates": [
+      {
+        "text": "M 021",
+        "xmin": 105,
+        "ymin": 128,
+        "xmax": 130,
+        "ymax": 140
+      }
+    ]
+  },
+  {
+    "image_name": "Cars197.png",
+    "plates": [
+      {
+        "text": "AALR33TEER",
+        "xmin": 222,
+        "ymin": 176,
+        "xmax": 359,
+        "ymax": 201
+      }
+    ]
+  },
+  {
+    "image_name": "Cars198.png",
+    "plates": [
+      {
+        "text": "BMHO1AVS86GR",
+        "xmin": 166,
+        "ymin": 225,
+        "xmax": 273,
+        "ymax": 246
+      }
+    ]
+  },
+  {
+    "image_name": "Cars199.png",
+    "plates": [
+      {
+        "text": "PSMHO 1NESO 17",
+        "xmin": 59,
+        "ymin": 88,
+        "xmax": 310,
+        "ymax": 158
+      }
+    ]
+  },
+  {
+    "image_name": "Cars2.png",
+    "plates": [
+      {
+        "text": "1PENU",
+        "xmin": 229,
+        "ymin": 176,
+        "xmax": 270,
+        "ymax": 193
+      }
+    ]
+  },
+  {
+    "image_name": "Cars20.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars200.png",
+    "plates": [
+      {
+        "text": "AAB 3380",
+        "xmin": 95,
+        "ymin": 189,
+        "xmax": 195,
+        "ymax": 217
+      }
+    ]
+  },
+  {
+    "image_name": "Cars201.png",
+    "plates": [
+      {
+        "text": "7CCR33TEEM",
+        "xmin": 216,
+        "ymin": 171,
+        "xmax": 367,
+        "ymax": 208
+      }
+    ]
+  },
+  {
+    "image_name": "Cars202.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars203.png",
+    "plates": [
+      {
+        "text": "56Z17KOD",
+        "xmin": 116,
+        "ymin": 112,
+        "xmax": 271,
+        "ymax": 165
+      }
+    ]
+  },
+  {
+    "image_name": "Cars204.png",
+    "plates": [
+      {
+        "text": "NBYONDY",
+        "xmin": 193,
+        "ymin": 145,
+        "xmax": 279,
+        "ymax": 187
+      }
+    ]
+  },
+  {
+    "image_name": "Cars205.png",
+    "plates": [
+      {
+        "text": "OTACOR",
+        "xmin": 156,
+        "ymin": 162,
+        "xmax": 221,
+        "ymax": 199
+      }
+    ]
+  },
+  {
+    "image_name": "Cars206.png",
+    "plates": [
+      {
+        "text": "HR 26BU 0380",
+        "xmin": 95,
+        "ymin": 185,
+        "xmax": 164,
+        "ymax": 206
+      }
+    ]
+  },
+  {
+    "image_name": "Cars207.png",
+    "plates": [
+      {
+        "text": "LLKGIZERF",
+        "xmin": 254,
+        "ymin": 229,
+        "xmax": 372,
+        "ymax": 264
+      }
+    ]
+  },
+  {
+    "image_name": "Cars208.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars209.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars21.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars210.png",
+    "plates": [
+      {
+        "text": "TEMHOTRESON 7",
+        "xmin": 54,
+        "ymin": 90,
+        "xmax": 315,
+        "ymax": 159
+      }
+    ]
+  },
+  {
+    "image_name": "Cars211.png",
+    "plates": [
+      {
+        "text": "F 65022",
+        "xmin": 28,
+        "ymin": 64,
+        "xmax": 387,
+        "ymax": 235
+      }
+    ]
+  },
+  {
+    "image_name": "Cars212.png",
+    "plates": [
+      {
+        "text": "9KL65H4383",
+        "xmin": 105,
+        "ymin": 94,
+        "xmax": 290,
+        "ymax": 141
+      }
+    ]
+  },
+  {
+    "image_name": "Cars213.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars214.png",
+    "plates": [
+      {
+        "text": "PT 2",
+        "xmin": 188,
+        "ymin": 121,
+        "xmax": 214,
+        "ymax": 134
+      }
+    ]
+  },
+  {
+    "image_name": "Cars215.png",
+    "plates": [
+      {
+        "text": "T 3CH 9984",
+        "xmin": 92,
+        "ymin": 105,
+        "xmax": 162,
+        "ymax": 123
+      }
+    ]
+  },
+  {
+    "image_name": "Cars216.png",
+    "plates": [
+      {
+        "text": "OPEC 0",
+        "xmin": 205,
+        "ymin": 214,
+        "xmax": 280,
+        "ymax": 262
+      }
+    ]
+  },
+  {
+    "image_name": "Cars217.png",
+    "plates": [
+      {
+        "text": "AER 2011",
+        "xmin": 149,
+        "ymin": 196,
+        "xmax": 223,
+        "ymax": 231
+      }
+    ]
+  },
+  {
+    "image_name": "Cars218.png",
+    "plates": [
+      {
+        "text": "TEE",
+        "xmin": 0,
+        "ymin": 166,
+        "xmax": 27,
+        "ymax": 188
+      }
+    ]
+  },
+  {
+    "image_name": "Cars219.png",
+    "plates": [
+      {
+        "text": "1KA03MG2784",
+        "xmin": 127,
+        "ymin": 172,
+        "xmax": 462,
+        "ymax": 236
+      }
+    ]
+  },
+  {
+    "image_name": "Cars22.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars220.png",
+    "plates": [
+      {
+        "text": "PP 055585",
+        "xmin": 142,
+        "ymin": 168,
+        "xmax": 188,
+        "ymax": 182
+      }
+    ]
+  },
+  {
+    "image_name": "Cars221.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars222.png",
+    "plates": [
+      {
+        "text": "B 26SPF 4",
+        "xmin": 178,
+        "ymin": 158,
+        "xmax": 235,
+        "ymax": 170
+      }
+    ]
+  },
+  {
+    "image_name": "Cars223.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars224.png",
+    "plates": [
+      {
+        "text": "SNWUTTT",
+        "xmin": 181,
+        "ymin": 250,
+        "xmax": 243,
+        "ymax": 275
+      }
+    ]
+  },
+  {
+    "image_name": "Cars225.png",
+    "plates": [
+      {
+        "text": "EEEEEJAG2UAR",
+        "xmin": 189,
+        "ymin": 161,
+        "xmax": 384,
+        "ymax": 215
+      }
+    ]
+  },
+  {
+    "image_name": "Cars226.png",
+    "plates": [
+      {
+        "text": "WTN 1954525",
+        "xmin": 249,
+        "ymin": 194,
+        "xmax": 318,
+        "ymax": 213
+      }
+    ]
+  },
+  {
+    "image_name": "Cars227.png",
+    "plates": [
+      {
+        "text": "E8C",
+        "xmin": 118,
+        "ymin": 199,
+        "xmax": 153,
+        "ymax": 211
+      }
+    ]
+  },
+  {
+    "image_name": "Cars228.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars229.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars23.png",
+    "plates": [
+      {
+        "text": "2214",
+        "xmin": 143,
+        "ymin": 172,
+        "xmax": 213,
+        "ymax": 211
+      }
+    ]
+  },
+  {
+    "image_name": "Cars230.png",
+    "plates": [
+      {
+        "text": "AOLR33TEE",
+        "xmin": 222,
+        "ymin": 173,
+        "xmax": 361,
+        "ymax": 202
+      }
+    ]
+  },
+  {
+    "image_name": "Cars231.png",
+    "plates": [
+      {
+        "text": "5GBI8TCEF",
+        "xmin": 64,
+        "ymin": 160,
+        "xmax": 133,
+        "ymax": 180
+      }
+    ]
+  },
+  {
+    "image_name": "Cars232.png",
+    "plates": [
+      {
+        "text": "013",
+        "xmin": 175,
+        "ymin": 174,
+        "xmax": 228,
+        "ymax": 201
+      }
+    ]
+  },
+  {
+    "image_name": "Cars233.png",
+    "plates": [
+      {
+        "text": "TI 8",
+        "xmin": 189,
+        "ymin": 55,
+        "xmax": 259,
+        "ymax": 78
+      }
+    ]
+  },
+  {
+    "image_name": "Cars234.png",
+    "plates": [
+      {
+        "text": "IM4U555I",
+        "xmin": 160,
+        "ymin": 149,
+        "xmax": 246,
+        "ymax": 171
+      }
+    ]
+  },
+  {
+    "image_name": "Cars235.png",
+    "plates": [
+      {
+        "text": "G 6J03JL 0126",
+        "xmin": 152,
+        "ymin": 145,
+        "xmax": 247,
+        "ymax": 167
+      }
+    ]
+  },
+  {
+    "image_name": "Cars236.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars237.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars238.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars239.png",
+    "plates": [
+      {
+        "text": "B 15LK 10898",
+        "xmin": 176,
+        "ymin": 254,
+        "xmax": 326,
+        "ymax": 284
+      }
+    ]
+  },
+  {
+    "image_name": "Cars24.png",
+    "plates": [
+      {
+        "text": "THR 26BCS 514",
+        "xmin": 167,
+        "ymin": 202,
+        "xmax": 240,
+        "ymax": 221
+      }
+    ]
+  },
+  {
+    "image_name": "Cars240.png",
+    "plates": [
+      {
+        "text": "1CDAF",
+        "xmin": 171,
+        "ymin": 116,
+        "xmax": 232,
+        "ymax": 132
+      }
+    ]
+  },
+  {
+    "image_name": "Cars241.png",
+    "plates": [
+      {
+        "text": "523",
+        "xmin": 126,
+        "ymin": 142,
+        "xmax": 241,
+        "ymax": 199
+      }
+    ]
+  },
+  {
+    "image_name": "Cars242.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars243.png",
+    "plates": [
+      {
+        "text": "KA 03MG 2784",
+        "xmin": 129,
+        "ymin": 174,
+        "xmax": 465,
+        "ymax": 235
+      }
+    ]
+  },
+  {
+    "image_name": "Cars244.png",
+    "plates": [
+      {
+        "text": "21280127",
+        "xmin": 20,
+        "ymin": 87,
+        "xmax": 360,
+        "ymax": 155
+      }
+    ]
+  },
+  {
+    "image_name": "Cars245.png",
+    "plates": [
+      {
+        "text": "LLHR 26BR 9044",
+        "xmin": 91,
+        "ymin": 110,
+        "xmax": 164,
+        "ymax": 138
+      }
+    ]
+  },
+  {
+    "image_name": "Cars246.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars247.png",
+    "plates": [
+      {
+        "text": "2P762",
+        "xmin": 147,
+        "ymin": 11,
+        "xmax": 300,
+        "ymax": 149
+      }
+    ]
+  },
+  {
+    "image_name": "Cars248.png",
+    "plates": [
+      {
+        "text": "PE 33",
+        "xmin": 184,
+        "ymin": 143,
+        "xmax": 311,
+        "ymax": 191
+      }
+    ]
+  },
+  {
+    "image_name": "Cars249.png",
+    "plates": [
+      {
+        "text": "KA 42N 0852",
+        "xmin": 300,
+        "ymin": 208,
+        "xmax": 354,
+        "ymax": 226
+      }
+    ]
+  },
+  {
+    "image_name": "Cars25.png",
+    "plates": [
+      {
+        "text": "J 13",
+        "xmin": 177,
+        "ymin": 139,
+        "xmax": 216,
+        "ymax": 159
+      }
+    ]
+  },
+  {
+    "image_name": "Cars250.png",
+    "plates": [
+      {
+        "text": "PPCWNII 2",
+        "xmin": 132,
+        "ymin": 123,
+        "xmax": 261,
+        "ymax": 160
+      }
+    ]
+  },
+  {
+    "image_name": "Cars251.png",
+    "plates": [
+      {
+        "text": "FHS62FKLE",
+        "xmin": 136,
+        "ymin": 134,
+        "xmax": 210,
+        "ymax": 153
+      }
+    ]
+  },
+  {
+    "image_name": "Cars252.png",
+    "plates": [
+      {
+        "text": "DANS4PJ",
+        "xmin": 174,
+        "ymin": 237,
+        "xmax": 314,
+        "ymax": 274
+      }
+    ]
+  },
+  {
+    "image_name": "Cars253.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars254.png",
+    "plates": [
+      {
+        "text": "GOT 2P 00",
+        "xmin": 166,
+        "ymin": 175,
+        "xmax": 235,
+        "ymax": 207
+      }
+    ]
+  },
+  {
+    "image_name": "Cars255.png",
+    "plates": [
+      {
+        "text": "BMH 20EJ 03640",
+        "xmin": 116,
+        "ymin": 156,
+        "xmax": 273,
+        "ymax": 188
+      }
+    ]
+  },
+  {
+    "image_name": "Cars256.png",
+    "plates": [
+      {
+        "text": "1VD63LB",
+        "xmin": 286,
+        "ymin": 175,
+        "xmax": 400,
+        "ymax": 212
+      }
+    ]
+  },
+  {
+    "image_name": "Cars257.png",
+    "plates": [
+      {
+        "text": "JOKLA",
+        "xmin": 167,
+        "ymin": 132,
+        "xmax": 241,
+        "ymax": 166
+      }
+    ]
+  },
+  {
+    "image_name": "Cars258.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars259.png",
+    "plates": [
+      {
+        "text": "MH 20EE 7598",
+        "xmin": 324,
+        "ymin": 166,
+        "xmax": 475,
+        "ymax": 205
+      }
+    ]
+  },
+  {
+    "image_name": "Cars26.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars260.png",
+    "plates": [
+      {
+        "text": "M 4U 5333",
+        "xmin": 170,
+        "ymin": 112,
+        "xmax": 232,
+        "ymax": 129
+      }
+    ]
+  },
+  {
+    "image_name": "Cars261.png",
+    "plates": [
+      {
+        "text": "TSOBER 1642",
+        "xmin": 1,
+        "ymin": 74,
+        "xmax": 464,
+        "ymax": 154
+      }
+    ]
+  },
+  {
+    "image_name": "Cars262.png",
+    "plates": [
+      {
+        "text": "1C18",
+        "xmin": 243,
+        "ymin": 184,
+        "xmax": 285,
+        "ymax": 205
+      }
+    ]
+  },
+  {
+    "image_name": "Cars263.png",
+    "plates": [
+      {
+        "text": "MH 02CR 4545",
+        "xmin": 129,
+        "ymin": 260,
+        "xmax": 232,
+        "ymax": 290
+      }
+    ]
+  },
+  {
+    "image_name": "Cars264.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars265.png",
+    "plates": [
+      {
+        "text": "M 771276",
+        "xmin": 87,
+        "ymin": 166,
+        "xmax": 216,
+        "ymax": 212
+      }
+    ]
+  },
+  {
+    "image_name": "Cars266.png",
+    "plates": [
+      {
+        "text": "G5S",
+        "xmin": 11,
+        "ymin": 57,
+        "xmax": 88,
+        "ymax": 76
+      },
+      {
+        "text": "SHMES00F",
+        "xmin": 15,
+        "ymin": 84,
+        "xmax": 84,
+        "ymax": 102
+      },
+      {
+        "text": "CEET",
+        "xmin": 23,
+        "ymin": 110,
+        "xmax": 75,
+        "ymax": 122
+      },
+      {
+        "text": "SINGS 07765",
+        "xmin": 24,
+        "ymin": 150,
+        "xmax": 74,
+        "ymax": 175
+      },
+      {
+        "text": "HHATCH 9984",
+        "xmin": 95,
+        "ymin": 105,
+        "xmax": 158,
+        "ymax": 122
+      },
+      {
+        "text": "TA6HS",
+        "xmin": 154,
+        "ymin": 45,
+        "xmax": 393,
+        "ymax": 176
+      }
+    ]
+  },
+  {
+    "image_name": "Cars267.png",
+    "plates": [
+      {
+        "text": "7222F",
+        "xmin": 274,
+        "ymin": 118,
+        "xmax": 343,
+        "ymax": 138
+      }
+    ]
+  },
+  {
+    "image_name": "Cars268.png",
+    "plates": [
+      {
+        "text": "TKUV",
+        "xmin": 213,
+        "ymin": 133,
+        "xmax": 271,
+        "ymax": 168
+      }
+    ]
+  },
+  {
+    "image_name": "Cars269.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars27.png",
+    "plates": [
+      {
+        "text": "DZI7YXR",
+        "xmin": 148,
+        "ymin": 127,
+        "xmax": 245,
+        "ymax": 159
+      }
+    ]
+  },
+  {
+    "image_name": "Cars270.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars271.png",
+    "plates": [
+      {
+        "text": "WESBOSS",
+        "xmin": 262,
+        "ymin": 141,
+        "xmax": 318,
+        "ymax": 160
+      }
+    ]
+  },
+  {
+    "image_name": "Cars272.png",
+    "plates": [
+      {
+        "text": "WPRX6IGDUJ",
+        "xmin": 170,
+        "ymin": 81,
+        "xmax": 316,
+        "ymax": 121
+      }
+    ]
+  },
+  {
+    "image_name": "Cars273.png",
+    "plates": [
+      {
+        "text": "LBRIT0001J",
+        "xmin": 74,
+        "ymin": 132,
+        "xmax": 264,
+        "ymax": 173
+      }
+    ]
+  },
+  {
+    "image_name": "Cars274.png",
+    "plates": [
+      {
+        "text": "BMANISAL",
+        "xmin": 196,
+        "ymin": 149,
+        "xmax": 253,
+        "ymax": 169
+      }
+    ]
+  },
+  {
+    "image_name": "Cars275.png",
+    "plates": [
+      {
+        "text": "BATMAN",
+        "xmin": 99,
+        "ymin": 150,
+        "xmax": 162,
+        "ymax": 167
+      }
+    ]
+  },
+  {
+    "image_name": "Cars276.png",
+    "plates": [
+      {
+        "text": "WZ17K00J",
+        "xmin": 115,
+        "ymin": 116,
+        "xmax": 276,
+        "ymax": 156
+      }
+    ]
+  },
+  {
+    "image_name": "Cars277.png",
+    "plates": [
+      {
+        "text": "TST",
+        "xmin": 48,
+        "ymin": 218,
+        "xmax": 72,
+        "ymax": 225
+      },
+      {
+        "text": "THF",
+        "xmin": 373,
+        "ymin": 212,
+        "xmax": 388,
+        "ymax": 217
+      }
+    ]
+  },
+  {
+    "image_name": "Cars278.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars279.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars28.png",
+    "plates": [
+      {
+        "text": "1AO8",
+        "xmin": 541,
+        "ymin": 366,
+        "xmax": 598,
+        "ymax": 384
+      }
+    ]
+  },
+  {
+    "image_name": "Cars280.png",
+    "plates": [
+      {
+        "text": "OTS",
+        "xmin": 191,
+        "ymin": 185,
+        "xmax": 213,
+        "ymax": 195
+      }
+    ]
+  },
+  {
+    "image_name": "Cars281.png",
+    "plates": [
+      {
+        "text": "MH 01DB 0001",
+        "xmin": 151,
+        "ymin": 169,
+        "xmax": 243,
+        "ymax": 183
+      }
+    ]
+  },
+  {
+    "image_name": "Cars282.png",
+    "plates": [
+      {
+        "text": "Z 68611365",
+        "xmin": 37,
+        "ymin": 145,
+        "xmax": 319,
+        "ymax": 203
+      }
+    ]
+  },
+  {
+    "image_name": "Cars283.png",
+    "plates": [
+      {
+        "text": "TTT",
+        "xmin": 137,
+        "ymin": 171,
+        "xmax": 157,
+        "ymax": 178
+      }
+    ]
+  },
+  {
+    "image_name": "Cars284.png",
+    "plates": [
+      {
+        "text": "L 662",
+        "xmin": 70,
+        "ymin": 199,
+        "xmax": 260,
+        "ymax": 271
+      }
+    ]
+  },
+  {
+    "image_name": "Cars285.png",
+    "plates": [
+      {
+        "text": "ENHR 26BR 9044",
+        "xmin": 91,
+        "ymin": 111,
+        "xmax": 163,
+        "ymax": 134
+      }
+    ]
+  },
+  {
+    "image_name": "Cars286.png",
+    "plates": [
+      {
+        "text": "ENMIDLYPH",
+        "xmin": 201,
+        "ymin": 191,
+        "xmax": 288,
+        "ymax": 230
+      }
+    ]
+  },
+  {
+    "image_name": "Cars287.png",
+    "plates": [
+      {
+        "text": "POL 7CN 5617",
+        "xmin": 148,
+        "ymin": 180,
+        "xmax": 262,
+        "ymax": 213
+      }
+    ]
+  },
+  {
+    "image_name": "Cars288.png",
+    "plates": [
+      {
+        "text": "IBATMAN",
+        "xmin": 97,
+        "ymin": 148,
+        "xmax": 164,
+        "ymax": 169
+      }
+    ]
+  },
+  {
+    "image_name": "Cars289.png",
+    "plates": [
+      {
+        "text": "S 32HP 2",
+        "xmin": 163,
+        "ymin": 140,
+        "xmax": 271,
+        "ymax": 173
+      }
+    ]
+  },
+  {
+    "image_name": "Cars29.png",
+    "plates": [
+      {
+        "text": "9214",
+        "xmin": 143,
+        "ymin": 171,
+        "xmax": 211,
+        "ymax": 208
+      }
+    ]
+  },
+  {
+    "image_name": "Cars290.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars291.png",
+    "plates": [
+      {
+        "text": "402A8578",
+        "xmin": 71,
+        "ymin": 205,
+        "xmax": 215,
+        "ymax": 246
+      }
+    ]
+  },
+  {
+    "image_name": "Cars292.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars293.png",
+    "plates": [
+      {
+        "text": "DGBI8TCE",
+        "xmin": 64,
+        "ymin": 160,
+        "xmax": 130,
+        "ymax": 181
+      }
+    ]
+  },
+  {
+    "image_name": "Cars294.png",
+    "plates": [
+      {
+        "text": "O 4CC1A 0001",
+        "xmin": 142,
+        "ymin": 117,
+        "xmax": 218,
+        "ymax": 135
+      }
+    ]
+  },
+  {
+    "image_name": "Cars295.png",
+    "plates": [
+      {
+        "text": "8544",
+        "xmin": 237,
+        "ymin": 143,
+        "xmax": 271,
+        "ymax": 162
+      }
+    ]
+  },
+  {
+    "image_name": "Cars296.png",
+    "plates": [
+      {
+        "text": "P 05",
+        "xmin": 163,
+        "ymin": 158,
+        "xmax": 234,
+        "ymax": 196
+      }
+    ]
+  },
+  {
+    "image_name": "Cars297.png",
+    "plates": [
+      {
+        "text": "IM4U555Z",
+        "xmin": 158,
+        "ymin": 149,
+        "xmax": 247,
+        "ymax": 170
+      }
+    ]
+  },
+  {
+    "image_name": "Cars298.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars299.png",
+    "plates": [
+      {
+        "text": "JSDN 7484U 5",
+        "xmin": 101,
+        "ymin": 136,
+        "xmax": 270,
+        "ymax": 176
+      }
+    ]
+  },
+  {
+    "image_name": "Cars3.png",
+    "plates": [
+      {
+        "text": "DZI7YXRFF",
+        "xmin": 142,
+        "ymin": 128,
+        "xmax": 261,
+        "ymax": 157
+      }
+    ]
+  },
+  {
+    "image_name": "Cars30.png",
+    "plates": [
+      {
+        "text": "JPK8546J",
+        "xmin": 155,
+        "ymin": 169,
+        "xmax": 200,
+        "ymax": 182
+      }
+    ]
+  },
+  {
+    "image_name": "Cars300.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars301.png",
+    "plates": [
+      {
+        "text": "G526JHDJ",
+        "xmin": 205,
+        "ymin": 107,
+        "xmax": 303,
+        "ymax": 135
+      }
+    ]
+  },
+  {
+    "image_name": "Cars302.png",
+    "plates": [
+      {
+        "text": "F 015",
+        "xmin": 222,
+        "ymin": 98,
+        "xmax": 425,
+        "ymax": 149
+      }
+    ]
+  },
+  {
+    "image_name": "Cars303.png",
+    "plates": [
+      {
+        "text": "RKLS 4A 26709",
+        "xmin": 150,
+        "ymin": 211,
+        "xmax": 247,
+        "ymax": 237
+      }
+    ]
+  },
+  {
+    "image_name": "Cars304.png",
+    "plates": [
+      {
+        "text": "PANYCHTLS",
+        "xmin": 143,
+        "ymin": 114,
+        "xmax": 222,
+        "ymax": 156
+      }
+    ]
+  },
+  {
+    "image_name": "Cars305.png",
+    "plates": [
+      {
+        "text": "SGO51JU",
+        "xmin": 361,
+        "ymin": 167,
+        "xmax": 434,
+        "ymax": 183
+      }
+    ]
+  },
+  {
+    "image_name": "Cars306.png",
+    "plates": [
+      {
+        "text": "ALAWYER",
+        "xmin": 139,
+        "ymin": 282,
+        "xmax": 249,
+        "ymax": 310
+      }
+    ]
+  },
+  {
+    "image_name": "Cars307.png",
+    "plates": [
+      {
+        "text": "7M906090KE",
+        "xmin": 172,
+        "ymin": 163,
+        "xmax": 437,
+        "ymax": 220
+      }
+    ]
+  },
+  {
+    "image_name": "Cars308.png",
+    "plates": [
+      {
+        "text": "JHR 26BC55I 4",
+        "xmin": 159,
+        "ymin": 221,
+        "xmax": 237,
+        "ymax": 241
+      }
+    ]
+  },
+  {
+    "image_name": "Cars309.png",
+    "plates": [
+      {
+        "text": "EBSS",
+        "xmin": 152,
+        "ymin": 122,
+        "xmax": 252,
+        "ymax": 207
+      }
+    ]
+  },
+  {
+    "image_name": "Cars31.png",
+    "plates": [
+      {
+        "text": "IYD63LB",
+        "xmin": 286,
+        "ymin": 173,
+        "xmax": 400,
+        "ymax": 211
+      }
+    ]
+  },
+  {
+    "image_name": "Cars310.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars311.png",
+    "plates": [
+      {
+        "text": "2111S",
+        "xmin": 295,
+        "ymin": 166,
+        "xmax": 355,
+        "ymax": 185
+      }
+    ]
+  },
+  {
+    "image_name": "Cars312.png",
+    "plates": [
+      {
+        "text": "PUI8BES",
+        "xmin": 111,
+        "ymin": 66,
+        "xmax": 518,
+        "ymax": 246
+      }
+    ]
+  },
+  {
+    "image_name": "Cars313.png",
+    "plates": [
+      {
+        "text": "AE0N",
+        "xmin": 176,
+        "ymin": 211,
+        "xmax": 252,
+        "ymax": 246
+      }
+    ]
+  },
+  {
+    "image_name": "Cars314.png",
+    "plates": [
+      {
+        "text": "IST",
+        "xmin": 195,
+        "ymin": 149,
+        "xmax": 274,
+        "ymax": 209
+      }
+    ]
+  },
+  {
+    "image_name": "Cars315.png",
+    "plates": [
+      {
+        "text": "J 98257",
+        "xmin": 12,
+        "ymin": 98,
+        "xmax": 385,
+        "ymax": 181
+      }
+    ]
+  },
+  {
+    "image_name": "Cars316.png",
+    "plates": [
+      {
+        "text": "OOMH92BLTT",
+        "xmin": 379,
+        "ymin": 192,
+        "xmax": 455,
+        "ymax": 220
+      }
+    ]
+  },
+  {
+    "image_name": "Cars317.png",
+    "plates": [
+      {
+        "text": "SEHR 26BCSSI 4",
+        "xmin": 164,
+        "ymin": 202,
+        "xmax": 240,
+        "ymax": 220
+      }
+    ]
+  },
+  {
+    "image_name": "Cars318.png",
+    "plates": [
+      {
+        "text": "ALR 486",
+        "xmin": 119,
+        "ymin": 117,
+        "xmax": 263,
+        "ymax": 160
+      }
+    ]
+  },
+  {
+    "image_name": "Cars319.png",
+    "plates": [
+      {
+        "text": "IIILLYOU",
+        "xmin": 167,
+        "ymin": 228,
+        "xmax": 232,
+        "ymax": 259
+      }
+    ]
+  },
+  {
+    "image_name": "Cars32.png",
+    "plates": [
+      {
+        "text": "IMANISA",
+        "xmin": 200,
+        "ymin": 149,
+        "xmax": 251,
+        "ymax": 167
+      }
+    ]
+  },
+  {
+    "image_name": "Cars320.png",
+    "plates": [
+      {
+        "text": "26690",
+        "xmin": 99,
+        "ymin": 225,
+        "xmax": 257,
+        "ymax": 266
+      }
+    ]
+  },
+  {
+    "image_name": "Cars321.png",
+    "plates": [
+      {
+        "text": "LLOLOF",
+        "xmin": 134,
+        "ymin": 235,
+        "xmax": 169,
+        "ymax": 246
+      }
+    ]
+  },
+  {
+    "image_name": "Cars322.png",
+    "plates": [
+      {
+        "text": "SS700V",
+        "xmin": 274,
+        "ymin": 257,
+        "xmax": 350,
+        "ymax": 297
+      }
+    ]
+  },
+  {
+    "image_name": "Cars323.png",
+    "plates": [
+      {
+        "text": "TNSSF 2378",
+        "xmin": 123,
+        "ymin": 28,
+        "xmax": 279,
+        "ymax": 65
+      }
+    ]
+  },
+  {
+    "image_name": "Cars324.png",
+    "plates": [
+      {
+        "text": "VI2LAFF",
+        "xmin": 151,
+        "ymin": 138,
+        "xmax": 255,
+        "ymax": 159
+      }
+    ]
+  },
+  {
+    "image_name": "Cars325.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars326.png",
+    "plates": [
+      {
+        "text": "PDLECK 4350",
+        "xmin": 141,
+        "ymin": 198,
+        "xmax": 252,
+        "ymax": 230
+      }
+    ]
+  },
+  {
+    "image_name": "Cars327.png",
+    "plates": [
+      {
+        "text": "PIPGMN 1129",
+        "xmin": 138,
+        "ymin": 126,
+        "xmax": 262,
+        "ymax": 155
+      }
+    ]
+  },
+  {
+    "image_name": "Cars328.png",
+    "plates": [
+      {
+        "text": "IM 4U 555",
+        "xmin": 156,
+        "ymin": 149,
+        "xmax": 248,
+        "ymax": 170
+      }
+    ]
+  },
+  {
+    "image_name": "Cars329.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars33.png",
+    "plates": [
+      {
+        "text": "OX65AND",
+        "xmin": 94,
+        "ymin": 56,
+        "xmax": 306,
+        "ymax": 169
+      }
+    ]
+  },
+  {
+    "image_name": "Cars330.png",
+    "plates": [
+      {
+        "text": "WG6BOO",
+        "xmin": 29,
+        "ymin": 192,
+        "xmax": 57,
+        "ymax": 203
+      },
+      {
+        "text": "VAG7ER",
+        "xmin": 168,
+        "ymin": 202,
+        "xmax": 198,
+        "ymax": 214
+      }
+    ]
+  },
+  {
+    "image_name": "Cars331.png",
+    "plates": [
+      {
+        "text": "AALLALO",
+        "xmin": 164,
+        "ymin": 220,
+        "xmax": 235,
+        "ymax": 240
+      }
+    ]
+  },
+  {
+    "image_name": "Cars332.png",
+    "plates": [
+      {
+        "text": "1DZI7YXRJ",
+        "xmin": 143,
+        "ymin": 126,
+        "xmax": 260,
+        "ymax": 159
+      }
+    ]
+  },
+  {
+    "image_name": "Cars333.png",
+    "plates": [
+      {
+        "text": "BMH 20EJ 03640",
+        "xmin": 117,
+        "ymin": 157,
+        "xmax": 270,
+        "ymax": 191
+      }
+    ]
+  },
+  {
+    "image_name": "Cars334.png",
+    "plates": [
+      {
+        "text": "SESOLAB",
+        "xmin": 155,
+        "ymin": 146,
+        "xmax": 211,
+        "ymax": 162
+      }
+    ]
+  },
+  {
+    "image_name": "Cars335.png",
+    "plates": [
+      {
+        "text": "MOTACOR",
+        "xmin": 156,
+        "ymin": 163,
+        "xmax": 221,
+        "ymax": 198
+      }
+    ]
+  },
+  {
+    "image_name": "Cars336.png",
+    "plates": [
+      {
+        "text": "AIDL 8CX 48501",
+        "xmin": 122,
+        "ymin": 195,
+        "xmax": 265,
+        "ymax": 234
+      }
+    ]
+  },
+  {
+    "image_name": "Cars337.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars338.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars339.png",
+    "plates": [
+      {
+        "text": "UOPPLATECOM",
+        "xmin": 209,
+        "ymin": 135,
+        "xmax": 283,
+        "ymax": 169
+      }
+    ]
+  },
+  {
+    "image_name": "Cars34.png",
+    "plates": [
+      {
+        "text": "BIDL7CN5617B",
+        "xmin": 147,
+        "ymin": 181,
+        "xmax": 260,
+        "ymax": 206
+      }
+    ]
+  },
+  {
+    "image_name": "Cars340.png",
+    "plates": [
+      {
+        "text": "BVX54FVL",
+        "xmin": 270,
+        "ymin": 126,
+        "xmax": 321,
+        "ymax": 143
+      }
+    ]
+  },
+  {
+    "image_name": "Cars341.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars342.png",
+    "plates": [
+      {
+        "text": "TMANISA",
+        "xmin": 196,
+        "ymin": 148,
+        "xmax": 253,
+        "ymax": 169
+      }
+    ]
+  },
+  {
+    "image_name": "Cars343.png",
+    "plates": [
+      {
+        "text": "SKIPGAS",
+        "xmin": 110,
+        "ymin": 186,
+        "xmax": 162,
+        "ymax": 209
+      }
+    ]
+  },
+  {
+    "image_name": "Cars344.png",
+    "plates": [
+      {
+        "text": "FCOUGLE",
+        "xmin": 240,
+        "ymin": 158,
+        "xmax": 379,
+        "ymax": 217
+      }
+    ]
+  },
+  {
+    "image_name": "Cars345.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars346.png",
+    "plates": [
+      {
+        "text": "ONXA 3AB 3380",
+        "xmin": 91,
+        "ymin": 185,
+        "xmax": 197,
+        "ymax": 217
+      }
+    ]
+  },
+  {
+    "image_name": "Cars347.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars348.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars349.png",
+    "plates": [
+      {
+        "text": "PPYS6BXU",
+        "xmin": 38,
+        "ymin": 225,
+        "xmax": 146,
+        "ymax": 249
+      }
+    ]
+  },
+  {
+    "image_name": "Cars35.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars350.png",
+    "plates": [
+      {
+        "text": "S02YO",
+        "xmin": 162,
+        "ymin": 179,
+        "xmax": 211,
+        "ymax": 188
+      }
+    ]
+  },
+  {
+    "image_name": "Cars351.png",
+    "plates": [
+      {
+        "text": "TRI",
+        "xmin": 249,
+        "ymin": 48,
+        "xmax": 368,
+        "ymax": 129
+      }
+    ]
+  },
+  {
+    "image_name": "Cars352.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars353.png",
+    "plates": [
+      {
+        "text": "ANBAB 3300",
+        "xmin": 93,
+        "ymin": 189,
+        "xmax": 201,
+        "ymax": 221
+      }
+    ]
+  },
+  {
+    "image_name": "Cars354.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars355.png",
+    "plates": [
+      {
+        "text": "BKTP 665",
+        "xmin": 164,
+        "ymin": 154,
+        "xmax": 239,
+        "ymax": 190
+      }
+    ]
+  },
+  {
+    "image_name": "Cars356.png",
+    "plates": [
+      {
+        "text": "DBSMARSM 23",
+        "xmin": 241,
+        "ymin": 216,
+        "xmax": 364,
+        "ymax": 275
+      }
+    ]
+  },
+  {
+    "image_name": "Cars357.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars358.png",
+    "plates": [
+      {
+        "text": "PZ 62FDX 5",
+        "xmin": 44,
+        "ymin": 94,
+        "xmax": 107,
+        "ymax": 107
+      },
+      {
+        "text": "1PZ262FDZJ",
+        "xmin": 296,
+        "ymin": 122,
+        "xmax": 358,
+        "ymax": 135
+      }
+    ]
+  },
+  {
+    "image_name": "Cars359.png",
+    "plates": [
+      {
+        "text": "P352CL",
+        "xmin": 228,
+        "ymin": 228,
+        "xmax": 266,
+        "ymax": 240
+      }
+    ]
+  },
+  {
+    "image_name": "Cars36.png",
+    "plates": [
+      {
+        "text": "TMIDLYPH",
+        "xmin": 203,
+        "ymin": 193,
+        "xmax": 285,
+        "ymax": 229
+      }
+    ]
+  },
+  {
+    "image_name": "Cars360.png",
+    "plates": [
+      {
+        "text": "DXQ",
+        "xmin": 52,
+        "ymin": 167,
+        "xmax": 94,
+        "ymax": 200
+      }
+    ]
+  },
+  {
+    "image_name": "Cars361.png",
+    "plates": [
+      {
+        "text": "WWPEACHNG",
+        "xmin": 148,
+        "ymin": 113,
+        "xmax": 305,
+        "ymax": 178
+      }
+    ]
+  },
+  {
+    "image_name": "Cars362.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars363.png",
+    "plates": [
+      {
+        "text": "TW 123",
+        "xmin": 153,
+        "ymin": 169,
+        "xmax": 254,
+        "ymax": 204
+      }
+    ]
+  },
+  {
+    "image_name": "Cars364.png",
+    "plates": [
+      {
+        "text": "L 220",
+        "xmin": 61,
+        "ymin": 140,
+        "xmax": 115,
+        "ymax": 167
+      }
+    ]
+  },
+  {
+    "image_name": "Cars365.png",
+    "plates": [
+      {
+        "text": "TH71B20768J",
+        "xmin": 293,
+        "ymin": 205,
+        "xmax": 373,
+        "ymax": 226
+      }
+    ]
+  },
+  {
+    "image_name": "Cars366.png",
+    "plates": [
+      {
+        "text": "MH20S20A",
+        "xmin": 144,
+        "ymin": 112,
+        "xmax": 316,
+        "ymax": 160
+      }
+    ]
+  },
+  {
+    "image_name": "Cars367.png",
+    "plates": [
+      {
+        "text": "HGOOGLEJ",
+        "xmin": 224,
+        "ymin": 161,
+        "xmax": 382,
+        "ymax": 222
+      }
+    ]
+  },
+  {
+    "image_name": "Cars368.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars369.png",
+    "plates": [
+      {
+        "text": "815LK10898",
+        "xmin": 176,
+        "ymin": 253,
+        "xmax": 325,
+        "ymax": 280
+      }
+    ]
+  },
+  {
+    "image_name": "Cars37.png",
+    "plates": [
+      {
+        "text": "PEAST",
+        "xmin": 146,
+        "ymin": 114,
+        "xmax": 246,
+        "ymax": 163
+      }
+    ]
+  },
+  {
+    "image_name": "Cars370.png",
+    "plates": [
+      {
+        "text": "BCHO 1ANOO 018",
+        "xmin": 285,
+        "ymin": 249,
+        "xmax": 425,
+        "ymax": 276
+      }
+    ]
+  },
+  {
+    "image_name": "Cars371.png",
+    "plates": [
+      {
+        "text": "220",
+        "xmin": 313,
+        "ymin": 135,
+        "xmax": 371,
+        "ymax": 150
+      }
+    ]
+  },
+  {
+    "image_name": "Cars372.png",
+    "plates": [
+      {
+        "text": "HR 26CE 1485",
+        "xmin": 221,
+        "ymin": 275,
+        "xmax": 353,
+        "ymax": 309
+      }
+    ]
+  },
+  {
+    "image_name": "Cars373.png",
+    "plates": [
+      {
+        "text": "4TN21B8C6225",
+        "xmin": 161,
+        "ymin": 132,
+        "xmax": 264,
+        "ymax": 157
+      }
+    ]
+  },
+  {
+    "image_name": "Cars374.png",
+    "plates": [
+      {
+        "text": "CS730WY",
+        "xmin": 354,
+        "ymin": 118,
+        "xmax": 441,
+        "ymax": 142
+      }
+    ]
+  },
+  {
+    "image_name": "Cars375.png",
+    "plates": [
+      {
+        "text": "BCD",
+        "xmin": 144,
+        "ymin": 114,
+        "xmax": 300,
+        "ymax": 145
+      }
+    ]
+  },
+  {
+    "image_name": "Cars376.png",
+    "plates": [
+      {
+        "text": "B2226HM",
+        "xmin": 159,
+        "ymin": 178,
+        "xmax": 252,
+        "ymax": 203
+      }
+    ]
+  },
+  {
+    "image_name": "Cars377.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars378.png",
+    "plates": [
+      {
+        "text": "7E7",
+        "xmin": 118,
+        "ymin": 92,
+        "xmax": 254,
+        "ymax": 137
+      }
+    ]
+  },
+  {
+    "image_name": "Cars379.png",
+    "plates": [
+      {
+        "text": "PB 9239",
+        "xmin": 197,
+        "ymin": 197,
+        "xmax": 351,
+        "ymax": 245
+      }
+    ]
+  },
+  {
+    "image_name": "Cars38.png",
+    "plates": [
+      {
+        "text": "OWGBCKY",
+        "xmin": 168,
+        "ymin": 196,
+        "xmax": 240,
+        "ymax": 231
+      }
+    ]
+  },
+  {
+    "image_name": "Cars380.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars381.png",
+    "plates": [
+      {
+        "text": "EE 2089563",
+        "xmin": 65,
+        "ymin": 131,
+        "xmax": 147,
+        "ymax": 155
+      }
+    ]
+  },
+  {
+    "image_name": "Cars382.png",
+    "plates": [
+      {
+        "text": "7CRAIGSS",
+        "xmin": 149,
+        "ymin": 206,
+        "xmax": 285,
+        "ymax": 240
+      }
+    ]
+  },
+  {
+    "image_name": "Cars383.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars384.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars385.png",
+    "plates": [
+      {
+        "text": "B09E",
+        "xmin": 69,
+        "ymin": 75,
+        "xmax": 310,
+        "ymax": 191
+      }
+    ]
+  },
+  {
+    "image_name": "Cars386.png",
+    "plates": [
+      {
+        "text": "B 84887",
+        "xmin": 83,
+        "ymin": 307,
+        "xmax": 221,
+        "ymax": 368
+      }
+    ]
+  },
+  {
+    "image_name": "Cars387.png",
+    "plates": [
+      {
+        "text": "HR 26AZ 5927",
+        "xmin": 163,
+        "ymin": 187,
+        "xmax": 256,
+        "ymax": 225
+      }
+    ]
+  },
+  {
+    "image_name": "Cars388.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars389.png",
+    "plates": [
+      {
+        "text": "E 887",
+        "xmin": 77,
+        "ymin": 305,
+        "xmax": 222,
+        "ymax": 370
+      }
+    ]
+  },
+  {
+    "image_name": "Cars39.png",
+    "plates": [
+      {
+        "text": "HH 156086779",
+        "xmin": 225,
+        "ymin": 180,
+        "xmax": 328,
+        "ymax": 213
+      }
+    ]
+  },
+  {
+    "image_name": "Cars390.png",
+    "plates": [
+      {
+        "text": "30759",
+        "xmin": 360,
+        "ymin": 118,
+        "xmax": 397,
+        "ymax": 136
+      }
+    ]
+  },
+  {
+    "image_name": "Cars391.png",
+    "plates": [
+      {
+        "text": "BRUL 324",
+        "xmin": 270,
+        "ymin": 163,
+        "xmax": 320,
+        "ymax": 190
+      }
+    ]
+  },
+  {
+    "image_name": "Cars392.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars393.png",
+    "plates": [
+      {
+        "text": "W 771276",
+        "xmin": 94,
+        "ymin": 171,
+        "xmax": 211,
+        "ymax": 208
+      }
+    ]
+  },
+  {
+    "image_name": "Cars394.png",
+    "plates": [
+      {
+        "text": "FH12MR0613B",
+        "xmin": 291,
+        "ymin": 167,
+        "xmax": 410,
+        "ymax": 190
+      }
+    ]
+  },
+  {
+    "image_name": "Cars395.png",
+    "plates": [
+      {
+        "text": "IONE",
+        "xmin": 241,
+        "ymin": 182,
+        "xmax": 288,
+        "ymax": 205
+      }
+    ]
+  },
+  {
+    "image_name": "Cars396.png",
+    "plates": [
+      {
+        "text": "1REAP3R",
+        "xmin": 181,
+        "ymin": 264,
+        "xmax": 269,
+        "ymax": 289
+      }
+    ]
+  },
+  {
+    "image_name": "Cars397.png",
+    "plates": [
+      {
+        "text": "S 214",
+        "xmin": 144,
+        "ymin": 169,
+        "xmax": 216,
+        "ymax": 212
+      }
+    ]
+  },
+  {
+    "image_name": "Cars398.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars399.png",
+    "plates": [
+      {
+        "text": "OX65AWD",
+        "xmin": 106,
+        "ymin": 62,
+        "xmax": 309,
+        "ymax": 161
+      }
+    ]
+  },
+  {
+    "image_name": "Cars4.png",
+    "plates": [
+      {
+        "text": "PUIGBES 2",
+        "xmin": 156,
+        "ymin": 82,
+        "xmax": 503,
+        "ymax": 253
+      }
+    ]
+  },
+  {
+    "image_name": "Cars40.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars400.png",
+    "plates": [
+      {
+        "text": "313",
+        "xmin": 303,
+        "ymin": 191,
+        "xmax": 340,
+        "ymax": 217
+      }
+    ]
+  },
+  {
+    "image_name": "Cars401.png",
+    "plates": [
+      {
+        "text": "JHR 26BCS 514",
+        "xmin": 158,
+        "ymin": 223,
+        "xmax": 238,
+        "ymax": 240
+      }
+    ]
+  },
+  {
+    "image_name": "Cars402.png",
+    "plates": [
+      {
+        "text": "GO51JU",
+        "xmin": 360,
+        "ymin": 165,
+        "xmax": 438,
+        "ymax": 181
+      }
+    ]
+  },
+  {
+    "image_name": "Cars403.png",
+    "plates": [
+      {
+        "text": "PER 0",
+        "xmin": 296,
+        "ymin": 189,
+        "xmax": 332,
+        "ymax": 209
+      }
+    ]
+  },
+  {
+    "image_name": "Cars404.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars405.png",
+    "plates": [
+      {
+        "text": "I1603687P",
+        "xmin": 241,
+        "ymin": 207,
+        "xmax": 299,
+        "ymax": 232
+      }
+    ]
+  },
+  {
+    "image_name": "Cars406.png",
+    "plates": [
+      {
+        "text": "12684",
+        "xmin": 285,
+        "ymin": 185,
+        "xmax": 374,
+        "ymax": 226
+      }
+    ]
+  },
+  {
+    "image_name": "Cars407.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars408.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars409.png",
+    "plates": [
+      {
+        "text": "2RK977AFI",
+        "xmin": 116,
+        "ymin": 146,
+        "xmax": 203,
+        "ymax": 168
+      }
+    ]
+  },
+  {
+    "image_name": "Cars41.png",
+    "plates": [
+      {
+        "text": "HYNTZ086J",
+        "xmin": 109,
+        "ymin": 182,
+        "xmax": 159,
+        "ymax": 206
+      }
+    ]
+  },
+  {
+    "image_name": "Cars410.png",
+    "plates": [
+      {
+        "text": "VEKWPOOP",
+        "xmin": 51,
+        "ymin": 150,
+        "xmax": 219,
+        "ymax": 212
+      }
+    ]
+  },
+  {
+    "image_name": "Cars411.png",
+    "plates": [
+      {
+        "text": "EVIPER",
+        "xmin": 160,
+        "ymin": 153,
+        "xmax": 249,
+        "ymax": 197
+      }
+    ]
+  },
+  {
+    "image_name": "Cars412.png",
+    "plates": [
+      {
+        "text": "1LR33TEER",
+        "xmin": 221,
+        "ymin": 172,
+        "xmax": 362,
+        "ymax": 202
+      }
+    ]
+  },
+  {
+    "image_name": "Cars413.png",
+    "plates": [
+      {
+        "text": "8544",
+        "xmin": 237,
+        "ymin": 143,
+        "xmax": 271,
+        "ymax": 162
+      }
+    ]
+  },
+  {
+    "image_name": "Cars414.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars415.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars416.png",
+    "plates": [
+      {
+        "text": "172TMJE",
+        "xmin": 150,
+        "ymin": 207,
+        "xmax": 234,
+        "ymax": 221
+      }
+    ]
+  },
+  {
+    "image_name": "Cars417.png",
+    "plates": [
+      {
+        "text": "BEBAD 2311",
+        "xmin": 90,
+        "ymin": 145,
+        "xmax": 273,
+        "ymax": 196
+      }
+    ]
+  },
+  {
+    "image_name": "Cars418.png",
+    "plates": [
+      {
+        "text": "OX65AND",
+        "xmin": 99,
+        "ymin": 70,
+        "xmax": 303,
+        "ymax": 155
+      }
+    ]
+  },
+  {
+    "image_name": "Cars419.png",
+    "plates": [
+      {
+        "text": "E 9739",
+        "xmin": 195,
+        "ymin": 196,
+        "xmax": 349,
+        "ymax": 242
+      }
+    ]
+  },
+  {
+    "image_name": "Cars42.png",
+    "plates": [
+      {
+        "text": "THN 13",
+        "xmin": 177,
+        "ymin": 140,
+        "xmax": 217,
+        "ymax": 159
+      }
+    ]
+  },
+  {
+    "image_name": "Cars420.png",
+    "plates": [
+      {
+        "text": "SKIPGAS",
+        "xmin": 112,
+        "ymin": 186,
+        "xmax": 160,
+        "ymax": 211
+      }
+    ]
+  },
+  {
+    "image_name": "Cars421.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars422.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars423.png",
+    "plates": [
+      {
+        "text": "EP3RVP",
+        "xmin": 162,
+        "ymin": 159,
+        "xmax": 283,
+        "ymax": 183
+      }
+    ]
+  },
+  {
+    "image_name": "Cars424.png",
+    "plates": [
+      {
+        "text": "1KA03MG2784",
+        "xmin": 128,
+        "ymin": 173,
+        "xmax": 461,
+        "ymax": 242
+      }
+    ]
+  },
+  {
+    "image_name": "Cars425.png",
+    "plates": [
+      {
+        "text": "6526JHD",
+        "xmin": 211,
+        "ymin": 103,
+        "xmax": 301,
+        "ymax": 132
+      }
+    ]
+  },
+  {
+    "image_name": "Cars426.png",
+    "plates": [
+      {
+        "text": "4CRAIGC",
+        "xmin": 148,
+        "ymin": 206,
+        "xmax": 282,
+        "ymax": 238
+      }
+    ]
+  },
+  {
+    "image_name": "Cars427.png",
+    "plates": [
+      {
+        "text": "OHCC 4A 0001",
+        "xmin": 236,
+        "ymin": 193,
+        "xmax": 375,
+        "ymax": 228
+      }
+    ]
+  },
+  {
+    "image_name": "Cars428.png",
+    "plates": [
+      {
+        "text": "DZI7YXRJ",
+        "xmin": 142,
+        "ymin": 128,
+        "xmax": 258,
+        "ymax": 157
+      }
+    ]
+  },
+  {
+    "image_name": "Cars429.png",
+    "plates": [
+      {
+        "text": "KAISER",
+        "xmin": 86,
+        "ymin": 166,
+        "xmax": 208,
+        "ymax": 195
+      }
+    ]
+  },
+  {
+    "image_name": "Cars43.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars430.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars431.png",
+    "plates": [
+      {
+        "text": "80SS",
+        "xmin": 55,
+        "ymin": 82,
+        "xmax": 343,
+        "ymax": 147
+      }
+    ]
+  },
+  {
+    "image_name": "Cars432.png",
+    "plates": [
+      {
+        "text": "SSSSDL 49AK 49",
+        "xmin": 95,
+        "ymin": 258,
+        "xmax": 196,
+        "ymax": 284
+      }
+    ]
+  },
+  {
+    "image_name": "Cars44.png",
+    "plates": [
+      {
+        "text": "EDL 2CAGG 786",
+        "xmin": 18,
+        "ymin": 153,
+        "xmax": 430,
+        "ymax": 271
+      }
+    ]
+  },
+  {
+    "image_name": "Cars45.png",
+    "plates": [
+      {
+        "text": "MUGG",
+        "xmin": 204,
+        "ymin": 103,
+        "xmax": 280,
+        "ymax": 175
+      }
+    ]
+  },
+  {
+    "image_name": "Cars46.png",
+    "plates": [
+      {
+        "text": "E 9239",
+        "xmin": 189,
+        "ymin": 193,
+        "xmax": 352,
+        "ymax": 248
+      }
+    ]
+  },
+  {
+    "image_name": "Cars47.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars48.png",
+    "plates": [
+      {
+        "text": "ZALR406F",
+        "xmin": 95,
+        "ymin": 117,
+        "xmax": 286,
+        "ymax": 155
+      }
+    ]
+  },
+  {
+    "image_name": "Cars49.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars5.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars50.png",
+    "plates": [
+      {
+        "text": "0SPUIBES",
+        "xmin": 116,
+        "ymin": 55,
+        "xmax": 525,
+        "ymax": 262
+      }
+    ]
+  },
+  {
+    "image_name": "Cars51.png",
+    "plates": [
+      {
+        "text": "YESBOSS",
+        "xmin": 264,
+        "ymin": 141,
+        "xmax": 318,
+        "ymax": 162
+      }
+    ]
+  },
+  {
+    "image_name": "Cars52.png",
+    "plates": [
+      {
+        "text": "FKH 158066779",
+        "xmin": 226,
+        "ymin": 181,
+        "xmax": 327,
+        "ymax": 210
+      }
+    ]
+  },
+  {
+    "image_name": "Cars53.png",
+    "plates": [
+      {
+        "text": "CHIOOSE",
+        "xmin": 146,
+        "ymin": 187,
+        "xmax": 260,
+        "ymax": 213
+      }
+    ]
+  },
+  {
+    "image_name": "Cars54.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars55.png",
+    "plates": [
+      {
+        "text": "9214",
+        "xmin": 143,
+        "ymin": 171,
+        "xmax": 210,
+        "ymax": 208
+      }
+    ]
+  },
+  {
+    "image_name": "Cars56.png",
+    "plates": [
+      {
+        "text": "KL54BOSS",
+        "xmin": 87,
+        "ymin": 82,
+        "xmax": 339,
+        "ymax": 146
+      }
+    ]
+  },
+  {
+    "image_name": "Cars57.png",
+    "plates": [
+      {
+        "text": "BKML 324",
+        "xmin": 270,
+        "ymin": 162,
+        "xmax": 321,
+        "ymax": 195
+      }
+    ]
+  },
+  {
+    "image_name": "Cars58.png",
+    "plates": [
+      {
+        "text": "MH 01DB 0001",
+        "xmin": 154,
+        "ymin": 166,
+        "xmax": 241,
+        "ymax": 187
+      }
+    ]
+  },
+  {
+    "image_name": "Cars59.png",
+    "plates": [
+      {
+        "text": "467R",
+        "xmin": 324,
+        "ymin": 162,
+        "xmax": 375,
+        "ymax": 175
+      }
+    ]
+  },
+  {
+    "image_name": "Cars6.png",
+    "plates": [
+      {
+        "text": "Y 739",
+        "xmin": 112,
+        "ymin": 114,
+        "xmax": 373,
+        "ymax": 239
+      }
+    ]
+  },
+  {
+    "image_name": "Cars60.png",
+    "plates": [
+      {
+        "text": "TOS7807AN",
+        "xmin": 45,
+        "ymin": 98,
+        "xmax": 364,
+        "ymax": 159
+      }
+    ]
+  },
+  {
+    "image_name": "Cars61.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars62.png",
+    "plates": [
+      {
+        "text": "QETOP",
+        "xmin": 156,
+        "ymin": 110,
+        "xmax": 243,
+        "ymax": 159
+      }
+    ]
+  },
+  {
+    "image_name": "Cars63.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars64.png",
+    "plates": [
+      {
+        "text": "TAXIJ",
+        "xmin": 120,
+        "ymin": 187,
+        "xmax": 325,
+        "ymax": 220
+      }
+    ]
+  },
+  {
+    "image_name": "Cars65.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars66.png",
+    "plates": [
+      {
+        "text": "9214",
+        "xmin": 144,
+        "ymin": 170,
+        "xmax": 211,
+        "ymax": 202
+      }
+    ]
+  },
+  {
+    "image_name": "Cars67.png",
+    "plates": [
+      {
+        "text": "MHI 4BN 7077",
+        "xmin": 189,
+        "ymin": 223,
+        "xmax": 328,
+        "ymax": 248
+      }
+    ]
+  },
+  {
+    "image_name": "Cars68.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars69.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars7.png",
+    "plates": [
+      {
+        "text": "YSK 219",
+        "xmin": 166,
+        "ymin": 141,
+        "xmax": 206,
+        "ymax": 154
+      }
+    ]
+  },
+  {
+    "image_name": "Cars70.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars71.png",
+    "plates": [
+      {
+        "text": "TUMTETT",
+        "xmin": 86,
+        "ymin": 150,
+        "xmax": 125,
+        "ymax": 161
+      }
+    ]
+  },
+  {
+    "image_name": "Cars72.png",
+    "plates": [
+      {
+        "text": "ADL 7CN 5617",
+        "xmin": 156,
+        "ymin": 182,
+        "xmax": 255,
+        "ymax": 208
+      }
+    ]
+  },
+  {
+    "image_name": "Cars73.png",
+    "plates": [
+      {
+        "text": "TN99F2378J",
+        "xmin": 119,
+        "ymin": 22,
+        "xmax": 283,
+        "ymax": 69
+      }
+    ]
+  },
+  {
+    "image_name": "Cars74.png",
+    "plates": [
+      {
+        "text": "W8CZI7KODJ",
+        "xmin": 115,
+        "ymin": 115,
+        "xmax": 277,
+        "ymax": 153
+      }
+    ]
+  },
+  {
+    "image_name": "Cars75.png",
+    "plates": [
+      {
+        "text": "SBR",
+        "xmin": 209,
+        "ymin": 196,
+        "xmax": 218,
+        "ymax": 201
+      }
+    ]
+  },
+  {
+    "image_name": "Cars76.png",
+    "plates": [
+      {
+        "text": "212SS",
+        "xmin": 6,
+        "ymin": 114,
+        "xmax": 470,
+        "ymax": 233
+      }
+    ]
+  },
+  {
+    "image_name": "Cars77.png",
+    "plates": [
+      {
+        "text": "HR 26CU 67999",
+        "xmin": 229,
+        "ymin": 151,
+        "xmax": 309,
+        "ymax": 178
+      }
+    ]
+  },
+  {
+    "image_name": "Cars78.png",
+    "plates": [
+      {
+        "text": "PKUS 442670",
+        "xmin": 149,
+        "ymin": 210,
+        "xmax": 249,
+        "ymax": 239
+      }
+    ]
+  },
+  {
+    "image_name": "Cars79.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars8.png",
+    "plates": [
+      {
+        "text": "J6526JHDJ",
+        "xmin": 204,
+        "ymin": 104,
+        "xmax": 304,
+        "ymax": 134
+      }
+    ]
+  },
+  {
+    "image_name": "Cars80.png",
+    "plates": [
+      {
+        "text": "AIBAD 2319",
+        "xmin": 94,
+        "ymin": 148,
+        "xmax": 279,
+        "ymax": 186
+      }
+    ]
+  },
+  {
+    "image_name": "Cars81.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars82.png",
+    "plates": [
+      {
+        "text": "UPITCI 366",
+        "xmin": 190,
+        "ymin": 59,
+        "xmax": 257,
+        "ymax": 77
+      }
+    ]
+  },
+  {
+    "image_name": "Cars83.png",
+    "plates": [
+      {
+        "text": "COGEE",
+        "xmin": 251,
+        "ymin": 295,
+        "xmax": 326,
+        "ymax": 341
+      }
+    ]
+  },
+  {
+    "image_name": "Cars84.png",
+    "plates": [
+      {
+        "text": "2HR26BCSSI4",
+        "xmin": 167,
+        "ymin": 201,
+        "xmax": 238,
+        "ymax": 220
+      }
+    ]
+  },
+  {
+    "image_name": "Cars85.png",
+    "plates": [
+      {
+        "text": "AVUGS3GTY",
+        "xmin": 86,
+        "ymin": 218,
+        "xmax": 146,
+        "ymax": 235
+      },
+      {
+        "text": "BAACNC",
+        "xmin": 313,
+        "ymin": 129,
+        "xmax": 358,
+        "ymax": 141
+      }
+    ]
+  },
+  {
+    "image_name": "Cars86.png",
+    "plates": [
+      {
+        "text": "WH 1ADX 9934",
+        "xmin": 332,
+        "ymin": 176,
+        "xmax": 447,
+        "ymax": 204
+      }
+    ]
+  },
+  {
+    "image_name": "Cars87.png",
+    "plates": [
+      {
+        "text": "1TSLAS",
+        "xmin": 3,
+        "ymin": 205,
+        "xmax": 45,
+        "ymax": 220
+      }
+    ]
+  },
+  {
+    "image_name": "Cars88.png",
+    "plates": [
+      {
+        "text": "SFES 7",
+        "xmin": 168,
+        "ymin": 148,
+        "xmax": 242,
+        "ymax": 171
+      }
+    ]
+  },
+  {
+    "image_name": "Cars89.png",
+    "plates": [
+      {
+        "text": "SOUR",
+        "xmin": 307,
+        "ymin": 206,
+        "xmax": 345,
+        "ymax": 221
+      }
+    ]
+  },
+  {
+    "image_name": "Cars9.png",
+    "plates": [
+      {
+        "text": "BMHOTAVSS66R",
+        "xmin": 164,
+        "ymin": 224,
+        "xmax": 272,
+        "ymax": 247
+      }
+    ]
+  },
+  {
+    "image_name": "Cars90.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars91.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars92.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars93.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars94.png",
+    "plates": [
+      {
+        "text": "ANRUIUN",
+        "xmin": 176,
+        "ymin": 210,
+        "xmax": 251,
+        "ymax": 248
+      }
+    ]
+  },
+  {
+    "image_name": "Cars95.png",
+    "plates": []
+  },
+  {
+    "image_name": "Cars96.png",
+    "plates": [
+      {
+        "text": "EPGWN 112",
+        "xmin": 133,
+        "ymin": 126,
+        "xmax": 261,
+        "ymax": 160
+      }
+    ]
+  },
+  {
+    "image_name": "Cars97.png",
+    "plates": [
+      {
+        "text": "KSIS",
+        "xmin": 98,
+        "ymin": 102,
+        "xmax": 297,
+        "ymax": 191
+      }
+    ]
+  },
+  {
+    "image_name": "Cars98.png",
+    "plates": [
+      {
+        "text": "SANEWTOIMG",
+        "xmin": 85,
+        "ymin": 196,
+        "xmax": 247,
+        "ymax": 259
+      }
+    ]
+  },
+  {
+    "image_name": "Cars99.png",
+    "plates": [
+      {
+        "text": "L 662",
+        "xmin": 70,
+        "ymin": 198,
+        "xmax": 262,
+        "ymax": 271
+      }
+    ]
+  }
+]

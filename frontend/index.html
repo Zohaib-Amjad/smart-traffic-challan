@@ -1,10 +1,12 @@
 <!DOCTYPE html>
+<!-- Public landing page: introduces the system and routes users to its workflows. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-  <title>Smart Traffic Challan System - Automatic Traffic Challan System</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+  <title>Smart Traffic Challan System - AI Vehicle Check</title>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,9 +17,40 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/styles.css?v=17">
   
   <style>
+    .landing-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .landing-page .navbar {
+      position: relative;
+      flex-wrap: nowrap;
+      gap: 16px;
+      overflow: visible;
+    }
+
+    .landing-page .nav-links {
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      overflow-x: auto;
+    }
+
+    .landing-page .hero-banner {
+      flex: 0 0 auto;
+      padding: 3.5rem 1.25rem;
+    }
+
+    .landing-page .container {
+      flex: 0 0 auto;
+      display: block;
+      max-width: none;
+      padding: 0;
+    }
+
     .upload-section {
       max-width: 780px;
       margin: -2.75rem auto 3rem auto;
@@ -45,49 +78,470 @@
     }
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.75rem;
-      margin-bottom: 3.5rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 0;
+      width: 100%;
+      max-width: 1080px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .feature-card {
+      position: relative;
+      overflow: hidden;
       background: #FFFFFF;
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
-      padding: 2.25rem 1.75rem;
+      padding: 1.15rem 1.15rem 1.25rem;
       text-align: center;
       box-shadow: var(--shadow-card);
-      transition: all 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
     .feature-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-6px);
       box-shadow: var(--shadow-md);
-      border-color: #CBD5E1;
+      border-color: #93C5FD;
     }
     .feature-icon {
-      font-size: 2.25rem;
-      margin-bottom: 1.25rem;
-      display: inline-block;
+      width: min(100%, 210px);
+      aspect-ratio: 16 / 8;
+      margin: 0 auto 0.9rem;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(3rem, 6vw, 4.5rem);
+      line-height: 1;
+      background: transparent;
+      background-image: none;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      transition: transform 0.2s ease;
+    }
+    .feature-card:hover .feature-icon {
+      transform: scale(1.04);
     }
     .feature-title {
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: #0F172A;
       margin-bottom: 8px;
     }
     .feature-desc {
-      font-size: 0.9rem;
+      font-size: 0.84rem;
       color: #64748B;
       line-height: 1.5;
     }
+
+    .landing-info {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 3.5rem 1.25rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .landing-info,
+    .landing-process,
+    .landing-rules {
+      min-height: 360px;
+      align-items: center;
+    }
+
+    .landing-process,
+    .landing-rules {
+      display: flex;
+    }
+
+    .landing-info h2,
+    .landing-process h2 {
+      color: var(--color-primary);
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      line-height: 1.2;
+      margin-bottom: 0.8rem;
+    }
+
+    .landing-info p,
+    .landing-process p {
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .landing-list {
+      list-style: none;
+      display: grid;
+      gap: 0.75rem;
+      margin-top: 1.35rem;
+    }
+
+    .landing-list li {
+      display: flex;
+      gap: 0.65rem;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+
+    .landing-list i {
+      color: var(--color-success);
+      margin-top: 0.25rem;
+    }
+
+    .landing-facts {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      border: 1px solid var(--border-color);
+      background: var(--border-color);
+      gap: 1px;
+    }
+
+    .landing-fact {
+      background: #FFFFFF;
+      padding: 1.2rem;
+    }
+
+    .landing-fact strong {
+      display: block;
+      color: var(--color-primary);
+      font-size: 1.45rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .landing-fact span {
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    .landing-process {
+      background: #EEF4FF;
+      border-top: 1px solid #DBEAFE;
+      padding: 3.5rem 1.25rem;
+    }
+
+    .landing-process-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .landing-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-top: 1.8rem;
+    }
+
+    .landing-step {
+      border-top: 3px solid var(--color-secondary);
+      padding-top: 0.9rem;
+    }
+
+    .landing-step-number {
+      color: var(--color-secondary);
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+    }
+
+    .landing-step h3 {
+      color: var(--color-primary);
+      font-size: 0.98rem;
+      margin: 0.4rem 0;
+    }
+
+    .landing-step p {
+      font-size: 0.84rem;
+    }
+
+    .landing-rules {
+      background: var(--color-primary);
+      color: #FFFFFF;
+      padding: 3.5rem 1.25rem;
+    }
+
+    .landing-rules-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .landing-rules h2 {
+      color: #FFFFFF;
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      line-height: 1.2;
+      margin-bottom: 0.8rem;
+    }
+
+    .landing-rules-intro {
+      color: #CBD5E1;
+      max-width: 700px;
+      line-height: 1.7;
+    }
+
+    .landing-rule-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      margin-top: 2rem;
+      background: rgba(148, 163, 184, 0.25);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .landing-rule {
+      background: #17233A;
+      padding: 1.25rem;
+      min-height: 150px;
+    }
+
+    .landing-rule i {
+      color: #FBBF24;
+      font-size: 1.15rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .landing-rule h3 {
+      font-size: 0.96rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .landing-rule p {
+      color: #CBD5E1;
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+
+    .landing-rules-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.6rem;
+      color: #FFFFFF;
+      font-size: 0.86rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .landing-rules-link:hover {
+      color: #FBBF24;
+    }
+
+    .landing-footer {
+      text-align: left;
+      padding: 3rem 1.25rem 1.2rem;
+    }
+
+    .landing-footer-grid {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr repeat(3, 1fr);
+      gap: 2rem;
+      padding-bottom: 2.2rem;
+    }
+
+    .landing-footer h2 {
+      color: #FFFFFF;
+      font-size: 1rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .landing-footer h3 {
+      color: #FFFFFF;
+      font-size: 0.82rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .landing-footer p,
+    .landing-footer li,
+    .landing-footer a {
+      color: #94A3B8;
+      font-size: 0.78rem;
+      line-height: 1.65;
+    }
+
+    .landing-footer a {
+      text-decoration: none;
+    }
+
+    .landing-footer a:hover {
+      color: #FFFFFF;
+    }
+
+    .landing-footer ul {
+      list-style: none;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .landing-footer-contact {
+      display: grid;
+      gap: 0.45rem;
+      margin-top: 0.8rem;
+    }
+
+    .landing-footer-contact i {
+      color: #60A5FA;
+      width: 1rem;
+      margin-right: 0.35rem;
+    }
+
+    .landing-footer-bottom {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding-top: 1rem;
+      border-top: 1px solid #1E293B;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .landing-actions .btn {
+      min-width: 150px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 0.98rem;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+    }
+
+    .landing-actions .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.24);
+    }
+
+    .landing-actions .btn:focus-visible {
+      outline: 3px solid rgba(147, 197, 253, 0.9);
+      outline-offset: 3px;
+    }
+
+    .landing-page .app-footer {
+      flex: 0 0 auto;
+      padding: 3.5rem 1.25rem 1.25rem;
+    }
+
+    @media (min-width: 701px) and (max-height: 700px) {
+      .landing-page .navbar {
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+      }
+
+      .landing-page .hero-banner {
+        padding-top: 1.25rem;
+        padding-bottom: 1.5rem;
+      }
+
+      .landing-page .hero-title {
+        font-size: 2.15rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .landing-page .hero-subtitle {
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+      }
+
+      .landing-page .feature-card {
+        padding: 0.9rem 1rem 1rem;
+      }
+
+      .landing-page .feature-icon {
+        width: min(100%, 230px);
+        margin-bottom: 0.75rem;
+      }
+
+      .landing-page .feature-desc {
+        font-size: 0.82rem;
+      }
+
+      .landing-page .app-footer {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .landing-page {
+        height: 100%;
+        min-height: 100vh;
+      }
+
+      .landing-page .navbar {
+        position: relative;
+      }
+
+      .landing-page .hero-banner {
+        padding: 2.5rem 1rem;
+      }
+
+      .landing-page .container {
+        align-items: flex-start;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+
+      .landing-info,
+      .landing-steps,
+      .landing-rule-grid,
+      .landing-footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .landing-info,
+      .landing-process {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .landing-info,
+      .landing-process,
+      .landing-rules {
+        min-height: 0;
+        padding-top: 2.5rem;
+        padding-bottom: 2.5rem;
+      }
+
+      .landing-footer-bottom {
+        display: block;
+      }
+
+      .landing-page .container {
+        padding: 0.9rem 0.65rem;
+      }
+
+      .feature-card {
+        padding: 0.65rem 0.35rem 0.75rem;
+      }
+
+      .feature-icon {
+        width: 100%;
+        font-size: clamp(2rem, 10vw, 3rem);
+        margin-bottom: 0.6rem;
+      }
+
+      .feature-title {
+        font-size: 0.72rem;
+        line-height: 1.25;
+      }
+
+      .feature-desc {
+        display: none;
+      }
+    }
   </style>
 </head>
-<body>
+<body class="landing-page">
 
   <!-- Top Navbar (Deep Navy #0F172A) -->
   <header class="navbar">
     <a href="/" class="brand">
       <div class="brand-icon">
-        <i class="fa-solid fa-traffic-light"></i>
+        <img src="/static/logo.png" alt="Smart Traffic Challan System logo">
       </div>
       <div>
         <div class="brand-title">Smart Traffic Challan System</div>
@@ -95,58 +549,102 @@
       </div>
     </a>
 
-    <nav class="nav-links">
-      <a href="/" class="nav-item active">Home</a>
-      <a href="/login" class="nav-item">Sign in</a>
-      <a href="/register" class="nav-item">Register</a>
-    </nav>
+    <nav class="nav-links" id="appNav" data-nav-mode="public" data-active="home"></nav>
   </header>
 
   <!-- Hero Banner (Deep Navy #0F172A) -->
   <section class="hero-banner">
-    <h1 class="hero-title">Automatic Traffic Challan<br>System</h1>
+    <h1 class="hero-title">Know your vehicle.<br>Drive with confidence.</h1>
     <p class="hero-subtitle">
-      Smart and secure traffic challan management system for vehicle monitoring and violation detection.
+      Use AI to read a number plate, review vehicle details, and learn the traffic rules that keep Lahore moving.
     </p>
-    <div class="hero-btns">
-      <a href="/login" class="btn btn-primary" style="padding: 12px 34px; font-size: 1rem;">Login</a>
-      <a href="/register" class="btn btn-success" style="padding: 12px 34px; font-size: 1rem;">Register</a>
+    <div class="hero-btns landing-actions">
+      <a href="/login?next=%2Fcitizen" class="btn btn-primary"><i class="fa-solid fa-car"></i> Check Vehicle Details</a>
     </div>
   </section>
 
   <!-- Main Container -->
   <main class="container">
     
-    <!-- 3 Features Grid (Quick Access Cards) -->
-    <section class="features-grid">
-      <!-- Feature 1: Vehicle Registration -->
-      <a href="/login?next=%2Fvehicles" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
-        <div class="feature-icon">🚗</div>
-        <h3 class="feature-title">Vehicle Registration</h3>
-        <p class="feature-desc">Register and manage vehicle information securely with real-time verification.</p>
-      </a>
+    <section class="landing-info">
+      <div>
+        <p class="landing-section-kicker" style="color: var(--color-secondary); font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.76rem;">A clearer starting point</p>
+        <h2>Traffic information, without the paperwork.</h2>
+        <p>The public side of Smart Traffic Challan keeps the first step simple. Citizens can check a vehicle from an image, understand the result, and read practical road guidance before they need anything else.</p>
+        <ul class="landing-list">
+          <li><i class="fa-solid fa-circle-check"></i><span>AI-assisted number plate reading with an image preview.</span></li>
+          <li><i class="fa-solid fa-circle-check"></i><span>Registered vehicle information returned in one focused result.</span></li>
+          <li><i class="fa-solid fa-circle-check"></i><span>Separate officer and vehicle-registerer workspaces behind login.</span></li>
+        </ul>
+      </div>
+      <div class="landing-facts" aria-label="System facts">
+        <div class="landing-fact"><strong>AI</strong><span>Computer vision and OCR assisted checking</span></div>
+        <div class="landing-fact"><strong>25</strong><span>Punjab offence schedule entries</span></div>
+        <div class="landing-fact"><strong>433</strong><span>Indexed sample vehicle images</span></div>
+        <div class="landing-fact"><strong>Local</strong><span>Private project demonstration access</span></div>
+      </div>
+    </section>
 
-      <!-- Feature 2: Number Plate Recognition -->
-      <a href="/login?next=%2Fnumber-plate" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
-        <div class="feature-icon">📷</div>
-        <h3 class="feature-title">Number Plate Recognition</h3>
-        <p class="feature-desc">Detect vehicle number plates instantly using Computer Vision & OCR.</p>
-      </a>
+    <section class="landing-process">
+      <div class="landing-process-inner">
+        <p class="landing-section-kicker" style="color: var(--color-secondary); font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.76rem;">AI vehicle check</p>
+        <h2>From image to useful detail</h2>
+        <p>The citizen workflow is designed to answer one question quickly: what vehicle is in this image?</p>
+        <div class="landing-steps">
+          <article class="landing-step"><span class="landing-step-number">01</span><h3>Upload an image</h3><p>Choose a clear photo of your vehicle or number plate.</p></article>
+          <article class="landing-step"><span class="landing-step-number">02</span><h3>Let AI read it</h3><p>Computer vision detects the plate and OCR extracts its text.</p></article>
+          <article class="landing-step"><span class="landing-step-number">03</span><h3>Review the result</h3><p>See the plate and available registered vehicle information.</p></article>
+        </div>
+      </div>
+    </section>
 
-      <!-- Feature 3: Challan Management -->
-      <a href="/login?next=%2Fchallans" class="feature-card" style="text-decoration: none; color: inherit; cursor: pointer;">
-        <div class="feature-icon">📄</div>
-        <h3 class="feature-title">Challan Management</h3>
-        <p class="feature-desc">Generate, inspect, and export official digital traffic violation challans.</p>
-      </a>
+    <section class="landing-rules" id="traffic-rules">
+      <div class="landing-rules-inner">
+        <p class="landing-section-kicker" style="color: #FBBF24; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.76rem;">Road awareness</p>
+        <h2>Traffic rules for everyday driving</h2>
+        <p class="landing-rules-intro">Safe roads are built from ordinary habits. Keep these essentials in mind whether you are driving across the city or taking a longer route.</p>
+        <div class="landing-rule-grid">
+          <article class="landing-rule"><i class="fa-solid fa-helmet-safety"></i><h3>Wear a helmet</h3><p>Motorcycle riders and passengers should wear a properly fastened helmet on every trip.</p></article>
+          <article class="landing-rule"><i class="fa-solid fa-mobile-screen-button"></i><h3>Do not use your phone</h3><p>Put the phone away while driving. Pull over safely before reading or replying.</p></article>
+          <article class="landing-rule"><i class="fa-solid fa-traffic-light"></i><h3>Follow signals</h3><p>Stop behind the line at red lights and follow lane markings and officer directions.</p></article>
+          <article class="landing-rule"><i class="fa-solid fa-gauge-high"></i><h3>Control your speed</h3><p>Stay within the posted limit and slow down near schools, crossings, and intersections.</p></article>
+          <article class="landing-rule"><i class="fa-solid fa-car-burst"></i><h3>Keep safe distance</h3><p>Leave enough space to brake smoothly when traffic slows or conditions change.</p></article>
+          <article class="landing-rule"><i class="fa-solid fa-id-card"></i><h3>Carry valid documents</h3><p>Keep your driving licence and vehicle documents available when travelling.</p></article>
+        </div>
+      </div>
     </section>
 
   </main>
 
   <!-- Footer -->
-  <footer class="app-footer">
-    © 2026 Smart Traffic Challan System | Final Year Project
+  <footer class="app-footer landing-footer">
+    <div class="landing-footer-grid">
+      <section>
+        <h2>Smart Traffic Challan System</h2>
+        <p>A local AI-assisted traffic information platform for vehicle checks, road awareness, and controlled officer workflows.</p>
+        <div class="landing-footer-contact">
+          <p><i class="fa-solid fa-shield-halved"></i> Local project demonstration</p>
+        </div>
+      </section>
+      <section>
+        <h3>Explore</h3>
+        <ul><li><a href="/">Home</a></li><li><a href="/login?next=%2Fcitizen">AI Vehicle Check</a></li></ul>
+      </section>
+      <section>
+        <h3>Account</h3>
+        <ul><li><a href="/login">Login</a></li><li><a href="/register">Create account</a></li><li><a href="/login?next=%2Fcitizen">Citizen access</a></li></ul>
+      </section>
+      <section>
+        <h3>Project note</h3>
+        <p>This is a final-year project demo. Owner data is synthetic and payment processing is simulated.</p>
+      </section>
+    </div>
+    <div class="landing-footer-bottom">
+      <p>© 2026 Smart Traffic Challan System. All rights reserved.</p>
+      <p>Built for learning, safer roads, and responsible driving.</p>
+    </div>
   </footer>
 
+  <script src="/static/js/auth.js?v=17"></script>
 </body>
 </html>

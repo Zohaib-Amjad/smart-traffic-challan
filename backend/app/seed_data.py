@@ -1,7 +1,11 @@
+"""Reference data and startup initialization."""
+
 import sqlite3
 import datetime
 from app.config import DB_PATH
 from app.database import init_db
+from app.punjab_schedule import seed_punjab_schedule
+from app.services.archive_registry import import_archive_plates, index_archive_dataset, plate_key
 
 USERS_DATA = [
     {
@@ -12,7 +16,14 @@ USERS_DATA = [
         "created_at": "2026-08-10 08:00:00"
     },
     {
-        "name": "System Administrator",
+        "name": "Traffic Patrol Officer",
+        "email": "officer2@traffic.gov.pk",
+        "password": "admin123",
+        "role": "Officer",
+        "created_at": "2026-08-10 08:00:00"
+    },
+    {
+        "name": "Vehicle Registration Officer",
         "email": "admin@traffic.gov.pk",
         "password": "admin123",
         "role": "Admin",
@@ -33,12 +44,13 @@ VEHICLES_DATA = [
         "owner_name": "Muhammad Usman Khan",
         "owner_cnic": "35202-8923411-3",
         "owner_phone": "+92 300 4589123",
-        "owner_email": "usman.khan@gmail.com",
+        "owner_email": "citizen@test.pk",
         "owner_address": "House 45-B, Sector C, Bahria Town, Lahore",
         "vehicle_make": "Honda",
         "vehicle_model": "Civic Oriel 2021",
         "vehicle_color": "Crystal Black",
-        "vehicle_type": "Car",
+        "vehicle_type": "Motor car",
+        "engine_cc": 1800,
         "registration_date": "2021-03-15",
         "tax_status": "Paid"
     },
@@ -52,7 +64,8 @@ VEHICLES_DATA = [
         "vehicle_make": "Toyota",
         "vehicle_model": "Corolla Grande 2022",
         "vehicle_color": "Super White",
-        "vehicle_type": "Car",
+        "vehicle_type": "Motor car",
+        "engine_cc": 1800,
         "registration_date": "2022-06-20",
         "tax_status": "Paid"
     },
@@ -66,7 +79,8 @@ VEHICLES_DATA = [
         "vehicle_make": "Suzuki",
         "vehicle_model": "Alto VXR 2020",
         "vehicle_color": "Silky Silver",
-        "vehicle_type": "Car",
+        "vehicle_type": "Motor car",
+        "engine_cc": 660,
         "registration_date": "2020-01-10",
         "tax_status": "Paid"
     },
@@ -81,6 +95,7 @@ VEHICLES_DATA = [
         "vehicle_model": "YBR 125G 2023",
         "vehicle_color": "Racing Blue",
         "vehicle_type": "Motorcycle",
+        "engine_cc": 125,
         "registration_date": "2023-04-12",
         "tax_status": "Paid"
     },
@@ -95,21 +110,8 @@ VEHICLES_DATA = [
         "vehicle_model": "Sportage AWD 2023",
         "vehicle_color": "Cherry Black",
         "vehicle_type": "SUV",
+        "engine_cc": 1999,
         "registration_date": "2023-08-01",
-        "tax_status": "Paid"
-    },
-    {
-        "plate_number": "LHE-19-1122",
-        "owner_name": "Zohaib Amjad",
-        "owner_cnic": "35202-3344556-9",
-        "owner_phone": "+92 302 8899001",
-        "owner_email": "zohaib.amjad@gmail.com",
-        "owner_address": "House 12, Phase 5, DHA, Lahore",
-        "vehicle_make": "Hyundai",
-        "vehicle_model": "Tucson GLS 2022",
-        "vehicle_color": "Polar White",
-        "vehicle_type": "SUV",
-        "registration_date": "2022-02-14",
         "tax_status": "Paid"
     },
     {
@@ -122,7 +124,8 @@ VEHICLES_DATA = [
         "vehicle_make": "Honda",
         "vehicle_model": "City 1.5 Aspire",
         "vehicle_color": "Urban Titanium",
-        "vehicle_type": "Car",
+        "vehicle_type": "Motor car",
+        "engine_cc": 1500,
         "registration_date": "2021-11-05",
         "tax_status": "Paid"
     },
@@ -136,7 +139,8 @@ VEHICLES_DATA = [
         "vehicle_make": "Toyota",
         "vehicle_model": "Hilux Revo 2023",
         "vehicle_color": "Attitude Black",
-        "vehicle_type": "Truck",
+        "vehicle_type": "Pickup",
+        "engine_cc": 2800,
         "registration_date": "2023-01-20",
         "tax_status": "Paid"
     },
@@ -150,7 +154,8 @@ VEHICLES_DATA = [
         "vehicle_make": "Toyota",
         "vehicle_model": "Corolla 1.6 Altis",
         "vehicle_color": "Super Red",
-        "vehicle_type": "Car",
+        "vehicle_type": "Motor car",
+        "engine_cc": 1600,
         "registration_date": "2024-01-10",
         "tax_status": "Paid"
     },
@@ -164,7 +169,8 @@ VEHICLES_DATA = [
         "vehicle_make": "Honda",
         "vehicle_model": "Civic VTEC 2020",
         "vehicle_color": "Taffeta White",
-        "vehicle_type": "Car",
+        "vehicle_type": "Motor car",
+        "engine_cc": 1800,
         "registration_date": "2020-05-18",
         "tax_status": "Paid"
     }
@@ -213,78 +219,7 @@ CAMERAS_DATA = [
     }
 ]
 
-TARIFFS_DATA = [
-    {
-        "code": "V-RED-LIGHT",
-        "title": "Red Light Signal Jumping",
-        "description": "Crossing intersection stop-line during RED traffic signal phase.",
-        "fine_amount": 2500,
-        "points": 3
-    },
-    {
-        "code": "V-SIGNAL",
-        "title": "Signal Violation",
-        "description": "Ignoring traffic light commands or yellow clearance phase.",
-        "fine_amount": 3000,
-        "points": 3
-    },
-    {
-        "code": "V-OVERSPEED",
-        "title": "Over-Speeding Violation",
-        "description": "Exceeding designated road speed limit by more than 5 km/h.",
-        "fine_amount": 2000,
-        "points": 2
-    },
-    {
-        "code": "V-WRONG-WAY",
-        "title": "One-Way / Wrong-Way Driving",
-        "description": "Driving opposite to designated traffic flow or illegal U-turn.",
-        "fine_amount": 3000,
-        "points": 4
-    },
-    {
-        "code": "V-WRONG-PARKING",
-        "title": "Illegal Parking in No-Parking Zone",
-        "description": "Unauthorized parking in designated clearway or no-parking area.",
-        "fine_amount": 2000,
-        "points": 2
-    },
-    {
-        "code": "V-NO-HELMET",
-        "title": "Riding Without Safety Helmet",
-        "description": "Riding or pillion riding on motorcycle without approved helmet.",
-        "fine_amount": 1000,
-        "points": 1
-    },
-    {
-        "code": "V-TRIPLE-RIDING",
-        "title": "Triple Riding on Motorcycle",
-        "description": "Carrying more than one pillion passenger on a two-wheeler.",
-        "fine_amount": 1500,
-        "points": 2
-    },
-    {
-        "code": "V-LANE-VIOLATION",
-        "title": "Lane Straddling / Illegal Lane Change",
-        "description": "Failing to stay within marked traffic lanes or reckless overtaking.",
-        "fine_amount": 1000,
-        "points": 1
-    },
-    {
-        "code": "V-PHONE-USAGE",
-        "title": "Mobile Phone Usage While Driving",
-        "description": "Holding or using mobile telephone while vehicle is in motion.",
-        "fine_amount": 2000,
-        "points": 3
-    },
-    {
-        "code": "V-TINTED-GLASS",
-        "title": "Prohibited Tinted / Black Windows",
-        "description": "Using unauthorized dark tint film on vehicle glass.",
-        "fine_amount": 2000,
-        "points": 2
-    }
-]
+TARIFFS_DATA = []  # Replaced by seed_punjab_schedule() on startup.
 
 CHALLANS_SEED = [
     {
@@ -293,9 +228,9 @@ CHALLANS_SEED = [
         "camera_id": 1,
         "camera_name": "Kalma Chowk Intersect #1",
         "location": "Lahore - Kalma Chowk",
-        "violation_code": "V-RED-LIGHT",
-        "violation_name": "Red Light Signal Jumping",
-        "fine_amount": 2500,
+        "violation_code": "V-03",
+        "violation_name": "Violation of traffic signals (electronic/manual)",
+        "fine_amount": 5000,
         "speed_detected": 45,
         "speed_limit": 60,
         "status": "Unpaid",
@@ -308,9 +243,9 @@ CHALLANS_SEED = [
         "camera_id": 2,
         "camera_name": "Mall Road Crossing North",
         "location": "Lahore - Mall Road",
-        "violation_code": "V-WRONG-PARKING",
-        "violation_name": "Illegal Parking in No-Parking Zone",
-        "fine_amount": 2000,
+        "violation_code": "V-23",
+        "violation_name": "Violation of parking rules",
+        "fine_amount": 5000,
         "speed_detected": 0,
         "speed_limit": 50,
         "status": "Unpaid",
@@ -323,9 +258,9 @@ CHALLANS_SEED = [
         "camera_id": 1,
         "camera_name": "Kalma Chowk Intersect #1",
         "location": "Lahore - Kalma Chowk",
-        "violation_code": "V-OVERSPEED",
-        "violation_name": "Over-Speeding (78 km/h in 60 km/h zone)",
-        "fine_amount": 2000,
+        "violation_code": "V-01",
+        "violation_name": "Exceeding prescribed speed limit",
+        "fine_amount": 5000,
         "speed_detected": 78,
         "speed_limit": 60,
         "status": "Unpaid",
@@ -338,9 +273,9 @@ CHALLANS_SEED = [
         "camera_id": 3,
         "camera_name": "Islamabad Expressway North",
         "location": "Islamabad - Expressway",
-        "violation_code": "V-PHONE-USAGE",
-        "violation_name": "Mobile Phone Usage While Driving",
-        "fine_amount": 2000,
+        "violation_code": "V-21",
+        "violation_name": "Using handheld mobile phone while driving",
+        "fine_amount": 5000,
         "speed_detected": 65,
         "speed_limit": 80,
         "status": "Paid",
@@ -353,9 +288,9 @@ CHALLANS_SEED = [
         "camera_id": 1,
         "camera_name": "Kalma Chowk Intersect #1",
         "location": "Lahore - Kalma Chowk",
-        "violation_code": "V-NO-HELMET",
-        "violation_name": "Riding Without Safety Helmet",
-        "fine_amount": 1000,
+        "violation_code": "V-19",
+        "violation_name": "Motorcycle without crash helmet",
+        "fine_amount": 2000,
         "speed_detected": 40,
         "speed_limit": 60,
         "status": "Unpaid",
@@ -368,9 +303,9 @@ CHALLANS_SEED = [
         "camera_id": 4,
         "camera_name": "Shahrah-e-Faisal Main Signal",
         "location": "Karachi - Shahrah-e-Faisal",
-        "violation_code": "V-WRONG-WAY",
-        "violation_name": "One-Way / Wrong-Way Driving",
-        "fine_amount": 3000,
+        "violation_code": "V-06",
+        "violation_name": "Driving on the wrong side of the road",
+        "fine_amount": 5000,
         "speed_detected": 35,
         "speed_limit": 70,
         "status": "Paid",
@@ -379,59 +314,108 @@ CHALLANS_SEED = [
     }
 ]
 
+# Keep seeded plate numbers separate so demo vehicles can be removed without
+# touching vehicles registered through the application.
+SEEDED_VEHICLE_PLATES = tuple(vehicle["plate_number"] for vehicle in VEHICLES_DATA)
+
 def seed_database():
+    # Create the schema and refresh reference data.
     init_db()
     conn = sqlite3.connect(str(DB_PATH))
     cursor = conn.cursor()
-    
-    # 1. Seed Users
-    for u in USERS_DATA:
+
+    # Keep the three local demo identities available for role-based login.
+    for user in USERS_DATA:
         cursor.execute("""
-        INSERT OR REPLACE INTO users (name, email, password, role, created_at)
+        INSERT INTO users (name, email, password, role, created_at)
         VALUES (?, ?, ?, ?, ?)
-        """, (u["name"], u["email"], u["password"], u["role"], u["created_at"]))
-        
-    # 2. Seed Vehicles
+        ON CONFLICT(email) DO UPDATE SET
+            name = excluded.name,
+            password = excluded.password,
+            role = excluded.role
+        """, (
+            user["name"],
+            user["email"],
+            user["password"],
+            user["role"],
+            user["created_at"],
+        ))
+    
+    # 1. Keep registry plates available for Check Owner / challan lookup.
     for v in VEHICLES_DATA:
         cursor.execute("""
-        INSERT OR REPLACE INTO vehicles 
-        (plate_number, owner_name, owner_cnic, owner_phone, owner_email, owner_address, vehicle_make, vehicle_model, vehicle_color, vehicle_type, registration_date, tax_status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO vehicles (
+            plate_number, owner_name, owner_cnic, owner_phone, owner_email, owner_address,
+            vehicle_make, vehicle_model, vehicle_color, vehicle_type, engine_cc, registration_date, tax_status,
+            source, plate_key
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'demo', ?)
+        ON CONFLICT(plate_number) DO UPDATE SET
+            owner_name = excluded.owner_name,
+            owner_cnic = excluded.owner_cnic,
+            owner_phone = excluded.owner_phone,
+            owner_email = excluded.owner_email,
+            owner_address = excluded.owner_address,
+            vehicle_make = excluded.vehicle_make,
+            vehicle_model = excluded.vehicle_model,
+            vehicle_color = excluded.vehicle_color,
+            vehicle_type = excluded.vehicle_type,
+            engine_cc = excluded.engine_cc,
+            registration_date = excluded.registration_date,
+            tax_status = excluded.tax_status,
+            plate_key = excluded.plate_key,
+            source = COALESCE(vehicles.source, 'demo')
+        WHERE COALESCE(vehicles.source, 'demo') IN ('demo', 'archive')
         """, (
-            v["plate_number"], v["owner_name"], v["owner_cnic"], v["owner_phone"],
-            v["owner_email"], v["owner_address"], v["vehicle_make"], v["vehicle_model"],
-            v["vehicle_color"], v["vehicle_type"], v["registration_date"], v["tax_status"]
+            v["plate_number"].strip().upper(),
+            v["owner_name"],
+            v["owner_cnic"],
+            v["owner_phone"],
+            v["owner_email"],
+            v["owner_address"],
+            v["vehicle_make"],
+            v["vehicle_model"],
+            v["vehicle_color"],
+            v["vehicle_type"],
+            v.get("engine_cc"),
+            v["registration_date"],
+            v["tax_status"],
+            plate_key(v["plate_number"]),
         ))
+
+    # Map leftover short labels onto Punjab vehicle types.
+    cursor.execute("""
+        UPDATE vehicles SET vehicle_type = 'Motor car'
+        WHERE LOWER(TRIM(vehicle_type)) IN ('car', 'car / sedan', 'sedan', 'hatchback')
+    """)
+    cursor.execute("""
+        UPDATE vehicles SET vehicle_type = 'Motorcycle'
+        WHERE LOWER(TRIM(vehicle_type)) IN ('bike', 'motorcycle / bike')
+    """)
+    cursor.execute("""
+        UPDATE vehicles SET engine_cc = 1600
+        WHERE engine_cc IS NULL
+          AND LOWER(TRIM(vehicle_type)) IN ('motor car', 'jeep', 'suv', 'motor cab', 'private vehicle')
+    """)
         
-    # 3. Seed Cameras
+    # 2. Seed Cameras
     for c in CAMERAS_DATA:
         cursor.execute("""
         INSERT OR REPLACE INTO cameras (code, name, location, speed_limit, signal_state, is_active, lat, lng)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (c["code"], c["name"], c["location"], c["speed_limit"], c["signal_state"], c["is_active"], c["lat"], c["lng"]))
         
-    # 4. Seed Tariffs
-    for t in TARIFFS_DATA:
-        cursor.execute("""
-        INSERT OR REPLACE INTO violation_tariffs (code, title, description, fine_amount, points)
-        VALUES (?, ?, ?, ?, ?)
-        """, (t["code"], t["title"], t["description"], t["fine_amount"], t["points"]))
+    # 3. Punjab Twelfth Schedule: 25 offences x 5 vehicle-class columns.
+    seed_punjab_schedule(cursor)
         
-    # 5. Seed Initial Challans
-    for ch in CHALLANS_SEED:
-        cursor.execute("""
-        INSERT OR REPLACE INTO challans
-        (challan_no, plate_number, camera_id, camera_name, location, violation_code, violation_name, fine_amount, speed_detected, speed_limit, status, created_at, due_date)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            ch["challan_no"], ch["plate_number"], ch["camera_id"], ch["camera_name"],
-            ch["location"], ch["violation_code"], ch["violation_name"], ch["fine_amount"],
-            ch["speed_detected"], ch["speed_limit"], ch["status"], ch["created_at"], ch["due_date"]
-        ))
+    # 4. Challans are created only through the authenticated application workflows.
+    imported = import_archive_plates(cursor)
+    conn.commit()
+    indexed = index_archive_dataset()
         
     conn.commit()
     conn.close()
-    print("[Database] Seeded users, vehicles, cameras, tariffs, and rich dummy challans successfully.")
+    print(f"[Database] Seeded users, Punjab schedule, cameras, and demo challans; imported {imported} archive plate records; indexed {indexed} archive images.")
 
 if __name__ == "__main__":
     seed_database()

@@ -1,8 +1,9 @@
-// Live Traffic Police Command Center App Logic
+// Administrative dashboard: polling, live alerts, controls, tables, and evidence.
 let allChallans = [];
 let lastAlertNo = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Start the clock and periodic API refreshes after the DOM is ready.
   startClock();
   loadDashboardData();
   loadChallans();
@@ -13,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function startClock() {
+  // Display local time and ISO date for live activity monitoring.
   const clockEl = document.getElementById('liveClock');
   setInterval(() => {
     const now = new Date();
@@ -20,22 +22,22 @@ function startClock() {
   }, 1000);
 }
 
-// 1. Dashboard Metrics & Live Events Feed
+// 1. Fetch KPI, feed, and chart data from the combined analytics endpoint.
 async function loadDashboardData() {
   try {
     const res = await fetch('/api/analytics/dashboard');
     if (!res.ok) return;
     const data = await res.json();
 
-    // Update KPI counters
+    // Update the summary cards with the newest aggregate values.
     document.getElementById('kpiTotalChallans').innerText = data.stats.total_challans;
     document.getElementById('kpiRevenue').innerText = 'PKR ' + Number(data.stats.total_revenue).toLocaleString();
     document.getElementById('kpiPendingRevenue').innerText = 'PKR ' + Number(data.stats.pending_revenue).toLocaleString();
 
-    // Update Live Violations Feed
+    // Replace the feed with the latest records from the backend.
     renderLiveFeed(data.recent_challans);
 
-    // Update Charts
+    // Render grouped violation data when the API has chart rows.
     if (data.violations_by_type && data.violations_by_type.length > 0) {
       renderViolationsChart(data.violations_by_type);
     }
@@ -70,7 +72,7 @@ function renderLiveFeed(challans) {
   `).join('');
 }
 
-// 2. Poll Real-Time Alerts
+// 2. Check for a new alert and refresh records when one appears.
 async function pollLiveAlerts() {
   try {
     const res = await fetch('/api/stream/live_alert');
@@ -85,7 +87,7 @@ async function pollLiveAlerts() {
       document.getElementById('alertDesc').innerText = `${data.alert.violation_name} at ${data.alert.location} | Fine: PKR ${data.alert.fine_amount.toLocaleString()}`;
       ticker.style.display = 'flex';
 
-      // Reload data to reflect new challan
+      // Make the new challan visible in both the feed and master table.
       loadDashboardData();
       loadChallans();
     }
@@ -94,7 +96,7 @@ async function pollLiveAlerts() {
   }
 }
 
-// 3. Interactive Camera & Signal Controls
+// 3. Send camera, signal, and speed-limit controls to the API.
 async function setSignal(state) {
   try {
     const res = await fetch(`/api/stream/set_signal/${state}`, { method: 'POST' });
@@ -131,7 +133,7 @@ async function changeCamera(cameraId) {
   }
 }
 
-// 4. Master Challan Table
+// 4. Load history and filter it locally for quick table searching.
 async function loadChallans() {
   try {
     const res = await fetch('/api/challans?limit=100');
@@ -189,7 +191,7 @@ function filterChallans() {
   `).join('');
 }
 
-// 5. Evidence Modal
+// 5. Fetch one challan and render owner, offence, and evidence details.
 async function openEvidenceModal(challanNo) {
   try {
     const res = await fetch(`/api/challans/${challanNo}`);

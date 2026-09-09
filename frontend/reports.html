@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<!-- Reports page: presents totals, grouped violations, recent tickets, and CSV export. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
   <title>Traffic Challan Reports - Traffic Challan System</title>
   
   <!-- Google Fonts -->
@@ -15,28 +17,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css">
-  <script src="/static/js/auth.js"></script>
+  <link rel="stylesheet" href="/static/css/styles.css?v=17">
+  <script src="/static/js/auth.js?v=17"></script>
   <script>requireAuth();</script>
   
   <style>
-    .rep-hero {
-      background-color: var(--color-primary);
-      padding: 4rem 1.5rem;
-      text-align: center;
-      color: #FFFFFF;
-      margin-bottom: 2.5rem;
-    }
-    .rep-hero-title {
-      font-size: 2.5rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      margin-bottom: 0.75rem;
-    }
-    .rep-hero-sub {
-      font-size: 1.05rem;
-      color: #CBD5E1;
-    }
     .rep-card {
       background: #FFFFFF;
       border: 1px solid var(--border-color);
@@ -52,15 +37,26 @@
       color: #0F172A;
       margin-bottom: 1.5rem;
     }
+    .rep-page-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 4px;
+    }
+    .rep-page-sub {
+      color: #64748B;
+      font-size: 0.88rem;
+      margin-bottom: 1.5rem;
+    }
   </style>
 </head>
 <body>
 
   <!-- Top Navbar (Deep Navy #0F172A) -->
   <header class="navbar">
-    <a href="/dashboard" class="brand">
+    <a href="/" class="brand">
       <div class="brand-icon">
-        <i class="fa-solid fa-traffic-light"></i>
+        <img src="/static/logo.png" alt="Smart Traffic Challan System logo">
       </div>
       <div>
         <div class="brand-title">Smart Traffic Challan System</div>
@@ -68,22 +64,30 @@
       </div>
     </a>
 
-    <nav class="nav-links">
-      <a href="/dashboard" class="nav-item">Dashboard</a>
-      <a href="/challans" class="nav-item">Challan History</a>
-      <a href="/generate-challan" class="nav-item">+ Generate Challan</a>
-      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    <nav class="nav-links" id="appNav" data-nav-mode="app" data-active="reports">
+      <div class="nav-cluster">
+        <div class="nav-group">
+          <a href="/dashboard" class="nav-item nav-parent" data-nav="dashboard"><img class="nav-parent-icon" src="/static/admin-control.svg?v=17" alt=""> Administrative Control</a>
+          <a href="/vehicles" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Vehicle Management</a>
+          <a href="/number-plate" class="nav-item" data-nav="number-plate"><i class="fa-solid fa-camera"></i> Number Plate Recognition</a>
+          <div class="nav-dropdown">
+            <button type="button" class="nav-item" data-nav="challans" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-file-lines"></i> Challan Management <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i></button>
+            <div class="nav-dropdown-menu">
+              <a href="/generate-challan" class="nav-item" data-nav="generate-challan">Generate Challan</a>
+              <a href="/challans" class="nav-item" data-nav="challan-history">Challan History</a>
+            </div>
+          </div>
+          <a href="/reports" class="nav-item" data-nav="reports"><i class="fa-solid fa-chart-column"></i> Reports</a>
+        </div>
+      </div>
+      <a href="#" class="nav-item nav-logout" onclick="logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
-  <!-- Hero Banner -->
-  <section class="rep-hero">
-    <h1 class="rep-hero-title">Traffic Challan Reports</h1>
-    <p class="rep-hero-sub">View and analyze your challan records</p>
-  </section>
-
   <!-- Main Content -->
-  <main class="container" style="max-width: 1000px; padding-bottom: 4rem;">
+  <main class="container" style="max-width: 1000px; padding-top: 2.5rem; padding-bottom: 4rem;">
+    <h2 class="rep-page-title">Traffic Challan Reports</h2>
+    <p class="rep-page-sub">View and analyze your challan records</p>
     
     <!-- 4 Top KPI Cards (Screenshot 29) -->
     <div class="metrics-grid">

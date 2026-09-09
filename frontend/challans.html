@@ -1,10 +1,12 @@
 <!DOCTYPE html>
+<!-- Challan history page: browse, view, and delete recorded tickets. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-  <title>Challan History - Traffic Challan System</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+  <title>Challan History - Smart Traffic Challan System</title>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,27 +17,287 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css">
-  <script src="/static/js/auth.js"></script>
+  <link rel="stylesheet" href="/static/css/styles.css?v=18">
+  <script src="/static/js/auth.js?v=18"></script>
   <script>requireAuth();</script>
   
   <style>
-    .hist-hero {
-      background-color: var(--color-primary);
-      padding: 4rem 1.5rem;
-      text-align: center;
-      color: #FFFFFF;
-      margin-bottom: 2.5rem;
+    .history-page {
+      max-width: 1180px;
+      padding-top: 2rem;
+      padding-bottom: 4rem;
     }
-    .hist-hero-title {
-      font-size: 2.5rem;
+
+    .history-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .history-kicker {
+      font-size: 0.72rem;
       font-weight: 800;
-      letter-spacing: -0.5px;
-      margin-bottom: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #2563EB;
+      margin-bottom: 6px;
     }
-    .hist-hero-sub {
-      font-size: 1.05rem;
-      color: #CBD5E1;
+
+    .history-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #0F172A;
+      letter-spacing: -0.4px;
+      margin-bottom: 4px;
+    }
+
+    .history-sub {
+      color: #64748B;
+      font-size: 0.92rem;
+    }
+
+    .history-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 1.25rem;
+    }
+
+    .history-stat {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .history-stat-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .history-stat-icon.blue { background: #EFF6FF; color: #2563EB; }
+    .history-stat-icon.red { background: #FEF2F2; color: #DC2626; }
+    .history-stat-icon.green { background: #F0FDF4; color: #16A34A; }
+    .history-stat-icon.gold { background: #FFFBEB; color: #D97706; }
+
+    .history-stat-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .history-stat-value {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0F172A;
+      letter-spacing: -0.3px;
+    }
+
+    .history-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .history-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #F1F5F9;
+      background: #F8FAFC;
+    }
+
+    .history-search {
+      position: relative;
+      min-width: min(100%, 280px);
+      flex: 1 1 240px;
+    }
+
+    .history-search i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94A3B8;
+      font-size: 0.82rem;
+    }
+
+    .history-search input {
+      width: 100%;
+      padding: 10px 12px 10px 34px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      background: #FFFFFF;
+      outline: none;
+    }
+
+    .history-search input:focus {
+      border-color: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .history-filters {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .history-filters select {
+      min-width: 140px;
+      padding: 10px 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #0F172A;
+      background: #FFFFFF;
+    }
+
+    .history-count {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #64748B;
+      white-space: nowrap;
+    }
+
+    .history-table-wrap {
+      overflow-x: auto;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .history-table thead th {
+      background: #F8FAFC;
+      color: #475569;
+      padding: 12px 16px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-bottom: 1px solid #E2E8F0;
+      white-space: nowrap;
+    }
+
+    .history-table tbody td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #F1F5F9;
+      vertical-align: middle;
+      font-size: 0.88rem;
+      color: #1E293B;
+    }
+
+    .history-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .history-table tbody tr:hover td {
+      background: #F8FAFC;
+    }
+
+    .ticket-id {
+      font-family: Consolas, monospace;
+      font-weight: 800;
+      font-size: 0.82rem;
+      color: #1D4ED8;
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .icon-btn.view {
+      background: #EFF6FF;
+      color: #2563EB;
+      border-color: #BFDBFE;
+    }
+
+    .icon-btn.view:hover {
+      background: #2563EB;
+      color: #FFFFFF;
+    }
+
+    .icon-btn.delete {
+      background: #FEF2F2;
+      color: #DC2626;
+      border-color: #FECACA;
+    }
+
+    .icon-btn.delete:hover {
+      background: #DC2626;
+      color: #FFFFFF;
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 3.5rem 1.5rem;
+      color: #64748B;
+    }
+
+    .history-empty i {
+      font-size: 2rem;
+      color: #94A3B8;
+      margin-bottom: 12px;
+    }
+
+    .history-empty h3 {
+      color: #0F172A;
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 900px) {
+      .history-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .history-title {
+        font-size: 1.45rem;
+      }
+      .history-stats {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -43,9 +305,9 @@
 
   <!-- Top Navbar (Deep Navy #0F172A) -->
   <header class="navbar">
-    <a href="/dashboard" class="brand">
+    <a href="/" class="brand">
       <div class="brand-icon">
-        <i class="fa-solid fa-traffic-light"></i>
+        <img src="/static/logo.png" alt="Smart Traffic Challan System logo">
       </div>
       <div>
         <div class="brand-title">Smart Traffic Challan System</div>
@@ -53,124 +315,231 @@
       </div>
     </a>
 
-    <nav class="nav-links">
-      <a href="/dashboard" class="nav-item">Dashboard</a>
-      <a href="/generate-challan" class="nav-item">+ Generate Challan</a>
-      <a href="/reports" class="nav-item">Reports</a>
-      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    <nav class="nav-links" id="appNav" data-nav-mode="app" data-active="challans">
+      <div class="nav-cluster">
+        <div class="nav-group">
+          <a href="/dashboard" class="nav-item nav-parent" data-nav="dashboard"><img class="nav-parent-icon" src="/static/admin-control.svg?v=18" alt=""> Administrative Control</a>
+          <a href="/vehicles" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Vehicle Management</a>
+          <a href="/number-plate" class="nav-item" data-nav="number-plate"><i class="fa-solid fa-camera"></i> Number Plate Recognition</a>
+          <div class="nav-dropdown">
+            <button type="button" class="nav-item" data-nav="challans" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-file-lines"></i> Challan Management <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i></button>
+            <div class="nav-dropdown-menu">
+              <a href="/generate-challan" class="nav-item" data-nav="generate-challan">Generate Challan</a>
+              <a href="/challans" class="nav-item" data-nav="challan-history">Challan History</a>
+            </div>
+          </div>
+          <a href="/reports" class="nav-item" data-nav="reports"><i class="fa-solid fa-chart-column"></i> Reports</a>
+        </div>
+      </div>
+      <a href="#" class="nav-item nav-logout" onclick="logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
-  <!-- Hero Banner -->
-  <section class="hist-hero">
-    <h1 class="hist-hero-title">Challan History</h1>
-    <p class="hist-hero-sub">View all your generated traffic challans</p>
-  </section>
+  <main class="container history-page">
+    <div class="history-head">
+      <div>
+        <div class="history-kicker">Challan Management</div>
+        <h1 class="history-title">Challan History</h1>
+        <p class="history-sub">Tickets you have issued, with payment status and owner records.</p>
+      </div>
+      <a href="/generate-challan" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Generate Challan
+      </a>
+    </div>
 
-  <!-- Main Table Container -->
-  <main class="container" style="max-width: 1100px; padding-bottom: 4rem;">
-    <div class="card" style="padding: 2rem 2rem; box-shadow: var(--shadow-lg);">
-      
-      <!-- Card Top Header -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 12px;">
+    <div class="history-stats">
+      <div class="history-stat">
+        <div class="history-stat-icon blue"><i class="fa-solid fa-file-invoice"></i></div>
         <div>
-          <h2 style="font-size: 1.5rem; font-weight: 800; color: #0F172A; margin-bottom: 4px;">My Challans</h2>
-          <p style="color: #64748B; font-size: 0.88rem;">Complete record of your traffic violation challans.</p>
+          <div class="history-stat-label">Total Challans</div>
+          <div class="history-stat-value" id="statTotal">0</div>
         </div>
+      </div>
+      <div class="history-stat">
+        <div class="history-stat-icon red"><i class="fa-solid fa-clock"></i></div>
+        <div>
+          <div class="history-stat-label">Unpaid</div>
+          <div class="history-stat-value" id="statUnpaid">0</div>
+        </div>
+      </div>
+      <div class="history-stat">
+        <div class="history-stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+          <div class="history-stat-label">Paid</div>
+          <div class="history-stat-value" id="statPaid">0</div>
+        </div>
+      </div>
+      <div class="history-stat">
+        <div class="history-stat-icon gold"><i class="fa-solid fa-money-bill-wave"></i></div>
+        <div>
+          <div class="history-stat-label">Total Fine</div>
+          <div class="history-stat-value" id="statFine">Rs. 0</div>
+        </div>
+      </div>
+    </div>
 
-        <!-- Action Buttons -->
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <a href="/generate-challan" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i> Generate Challan
-          </a>
-          <a href="/reports" class="btn btn-dark">
-            <i class="fa-solid fa-chart-pie"></i> Reports
-          </a>
+    <div class="history-card">
+      <div class="history-toolbar">
+        <div class="history-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="search" id="historySearch" placeholder="Search ticket, plate, owner, or violation">
+        </div>
+        <div class="history-filters">
+          <select id="historyStatus">
+            <option value="all">All statuses</option>
+            <option value="unpaid">Unpaid</option>
+            <option value="paid">Paid</option>
+          </select>
+          <span class="history-count" id="historyCount">0 records</span>
         </div>
       </div>
 
-      <!-- Master Table -->
-      <div class="table-container">
-        <table class="data-table">
+      <div class="history-table-wrap">
+        <table class="history-table">
           <thead>
             <tr>
-              <th>Ticket #</th>
-              <th>Plate Number</th>
-              <th>Owner Name</th>
+              <th>Ticket</th>
+              <th>Plate</th>
+              <th>Owner</th>
               <th>Violation</th>
               <th>Fine</th>
               <th>Status</th>
-              <th>Issue Date</th>
-              <th>Due Date</th>
+              <th>Issued</th>
+              <th>Due</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody id="myChallansTbody">
             <tr>
-              <td colspan="9" style="text-align: center; padding: 2rem; color: #64748B;">
-                <i class="fa-solid fa-spinner fa-spin"></i> Loading challans history...
+              <td colspan="9">
+                <div class="history-empty">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  <h3>Loading challan history</h3>
+                  <p>Fetching issued tickets from the system.</p>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-
     </div>
   </main>
 
-  <!-- Footer -->
   <footer class="app-footer">
     © 2026 Smart Traffic Challan System | Final Year Project
   </footer>
 
   <script>
-    document.addEventListener('DOMContentLoaded', loadMyChallans);
+    let allChallans = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadMyChallans();
+      document.getElementById('historySearch').addEventListener('input', renderChallans);
+      document.getElementById('historyStatus').addEventListener('change', renderChallans);
+    });
+
+    function isPaidStatus(status) {
+      return (status || '').toLowerCase() === 'paid';
+    }
+
+    function updateStats(items) {
+      const paid = items.filter((ch) => isPaidStatus(ch.status)).length;
+      const unpaid = items.length - paid;
+      const fine = items.reduce((sum, ch) => sum + Number(ch.fine_amount || 0), 0);
+      document.getElementById('statTotal').innerText = items.length;
+      document.getElementById('statPaid').innerText = paid;
+      document.getElementById('statUnpaid').innerText = unpaid;
+      document.getElementById('statFine').innerText = 'Rs. ' + fine.toLocaleString();
+    }
+
+    function filteredChallans() {
+      const query = document.getElementById('historySearch').value.trim().toLowerCase();
+      const status = document.getElementById('historyStatus').value;
+      return allChallans.filter((ch) => {
+        const paid = isPaidStatus(ch.status);
+        if (status === 'paid' && !paid) return false;
+        if (status === 'unpaid' && paid) return false;
+        if (!query) return true;
+        const haystack = [
+          ch.challan_no,
+          ch.id,
+          ch.plate_number,
+          ch.owner_name,
+          ch.violation_name
+        ].join(' ').toLowerCase();
+        return haystack.includes(query);
+      });
+    }
+
+    function renderChallans() {
+      const tbody = document.getElementById('myChallansTbody');
+      const items = filteredChallans();
+      document.getElementById('historyCount').innerText = `${items.length} record${items.length === 1 ? '' : 's'}`;
+
+      if (items.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9">
+              <div class="history-empty">
+                <i class="fa-regular fa-folder-open"></i>
+                <h3>No challans found</h3>
+                <p>${allChallans.length === 0 ? 'You have not issued any challans yet.' : 'Try another search, or generate a new challan.'}</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = items.map((ch) => {
+        const paid = isPaidStatus(ch.status);
+        return `
+          <tr id="row-${ch.id}">
+            <td><span class="ticket-id">${ch.challan_no || '#' + ch.id}</span></td>
+            <td><span class="plate-badge">${ch.plate_number}</span></td>
+            <td>${ch.owner_name || 'Registered Owner'}</td>
+            <td style="font-weight: 600;">${ch.violation_name}</td>
+            <td style="font-weight: 800;">Rs. ${Number(ch.fine_amount).toLocaleString()}</td>
+            <td>
+              <span class="status-pill ${paid ? 'paid' : 'pending'}">${paid ? 'Paid' : 'Unpaid'}</span>
+            </td>
+            <td style="color: #64748B; white-space: nowrap;">${ch.created_at || '--'}</td>
+            <td style="color: #B45309; font-weight: 700; white-space: nowrap;">${ch.due_date || '15 Days'}</td>
+            <td>
+              <div class="history-actions">
+                <a href="/challan/${ch.id}" class="icon-btn view" title="View details"><i class="fa-solid fa-eye"></i></a>
+                <button class="icon-btn delete" onclick="handleDeleteChallan(${ch.id})" title="Delete record"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
 
     async function loadMyChallans() {
-      const tbody = document.getElementById('myChallansTbody');
       try {
-        const res = await fetch('/api/challans');
-        const data = await res.json();
-
-        if (!data.items || data.items.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 2rem; color: #64748B;">No challans found.</td></tr>';
+        const user = getCurrentUser();
+        if (!user || !user.id) {
+          window.location.replace('/login?next=' + encodeURIComponent('/challans'));
           return;
         }
-
-        tbody.innerHTML = data.items.map(ch => {
-          const isPaid = (ch.status && ch.status.toLowerCase() === 'paid');
-          return `
-            <tr id="row-${ch.id}">
-              <td style="font-weight: 700; font-size: 0.88rem;">${ch.challan_no || '#' + ch.id}</td>
-              <td style="font-weight: 800; color: #0F172A;">
-                <span class="plate-badge">${ch.plate_number}</span>
-              </td>
-              <td style="color: #334155; font-size: 0.9rem;">${ch.owner_name || 'Registered Owner'}</td>
-              <td style="color: #1E293B; font-weight: 600;">${ch.violation_name}</td>
-              <td style="font-weight: 800; color: #0F172A;">Rs. ${Number(ch.fine_amount).toLocaleString()}</td>
-              <td>
-                <span class="status-pill ${isPaid ? 'paid' : 'pending'}">
-                  ${isPaid ? 'Paid' : 'Unpaid'}
-                </span>
-              </td>
-              <td style="font-size: 0.8rem; color: #64748B; white-space: nowrap;">${ch.created_at}</td>
-              <td style="font-size: 0.82rem; color: #B45309; font-weight: 700; white-space: nowrap;">${ch.due_date || '15 Days'}</td>
-              <td>
-                <div style="display: flex; gap: 6px;">
-                  <a href="/challan/${ch.id}" class="btn btn-primary btn-sm" title="View Details">
-                    <i class="fa-solid fa-eye"></i>
-                  </a>
-                  <button class="btn btn-sm" onclick="handleDeleteChallan(${ch.id})" style="background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA;" title="Delete Record">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          `;
-        }).join('');
-
+        const res = await fetch('/api/challans?issued_by=' + encodeURIComponent(user.id));
+        const data = await res.json();
+        allChallans = data.items || [];
+        updateStats(allChallans);
+        renderChallans();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: red; padding: 1.5rem;">Error loading challans: ${err.message}</td></tr>`;
+        document.getElementById('myChallansTbody').innerHTML = `
+          <tr>
+            <td colspan="9">
+              <div class="history-empty">
+                <i class="fa-solid fa-triangle-exclamation" style="color:#DC2626;"></i>
+                <h3>Could not load history</h3>
+                <p>${err.message}</p>
+              </div>
+            </td>
+          </tr>
+        `;
       }
     }
 
@@ -180,8 +549,9 @@
         const res = await fetch(`/api/challans/${id}`, { method: 'DELETE' });
         const data = await res.json();
         if (data.success) {
-          const row = document.getElementById(`row-${id}`);
-          if (row) row.remove();
+          allChallans = allChallans.filter((ch) => ch.id !== id);
+          updateStats(allChallans);
+          renderChallans();
         } else {
           alert('Could not delete record.');
         }

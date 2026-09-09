@@ -1,17 +1,21 @@
+"""Dashboard aggregate queries for counters, charts, activity, and cameras."""
+
 import sqlite3
 import datetime
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from app.config import DB_PATH
+from app.routers.auth import require_roles
 
 router = APIRouter(prefix="/api/analytics", tags=["Analytics"])
 
 @router.get("/dashboard")
-def get_dashboard_metrics():
+def get_dashboard_metrics(_: dict = Depends(require_roles("Officer"))):
+    # Collect all dashboard widgets in one response to reduce browser requests.
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
-    # 1. High level counters
+    # 1. High-level counters for KPI cards.
     cursor.execute("SELECT COUNT(*) FROM challans")
     total_challans = cursor.fetchone()[0]
     
@@ -33,7 +37,7 @@ def get_dashboard_metrics():
     cursor.execute("SELECT COUNT(*) FROM cameras WHERE is_active = 1")
     active_cameras = cursor.fetchone()[0]
     
-    # 2. Violations by Type (Chart 1)
+    # 2. Group violations for the dashboard doughnut chart.
     cursor.execute("""
     SELECT violation_name, COUNT(*) as count, SUM(fine_amount) as total_fines
     FROM challans
@@ -42,7 +46,7 @@ def get_dashboard_metrics():
     """)
     violations_by_type = [dict(r) for r in cursor.fetchall()]
     
-    # 3. Top Hotspot Locations (Chart 2)
+    # 3. Rank locations by number of recorded challans.
     cursor.execute("""
     SELECT location, COUNT(*) as count
     FROM challans
@@ -52,21 +56,21 @@ def get_dashboard_metrics():
     """)
     top_locations = [dict(r) for r in cursor.fetchall()]
     
-    # 4. Recent Violations feed
+    # 4. Return the latest violations for the live feed.
     cursor.execute("""
     SELECT * FROM challans 
     ORDER BY id DESC LIMIT 6
     """)
     recent_challans = [dict(r) for r in cursor.fetchall()]
     
-    # 5. System Logs
+    # 5. Return recent audit events for system monitoring.
     cursor.execute("""
     SELECT * FROM system_logs 
     ORDER BY id DESC LIMIT 10
     """)
     recent_logs = [dict(r) for r in cursor.fetchall()]
     
-    # 6. Cameras status
+    # 6. Include current camera state for the control panel.
     cursor.execute("SELECT * FROM cameras")
     cameras = [dict(r) for r in cursor.fetchall()]
     

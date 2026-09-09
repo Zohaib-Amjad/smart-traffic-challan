@@ -1,9 +1,13 @@
+"""CRUD endpoints for the registered vehicle and owner registry."""
+
 import sqlite3
 import datetime
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from app.config import DB_PATH
+from app.services.archive_registry import get_or_create_dummy_vehicle, lookup_vehicle_row, plate_key
+from app.routers.auth import require_roles
 
 router = APIRouter(prefix="/api/vehicles", tags=["Vehicle Management"])
 
@@ -30,41 +34,151 @@ class VehicleUpdateRequest(BaseModel):
     vehicle_model: Optional[str] = None
     vehicle_color: Optional[str] = None
 
+class OwnershipTransferRequest(BaseModel):
+    new_owner_email: str
+    reason: str = "Ownership transfer"
+
+class VehicleDocumentRequest(BaseModel):
+    document_type: str
+    document_ref: str
+
+class RegistrationStatusRequest(BaseModel):
+    status: str
+
 @router.get("")
-def list_vehicles():
+def list_vehicles(_: dict = Depends(require_roles("Officer", "Admin"))):
+    # List officer-registered vehicles; dataset plates stay available for lookup only.
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM vehicles ORDER BY id DESC")
+    cursor.execute(
+        "SELECT * FROM vehicles WHERE COALESCE(source, 'user') = 'user' ORDER BY id DESC"
+    )
     rows = cursor.fetchall()
     conn.close()
     
     return {"vehicles": [dict(r) for r in rows]}
 
+@router.get("/search")
+def search_registry(query: str, _: dict = Depends(require_roles("Admin", "Officer"))):
+    query = query.strip()
+    if len(query) < 2:
+        raise HTTPException(status_code=400, detail="Search requires at least two characters.")
+    conn = sqlite3.connect(str(DB_PATH))
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute("""
+        SELECT * FROM vehicles
+        WHERE plate_number LIKE ? OR owner_name LIKE ? OR owner_cnic LIKE ?
+        ORDER BY id DESC LIMIT 50
+    """, (f"%{query.upper()}%", f"%{query}%", f"%{query}%")).fetchall()
+    conn.close()
+    return {"vehicles": [dict(row) for row in rows]}
+
+@router.get("/{plate_number}/history")
+def vehicle_history(plate_number: str, _: dict = Depends(require_roles("Admin", "Officer"))):
+    clean_plate = plate_number.strip().upper()
+    conn = sqlite3.connect(str(DB_PATH))
+    conn.row_factory = sqlite3.Row
+    vehicle = conn.execute("SELECT * FROM vehicles WHERE plate_number = ?", (clean_plate,)).fetchone()
+    history = conn.execute("SELECT * FROM vehicle_ownership_history WHERE vehicle_id = (SELECT id FROM vehicles WHERE plate_number = ?) ORDER BY id DESC", (clean_plate,)).fetchall()
+    documents = conn.execute("SELECT * FROM vehicle_documents WHERE vehicle_id = (SELECT id FROM vehicles WHERE plate_number = ?) ORDER BY id DESC", (clean_plate,)).fetchall()
+    conn.close()
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found.")
+    return {"vehicle": dict(vehicle), "ownership_history": [dict(row) for row in history], "documents": [dict(row) for row in documents]}
+
+@router.post("/{plate_number}/transfer")
+def transfer_ownership(plate_number: str, req: OwnershipTransferRequest, user: dict = Depends(require_roles("Admin"))):
+    new_email = req.new_owner_email.strip().lower()
+    if "@" not in new_email:
+        raise HTTPException(status_code=400, detail="Enter a valid owner email.")
+    conn = sqlite3.connect(str(DB_PATH))
+    row = conn.execute("SELECT id, owner_email FROM vehicles WHERE plate_number = ?", (plate_number.strip().upper(),)).fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Vehicle not found.")
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute("UPDATE vehicles SET owner_email = ?, ownership_verified = 0 WHERE id = ?", (new_email, row[0]))
+    conn.execute("INSERT INTO vehicle_ownership_history (vehicle_id, previous_owner_email, new_owner_email, verified_by, transfer_reason, created_at) VALUES (?, ?, ?, ?, ?, ?)", (row[0], row[1], new_email, user["id"], req.reason.strip(), now))
+    conn.commit()
+    conn.close()
+    return {"success": True, "status": "Pending verification", "owner_email": new_email}
+
+@router.post("/{plate_number}/documents")
+def add_vehicle_document(plate_number: str, req: VehicleDocumentRequest, _: dict = Depends(require_roles("Admin"))):
+    conn = sqlite3.connect(str(DB_PATH))
+    row = conn.execute("SELECT id FROM vehicles WHERE plate_number = ?", (plate_number.strip().upper(),)).fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Vehicle not found.")
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute("INSERT INTO vehicle_documents (vehicle_id, document_type, document_ref, created_at) VALUES (?, ?, ?, ?)", (row[0], req.document_type.strip(), req.document_ref.strip(), now))
+    conn.commit()
+    conn.close()
+    return {"success": True, "status": "Pending"}
+
+@router.patch("/{plate_number}/documents/{document_id}")
+def verify_vehicle_document(plate_number: str, document_id: int, req: RegistrationStatusRequest, user: dict = Depends(require_roles("Admin"))):
+    status = req.status.strip().title()
+    if status not in {"Verified", "Rejected", "Pending"}:
+        raise HTTPException(status_code=400, detail="Document status must be Verified, Rejected, or Pending.")
+    conn = sqlite3.connect(str(DB_PATH))
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE vehicle_documents SET status = ?, verified_by = ?
+        WHERE id = ? AND vehicle_id = (SELECT id FROM vehicles WHERE plate_number = ?)
+    """, (status, user["id"] if status == "Verified" else None, document_id, plate_number.strip().upper()))
+    conn.commit()
+    changed = cursor.rowcount
+    conn.close()
+    if not changed:
+        raise HTTPException(status_code=404, detail="Document not found for this vehicle.")
+    return {"success": True, "status": status}
+
+@router.patch("/{plate_number}/status")
+def update_registration_status(plate_number: str, req: RegistrationStatusRequest, _: dict = Depends(require_roles("Admin"))):
+    status = req.status.strip().title()
+    if status not in {"Active", "Suspended", "Blocked"}:
+        raise HTTPException(status_code=400, detail="Status must be Active, Suspended, or Blocked.")
+    conn = sqlite3.connect(str(DB_PATH))
+    cursor = conn.cursor()
+    cursor.execute("UPDATE vehicles SET registration_status = ? WHERE plate_number = ?", (status, plate_number.strip().upper()))
+    conn.commit()
+    changed = cursor.rowcount
+    conn.close()
+    if not changed:
+        raise HTTPException(status_code=404, detail="Vehicle not found.")
+    return {"success": True, "registration_status": status}
+
 @router.get("/{plate_number}")
-def get_vehicle_by_plate(plate_number: str):
+def get_vehicle_by_plate(plate_number: str, _: dict = Depends(require_roles("Citizen", "Officer", "Admin"))):
     """
     CRUD Read: Fetch vehicle and owner details for a given number plate.
     """
+    # Normalize user/OCR input before performing an exact registry lookup.
     clean_plate = plate_number.strip().upper()
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    
-    cursor.execute("SELECT * FROM vehicles WHERE plate_number = ?", (clean_plate,))
-    row = cursor.fetchone()
+    try:
+        row = get_or_create_dummy_vehicle(cursor, clean_plate)
+        conn.commit()
+    except sqlite3.IntegrityError:
+        row = lookup_vehicle_row(cursor, clean_plate)
+        conn.rollback()
     conn.close()
     
     if not row:
-        raise HTTPException(status_code=404, detail="Vehicle not found in registry.")
+        raise HTTPException(status_code=404, detail="Enter at least 4 letters or digits to look up an owner.")
         
     return dict(row)
 
 @router.post("/add")
-def add_vehicle(req: VehicleAddRequest):
+def add_vehicle(req: VehicleAddRequest, _: dict = Depends(require_roles("Admin"))):
     """
     CRUD Create/Upsert: Add a new registered vehicle with owner details.
     """
+    # Insert a new registration, or update it when the plate already exists.
     conn = sqlite3.connect(str(DB_PATH))
     cursor = conn.cursor()
     
@@ -75,8 +189,8 @@ def add_vehicle(req: VehicleAddRequest):
     try:
         cursor.execute("""
         INSERT INTO vehicles 
-        (plate_number, vehicle_type, owner_name, owner_cnic, owner_phone, owner_email, owner_address, vehicle_make, vehicle_model, vehicle_color, registration_date, tax_status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Paid')
+        (plate_number, vehicle_type, owner_name, owner_cnic, owner_phone, owner_email, owner_address, vehicle_make, vehicle_model, vehicle_color, registration_date, tax_status, source, plate_key)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Paid', 'user', ?)
         """, (
             clean_plate,
             req.vehicle_type,
@@ -88,7 +202,8 @@ def add_vehicle(req: VehicleAddRequest):
             make,
             req.vehicle_model.strip(),
             req.vehicle_color.strip() if req.vehicle_color else "White",
-            now_date
+            now_date,
+            plate_key(clean_plate)
         ))
         conn.commit()
         vid = cursor.lastrowid
@@ -113,7 +228,7 @@ def add_vehicle(req: VehicleAddRequest):
         # If exists, update
         cursor.execute("""
         UPDATE vehicles 
-        SET vehicle_type = ?, owner_name = ?, owner_cnic = ?, owner_phone = ?, owner_email = ?, owner_address = ?, vehicle_make = ?, vehicle_model = ?, vehicle_color = ?
+        SET vehicle_type = ?, owner_name = ?, owner_cnic = ?, owner_phone = ?, owner_email = ?, owner_address = ?, vehicle_make = ?, vehicle_model = ?, vehicle_color = ?, plate_key = ?, source = COALESCE(source, 'user')
         WHERE plate_number = ?
         """, (
             req.vehicle_type,
@@ -125,6 +240,7 @@ def add_vehicle(req: VehicleAddRequest):
             make,
             req.vehicle_model.strip(),
             req.vehicle_color.strip() if req.vehicle_color else "White",
+            plate_key(clean_plate),
             clean_plate
         ))
         conn.commit()
@@ -132,10 +248,11 @@ def add_vehicle(req: VehicleAddRequest):
         return {"success": True, "message": "Vehicle updated successfully."}
 
 @router.put("/{plate_number}")
-def update_vehicle(plate_number: str, req: VehicleUpdateRequest):
+def update_vehicle(plate_number: str, req: VehicleUpdateRequest, _: dict = Depends(require_roles("Admin"))):
     """
     CRUD Update: Update vehicle/owner information.
     """
+    # Only fields supplied by the client are applied to the existing record.
     clean_plate = plate_number.strip().upper()
     conn = sqlite3.connect(str(DB_PATH))
     cursor = conn.cursor()
@@ -187,7 +304,7 @@ def update_vehicle(plate_number: str, req: VehicleUpdateRequest):
     return {"success": True, "message": "Vehicle updated successfully."}
 
 @router.delete("/{plate_number}")
-def delete_vehicle(plate_number: str):
+def delete_vehicle(plate_number: str, _: dict = Depends(require_roles("Admin"))):
     """
     CRUD Delete: Delete vehicle from registry.
     """

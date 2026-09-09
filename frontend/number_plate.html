@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<!-- Number-plate workflow: upload an image and inspect OCR/owner results. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
   <title>Number Plate Recognition - Smart Traffic Challan System</title>
   
   <!-- Google Fonts -->
@@ -15,9 +17,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css">
-  <script src="/static/js/auth.js"></script>
-  <script>requireAuth();</script>
+  <link rel="stylesheet" href="/static/css/styles.css?v=17">
+  <script src="/static/js/auth.js?v=17"></script>
+  <script>requireRole('Citizen', 'Officer');</script>
   
   <style>
     .npr-card {
@@ -38,15 +40,88 @@
       padding: 1.5rem;
       margin-top: 1.5rem;
     }
+
+    .npr-submit-btn {
+      white-space: nowrap;
+      min-width: 220px;
+    }
+
+    .npr-file-input {
+      width: 100%;
+      padding: 6px;
+      color: var(--text-muted);
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .npr-file-input::file-selector-button {
+      margin-right: 10px;
+      padding: 8px 14px;
+      color: #FFFFFF;
+      background: var(--color-secondary);
+      border: 0;
+      border-radius: 5px;
+      font: inherit;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease-in-out;
+    }
+
+    .npr-file-input:hover::file-selector-button {
+      background: var(--color-secondary-hover);
+    }
+
+    .npr-file-input.is-selected {
+      color: #166534;
+      background: #F0FDF4;
+      border-color: #86EFAC;
+    }
+
+    .npr-file-input.is-selected::file-selector-button {
+      background: var(--color-success);
+    }
+
+    .npr-file-input.is-selected:hover::file-selector-button {
+      background: var(--color-success-hover);
+    }
+
+    .npr-file-status {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      color: #15803D;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .npr-file-status.is-visible {
+      display: inline-flex;
+    }
+
+    .npr-file-input:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.18);
+      border-color: var(--border-focus);
+    }
+
+    @media (max-width: 600px) {
+      .npr-submit-btn {
+        min-width: 0;
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
 
   <!-- Top Navbar (Deep Navy #0F172A) -->
   <header class="navbar">
-    <a href="/dashboard" class="brand">
+    <a href="/" class="brand">
       <div class="brand-icon">
-        <i class="fa-solid fa-traffic-light"></i>
+        <img src="/static/logo.png" alt="Smart Traffic Challan System logo">
       </div>
       <div>
         <div class="brand-title">Smart Traffic Challan System</div>
@@ -54,16 +129,33 @@
       </div>
     </a>
 
-    <nav class="nav-links">
-      <a href="/dashboard" class="nav-item">Dashboard</a>
-      <a href="/vehicles" id="navVehicles" class="nav-item">Vehicles</a>
-      <a href="#" id="navTryAgain" class="nav-item" style="display: none;" onclick="resetNprView()"><i class="fa-solid fa-rotate-left"></i> Try Again</a>
-      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    <nav class="nav-links" id="appNav" data-nav-mode="app" data-active="number-plate">
+      <div class="nav-cluster">
+        <div class="nav-group">
+          <a href="/dashboard" class="nav-item nav-parent" data-nav="dashboard"><img class="nav-parent-icon" src="/static/admin-control.svg?v=17" alt=""> Administrative Control</a>
+          <a href="/vehicles" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Vehicle Management</a>
+          <a href="/number-plate" class="nav-item" data-nav="number-plate"><i class="fa-solid fa-camera"></i> Number Plate Recognition</a>
+          <div class="nav-dropdown">
+            <button type="button" class="nav-item" data-nav="challans" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-file-lines"></i> Challan Management <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i></button>
+            <div class="nav-dropdown-menu">
+              <a href="/generate-challan" class="nav-item" data-nav="generate-challan">Generate Challan</a>
+              <a href="/challans" class="nav-item" data-nav="challan-history">Challan History</a>
+            </div>
+          </div>
+          <a href="/reports" class="nav-item" data-nav="reports"><i class="fa-solid fa-chart-column"></i> Reports</a>
+        </div>
+      </div>
+      <a href="#" class="nav-item nav-logout" onclick="logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
   <!-- Main Container -->
   <main class="container" style="padding-top: 3.5rem; padding-bottom: 4rem;">
+    <section id="citizenChallanPanel" class="npr-card" style="display: none; margin-bottom: 1.5rem; text-align: left;">
+      <h2 style="font-size: 1.35rem; font-weight: 800; color: #0F172A; margin-bottom: 6px;">My Challans</h2>
+      <p style="color: #64748B; font-size: 0.88rem; margin-bottom: 1rem;">View your vehicle challans and update payment status.</p>
+      <div id="citizenChallanList" style="display: grid; gap: 10px;"></div>
+    </section>
     
     <!-- Upload State -->
     <div id="nprUploadSection" class="npr-card">
@@ -75,10 +167,11 @@
       <form id="nprForm" onsubmit="handleNprUpload(event)">
         <div style="text-align: left; margin-bottom: 1.5rem;">
           <label class="form-label">Select Vehicle Image</label>
-          <input type="file" id="nprImageInput" class="text-input" accept="image/*" required style="cursor: pointer;">
+          <input type="file" id="nprImageInput" class="npr-file-input" accept="image/*" required>
+          <span id="nprFileStatus" class="npr-file-status"><i class="fa-solid fa-circle-check"></i> Image selected and ready</span>
         </div>
 
-        <button type="submit" id="btnNprUpload" class="btn btn-primary" style="padding: 11px 32px; font-size: 1rem; width: 100%; max-width: 220px;">
+        <button type="submit" id="btnNprUpload" class="btn btn-primary npr-submit-btn" style="padding: 11px 32px; font-size: 1rem; width: 100%; max-width: 220px;">
           <i class="fa-solid fa-camera"></i> Upload Image
         </button>
       </form>
@@ -107,12 +200,12 @@
       <div id="nprOwnerDetailsCard" style="display: none; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: var(--radius-md); padding: 1.25rem; margin-top: 1.25rem; text-align: left;">
         <div style="font-weight: 800; color: #0F172A; font-size: 1.05rem; margin-bottom: 0.75rem; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
           <span><i class="fa-solid fa-id-card" style="color: #2563EB; margin-right: 6px;"></i> Registered Owner Information</span>
-          <span id="nprTaxBadge" class="status-pill paid" style="font-size: 0.75rem;">Tax Paid</span>
+          <span id="nprTaxBadge" class="status-pill unpaid" style="font-size: 0.75rem;">Unpaid</span>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.9rem;">
           <div><strong style="color: #64748B;">Owner Name:</strong> <span id="nprOwnerName" style="color: #0F172A; font-weight: 700;">--</span></div>
           <div><strong style="color: #64748B;">CNIC:</strong> <span id="nprOwnerCnic" style="color: #0F172A;">--</span></div>
-          <div><strong style="color: #64748B;">Vehicle:</strong> <span id="nprVehicleModel" style="color: #0F172A;">--</span></div>
+          <div id="nprVehicleRow"><strong style="color: #64748B;">Vehicle:</strong> <span id="nprVehicleModel" style="color: #0F172A;">--</span></div>
           <div><strong style="color: #64748B;">Contact:</strong> <span id="nprOwnerPhone" style="color: #0F172A;">--</span></div>
         </div>
         <div style="margin-top: 8px; font-size: 0.88rem; color: #64748B;">
@@ -122,9 +215,12 @@
 
       <!-- Actions -->
       <div style="margin-top: 1.75rem; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-        <a id="btnProceedChallan" href="/generate-challan" class="btn btn-primary" style="padding: 10px 22px;">
+        <a id="btnProceedChallan" href="/generate-challan" class="btn btn-primary" style="padding: 10px 22px; display: none;">
           <i class="fa-solid fa-file-invoice"></i> Generate Challan for this Vehicle
         </a>
+        <p id="nprPaidNotice" style="display: none; margin: 0; color: #64748B; font-size: 0.88rem; font-weight: 600;">
+          Status is Paid, so a new challan is not offered from this result.
+        </p>
         <button class="btn btn-secondary" onclick="resetNprView()" style="padding: 10px 20px;">
           Try Again
         </button>
@@ -140,6 +236,13 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      if (getCurrentUser()?.role === 'Citizen') {
+        document.getElementById('citizenChallanPanel').style.display = 'block';
+        loadCitizenChallans();
+      }
+      const imageInput = document.getElementById('nprImageInput');
+      imageInput.addEventListener('change', updateFileSelectionState);
+
       const cachedPlate = sessionStorage.getItem('lastDetectedPlate');
       const cachedImg = sessionStorage.getItem('lastPreviewImg');
       if (cachedPlate && cachedImg) {
@@ -149,35 +252,145 @@
       }
     });
 
+    function escapeCitizenText(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, (char) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[char]));
+    }
+
+    async function loadCitizenChallans() {
+      const list = document.getElementById('citizenChallanList');
+      try {
+        const res = await fetch('/api/citizen/challans');
+        if (!res.ok) throw new Error('Could not load challans.');
+        const data = await res.json();
+        if (!data.challans.length) {
+          list.innerHTML = '<p style="color: #64748B; margin: 0;">No challans are linked to your account.</p>';
+          return;
+        }
+        list.innerHTML = data.challans.map((challan) => {
+          const paid = String(challan.status).toLowerCase() === 'paid';
+          return `<article style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; background: #F8FAFC;">
+            <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+              <strong>${escapeCitizenText(challan.challan_no)}</strong>
+              <span class="status-pill ${paid ? 'paid' : 'unpaid'}">${escapeCitizenText(challan.status)}</span>
+            </div>
+            <div style="margin-top: 6px; color: #475569; font-size: 0.86rem;">${escapeCitizenText(challan.plate_number)} · ${escapeCitizenText(challan.violation_name)}</div>
+            <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span style="font-weight: 800; color: #0F172A;">PKR ${Number(challan.fine_amount).toLocaleString()}</span>
+              ${paid ? '<span style="color: #15803D; font-size: 0.82rem;">Payment recorded</span>' : `<button class="btn btn-success btn-sm" onclick="payCitizenChallan('${encodeURIComponent(challan.challan_no)}')"><i class="fa-solid fa-credit-card"></i> Pay (Demo)</button>`}
+            </div>
+          </article>`;
+        }).join('');
+      } catch (error) {
+        list.innerHTML = `<p style="color: #B91C1C; margin: 0;">${escapeCitizenText(error.message)}</p>`;
+      }
+    }
+
+    async function payCitizenChallan(encodedChallanNo) {
+      const challanNo = decodeURIComponent(encodedChallanNo);
+      try {
+        const res = await fetch('/api/citizen/pay', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            challan_no: challanNo,
+            payment_method: 'Demo Wallet',
+            account_number: 'DEMO-ACCOUNT',
+            payer_name: getCurrentUser()?.name || 'Citizen'
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Payment failed.');
+        alert(data.message || 'Payment recorded.');
+        loadCitizenChallans();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    function updateFileSelectionState() {
+      const imageInput = document.getElementById('nprImageInput');
+      const fileStatus = document.getElementById('nprFileStatus');
+      const hasFile = Boolean(imageInput.files && imageInput.files.length);
+      imageInput.classList.toggle('is-selected', hasFile);
+      fileStatus.classList.toggle('is-visible', hasFile);
+    }
+
+    function isSinglePlateResult(plate) {
+      const value = String(plate || '').trim();
+      return Boolean(value)
+        && value !== 'Not found'
+        && value !== 'Multiple detected'
+        && value !== 'Multiple vehicles detected'
+        && value !== 'No number plate text detected.';
+    }
+
     async function showResult(plate, imgUrl, isValid) {
       document.getElementById('nprUploadSection').style.display = 'none';
       document.getElementById('nprResultSection').style.display = 'block';
-      document.getElementById('navTryAgain').style.display = 'inline-flex';
-      document.getElementById('navVehicles').style.display = 'none';
 
       document.getElementById('nprPreviewImg').src = imgUrl;
       const detectedEl = document.getElementById('nprDetectedText');
       const proceedBtn = document.getElementById('btnProceedChallan');
+      const paidNotice = document.getElementById('nprPaidNotice');
       const ownerCard = document.getElementById('nprOwnerDetailsCard');
 
-      if (isValid && plate && plate !== 'No number plate text detected.') {
+      function applyPaymentStatus(status, plateValue) {
+        const citizen = getCurrentUser() && getCurrentUser().role === 'Citizen';
+        const paid = String(status || '').trim().toLowerCase() === 'paid';
+        const badge = document.getElementById('nprTaxBadge');
+        badge.innerText = paid ? 'Paid' : 'Unpaid';
+        badge.className = `status-pill ${paid ? 'paid' : 'unpaid'}`;
+        badge.style.fontSize = '0.75rem';
+        proceedBtn.style.display = citizen || paid ? 'none' : 'inline-flex';
+        proceedBtn.href = `/generate-challan?plate=${encodeURIComponent(plateValue)}`;
+        paidNotice.style.display = paid ? 'block' : 'none';
+      }
+
+      if (isValid && isSinglePlateResult(plate)) {
         detectedEl.innerText = plate;
         detectedEl.style.color = '#2563EB';
-        proceedBtn.style.display = 'inline-flex';
-        proceedBtn.href = `/generate-challan?plate=${encodeURIComponent(plate)}`;
+        applyPaymentStatus('Unpaid', plate);
 
-        // Fetch owner details from SQLite backend
         try {
           const res = await fetch(`/api/vehicles/${encodeURIComponent(plate.trim().toUpperCase())}`);
           if (res.ok) {
             const v = await res.json();
             document.getElementById('nprOwnerName').innerText = v.owner_name || 'N/A';
             document.getElementById('nprOwnerCnic').innerText = v.owner_cnic || 'N/A';
-            document.getElementById('nprVehicleModel').innerText = `${v.vehicle_make || ''} ${v.vehicle_model || ''} (${v.vehicle_color || ''})`;
             document.getElementById('nprOwnerPhone').innerText = v.owner_phone || 'N/A';
             document.getElementById('nprOwnerAddress').innerText = v.owner_address || 'Address on record';
-            document.getElementById('nprTaxBadge').innerText = (v.tax_status || 'Paid');
+            const vehicleRow = document.getElementById('nprVehicleRow');
+            const source = (v.source || '').toLowerCase();
+            const registryKnown = source === 'user' || source === 'demo';
+            const makeModel = [v.vehicle_make, v.vehicle_model].filter(Boolean).join(' ').trim();
+            if (registryKnown && makeModel) {
+              const colour = v.vehicle_color ? ` (${v.vehicle_color})` : '';
+              document.getElementById('nprVehicleModel').innerText = makeModel + colour;
+              vehicleRow.style.display = '';
+            } else {
+              vehicleRow.style.display = 'none';
+            }
             ownerCard.style.display = 'block';
+
+            let paymentStatus = v.tax_status || 'Unpaid';
+            try {
+              const challanRes = await fetch(`/api/challans/plate/${encodeURIComponent(plate.trim().toUpperCase())}`);
+              if (challanRes.ok) {
+                const challanData = await challanRes.json();
+                const unpaidCount = Number(challanData.summary && challanData.summary.unpaid_count) || 0;
+                const totalCount = Number(challanData.summary && challanData.summary.total_challans) || 0;
+                if (unpaidCount > 0) {
+                  paymentStatus = 'Unpaid';
+                } else if (totalCount > 0) {
+                  paymentStatus = 'Paid';
+                }
+              }
+            } catch (challanErr) {
+              // Keep dummy tax_status when challan history is unavailable.
+            }
+            applyPaymentStatus(paymentStatus, plate);
           } else {
             ownerCard.style.display = 'none';
           }
@@ -186,9 +399,14 @@
         }
 
       } else {
-        detectedEl.innerText = 'No number plate text detected.';
+        const text = String(plate || '').trim();
+        const label = (text === 'Multiple vehicles detected' || text === 'Multiple detected')
+          ? 'Multiple vehicles detected'
+          : 'Not found';
+        detectedEl.innerText = label;
         detectedEl.style.color = '#DC2626';
         proceedBtn.style.display = 'none';
+        paidNotice.style.display = 'none';
         ownerCard.style.display = 'none';
       }
     }
@@ -196,9 +414,8 @@
     function resetNprView() {
       document.getElementById('nprUploadSection').style.display = 'block';
       document.getElementById('nprResultSection').style.display = 'none';
-      document.getElementById('navTryAgain').style.display = 'none';
-      document.getElementById('navVehicles').style.display = 'inline-flex';
       document.getElementById('nprForm').reset();
+      updateFileSelectionState();
     }
 
     async function handleNprUpload(e) {
@@ -210,8 +427,22 @@
       }
 
       const btn = document.getElementById('btnNprUpload');
+      const countdownSeconds = 10;
+      let secondsRemaining = countdownSeconds;
+      let countdownTimer;
+      let timeoutTimer;
+      const controller = new AbortController();
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing OCR...';
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing OCR... ${secondsRemaining}s`;
+
+      countdownTimer = setInterval(() => {
+        secondsRemaining -= 1;
+        if (secondsRemaining > 0) {
+          btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing OCR... ${secondsRemaining}s`;
+        }
+      }, 1000);
+
+      timeoutTimer = setTimeout(() => controller.abort(), countdownSeconds * 1000);
 
       const formData = new FormData();
       formData.append('file', input.files[0]);
@@ -219,17 +450,22 @@
       try {
         const res = await fetch('/api/simulate/process_image', {
           method: 'POST',
-          body: formData
+          body: formData,
+          signal: controller.signal
         });
         const data = await res.json();
-        if (data.success && data.plate_number && data.plate_number !== 'No number plate text detected.') {
-          showResult(data.plate_number, data.pipeline_stages.original_image, true);
+        const preview = (data.pipeline_stages && (data.pipeline_stages.ai_annotated_frame || data.pipeline_stages.original_image))
+          || URL.createObjectURL(input.files[0]);
+        if (data.success && isSinglePlateResult(data.plate_number)) {
+          showResult(data.plate_number, preview, true);
         } else {
-          showResult('No number plate text detected.', data.pipeline_stages ? data.pipeline_stages.original_image : URL.createObjectURL(input.files[0]), false);
+          showResult(data.plate_number || 'Not found', preview, false);
         }
       } catch (err) {
-        showResult('No number plate text detected.', URL.createObjectURL(input.files[0]), false);
+        showResult('Not found', URL.createObjectURL(input.files[0]), false);
       } finally {
+        clearInterval(countdownTimer);
+        clearTimeout(timeoutTimer);
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-camera"></i> Upload Image';
       }

@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<!-- Vehicle registry page: list existing vehicles and register owner details. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
   <title>My Vehicles - Smart Traffic Challan System</title>
   
   <!-- Google Fonts -->
@@ -15,8 +17,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css">
-  <script src="/static/js/auth.js"></script>
+  <link rel="stylesheet" href="/static/css/styles.css?v=17">
+  <script src="/static/js/auth.js?v=17"></script>
   <script>requireAuth();</script>
   
   <style>
@@ -60,9 +62,9 @@
 
   <!-- Top Navbar (Deep Navy #0F172A) -->
   <header class="navbar">
-    <a href="/dashboard" class="brand">
+    <a href="/" class="brand">
       <div class="brand-icon">
-        <i class="fa-solid fa-traffic-light"></i>
+        <img src="/static/logo.png" alt="Smart Traffic Challan System logo">
       </div>
       <div>
         <div class="brand-title">Smart Traffic Challan System</div>
@@ -70,11 +72,23 @@
       </div>
     </a>
 
-    <nav class="nav-links">
-      <a href="/dashboard" class="nav-item">Dashboard</a>
-      <a href="#" id="navMyVehicles" class="nav-item active" onclick="showVehicleView('list')">My Vehicles</a>
-      <a href="#" id="navAddVehicle" class="nav-item" onclick="showVehicleView('add')">+ Add Vehicle</a>
-      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    <nav class="nav-links" id="appNav" data-nav-mode="app" data-active="vehicles">
+      <div class="nav-cluster">
+        <div class="nav-group">
+          <a href="/dashboard" class="nav-item nav-parent" data-nav="dashboard"><img class="nav-parent-icon" src="/static/admin-control.svg?v=17" alt=""> Administrative Control</a>
+          <a href="/vehicles" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Vehicle Management</a>
+          <a href="/number-plate" class="nav-item" data-nav="number-plate"><i class="fa-solid fa-camera"></i> Number Plate Recognition</a>
+          <div class="nav-dropdown">
+            <button type="button" class="nav-item" data-nav="challans" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-file-lines"></i> Challan Management <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i></button>
+            <div class="nav-dropdown-menu">
+              <a href="/generate-challan" class="nav-item" data-nav="generate-challan">Generate Challan</a>
+              <a href="/challans" class="nav-item" data-nav="challan-history">Challan History</a>
+            </div>
+          </div>
+          <a href="/reports" class="nav-item" data-nav="reports"><i class="fa-solid fa-chart-column"></i> Reports</a>
+        </div>
+      </div>
+      <a href="#" class="nav-item nav-logout" onclick="logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
@@ -85,8 +99,8 @@
     <div id="vehicleListView">
       <div class="card" style="padding: 2.5rem 2rem; box-shadow: var(--shadow-lg); margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 12px;">
-          <h2 style="font-size: 1.6rem; font-weight: 800; color: #0F172A;">My Vehicles</h2>
-          <button class="btn btn-primary" onclick="showVehicleView('add')">
+          <h2 id="vehicleListTitle" style="font-size: 1.6rem; font-weight: 800; color: #0F172A;">My Vehicles</h2>
+          <button id="addVehicleButton" class="btn btn-primary" onclick="showVehicleView('add')">
             <i class="fa-solid fa-plus"></i> Add Vehicle
           </button>
         </div>
@@ -195,8 +209,19 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      const user = getCurrentUser();
+      const isOfficer = user && user.role === 'Officer';
+      if (isOfficer) {
+        document.getElementById('vehicleListTitle').innerText = 'Registered Vehicles';
+        document.getElementById('addVehicleButton').style.display = 'none';
+        document.getElementById('vehicleAddView').style.display = 'none';
+      }
       if (window.location.pathname.includes('/add')) {
-        showVehicleView('add');
+        if (isOfficer) {
+          showVehicleView('list');
+        } else {
+          showVehicleView('add');
+        }
       } else {
         loadVehicles();
       }
@@ -206,13 +231,13 @@
       if (view === 'add') {
         document.getElementById('vehicleListView').style.display = 'none';
         document.getElementById('vehicleAddView').style.display = 'block';
-        document.getElementById('navAddVehicle').classList.add('active');
-        document.getElementById('navMyVehicles').classList.remove('active');
+        document.getElementById('navAddVehicle')?.classList.add('active');
+        document.getElementById('navMyVehicles')?.classList.remove('active');
       } else {
         document.getElementById('vehicleListView').style.display = 'block';
         document.getElementById('vehicleAddView').style.display = 'none';
-        document.getElementById('navMyVehicles').classList.add('active');
-        document.getElementById('navAddVehicle').classList.remove('active');
+        document.getElementById('navMyVehicles')?.classList.add('active');
+        document.getElementById('navAddVehicle')?.classList.remove('active');
         loadVehicles();
       }
     }
@@ -244,14 +269,15 @@
             <div class="v-field"><span class="v-label">Vehicle:</span> ${v.vehicle_make || ''} ${v.vehicle_model} (${v.vehicle_color || 'White'})</div>
             <div class="v-field"><span class="v-label">Type:</span> ${v.vehicle_type || 'Car'}</div>
             <div class="v-field"><span class="v-label">Address:</span> ${v.owner_address || 'N/A'}</div>
-            <div style="margin-top: 10px; display: flex; gap: 8px; justify-content: center;">
-              <a href="/generate-challan?plate=${v.plate_number}" class="btn btn-primary btn-sm">
-                <i class="fa-solid fa-file-invoice"></i> Issue Challan
-              </a>
-              <a href="/citizen.html?challan=${v.plate_number}" class="btn btn-secondary btn-sm">
-                <i class="fa-solid fa-magnifying-glass"></i> View Fines
-              </a>
-            </div>
+            ${getCurrentUser()?.role === 'Officer' ? `
+              <div style="margin-top: 10px; display: flex; gap: 8px; justify-content: center;">
+                <a href="/generate-challan?plate=${encodeURIComponent(v.plate_number)}" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-file-invoice"></i> Issue Challan
+                </a>
+                <a href="/challans" class="btn btn-secondary btn-sm">
+                  <i class="fa-solid fa-magnifying-glass"></i> View Fines
+                </a>
+              </div>` : ''}
           </div>
         `).join('');
 

@@ -1,23 +1,26 @@
+"""Live traffic simulation, camera controls, and real-time alert endpoints."""
+
 import cv2
 import time
 import os
 import sqlite3
 import numpy as np
 import datetime
-from fastapi import APIRouter, Response, HTTPException
+from fastapi import APIRouter, Depends, Response, HTTPException
 from fastapi.responses import StreamingResponse
 
 from app.config import DB_PATH, SAMPLE_MEDIA_DIR
 from app.anpr.detector import VehiclePlateDetector
 from app.anpr.tracker import VehicleTracker
 from app.anpr.violation_rules import check_and_create_violations
+from app.routers.auth import require_roles
 
 router = APIRouter(prefix="/api/stream", tags=["Live Stream"])
 
 detector = VehiclePlateDetector()
 tracker = VehicleTracker()
 
-# Global stream state
+# Shared simulation state read by the live feed and control endpoints.
 stream_state = {
     "active_camera_id": 1,
     "signal_state": "GREEN", # GREEN, RED
@@ -28,7 +31,7 @@ stream_state = {
     "location": "Ferozepur Road, Lahore"
 }
 
-# 12 diverse realistic vehicles organized across 3 lanes with realistic staggered spacing
+# Demo fleet used to produce a repeatable camera stream without physical hardware.
 TRAFFIC_FLEET = [
     # Lane 1 (Fast Lane, x=200)
     {"id": 1, "plate": "LEA-21-4589", "type": "sedan", "color": (25, 25, 30), "make": "Civic Oriel", "target_speed": 66, "y": 80, "lane": 1, "cur_speed": 66, "headlight_on": True},
@@ -49,12 +52,13 @@ TRAFFIC_FLEET = [
     {"id": 12, "plate": "KHI-CC-401", "type": "pickup", "color": (240, 240, 240), "make": "Hilux Revo", "target_speed": 58, "y": -940, "lane": 3, "cur_speed": 58, "headlight_on": True}
 ]
 
-# Lane positions in X coordinates
+# Fixed x-coordinates keep simulated vehicles inside their assigned lanes.
 LANE_X_COORDS = {1: 200, 2: 440, 3: 680}
 MIN_FOLLOWING_DISTANCE = 250 # Minimum distance between front and rear bumper in same lane to prevent any overlap
 
 def draw_front_sedan(frame, x, y, color, plate_text):
     """Draws front perspective of a modern aerodynamic sedan moving downwards towards camera."""
+    # Drawing helpers create visual test vehicles and return detection boxes/crops.
     w, h = 150, 220
     
     # 1. Road drop shadow
@@ -527,14 +531,14 @@ def stream_generator():
         time.sleep(0.04) # ~25 FPS
 
 @router.get("/video_feed")
-def video_feed():
+def video_feed(_: dict = Depends(require_roles("Officer"))):
     return StreamingResponse(
         stream_generator(),
         media_type="multipart/x-mixed-replace; boundary=frame"
     )
 
 @router.post("/set_signal/{state}")
-def set_signal(state: str):
+def set_signal(state: str, _: dict = Depends(require_roles("Officer"))):
     state_upper = state.upper()
     if state_upper in ["RED", "GREEN", "YELLOW"]:
         stream_state["signal_state"] = state_upper
@@ -549,14 +553,14 @@ def set_signal(state: str):
     raise HTTPException(status_code=400, detail="Invalid signal state. Use RED or GREEN")
 
 @router.post("/set_speed_limit/{limit}")
-def set_speed_limit(limit: int):
+def set_speed_limit(limit: int, _: dict = Depends(require_roles("Officer"))):
     if 20 <= limit <= 140:
         stream_state["speed_limit"] = limit
         return {"status": "success", "speed_limit": limit}
     raise HTTPException(status_code=400, detail="Speed limit must be between 20 and 140")
 
 @router.post("/select_camera/{camera_id}")
-def select_camera(camera_id: int):
+def select_camera(camera_id: int, _: dict = Depends(require_roles("Officer"))):
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()

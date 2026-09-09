@@ -1,6 +1,8 @@
+// Keep the Chart.js instance so polling can replace it without duplicates.
 let violationsChart = null;
 
 function renderViolationsChart(data) {
+  // Map grouped API rows to the labels and counts required by Chart.js.
   const ctx = document.getElementById('violationsPieChart');
   if (!ctx) return;
 

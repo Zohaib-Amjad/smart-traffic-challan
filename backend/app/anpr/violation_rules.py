@@ -1,3 +1,5 @@
+"""Business rules that turn tracked detections into evidence-backed challans."""
+
 import os
 import cv2
 import uuid
@@ -11,6 +13,7 @@ def check_and_create_violations(frame, detections, camera_info, tracker):
     Evaluates traffic rules for detected vehicles and records any violation.
     Returns list of newly triggered challan objects.
     """
+    # A single frame can contain multiple vehicles and therefore multiple results.
     created_violations = []
     h, w = frame.shape[:2]
     
@@ -34,23 +37,23 @@ def check_and_create_violations(frame, detections, camera_info, tracker):
         violation_name = None
         fine_amount = 0
         
-        # Rule 1: Red Light Jump (Vehicle crossed stop line during RED phase)
+        # Rule 1: red-light crossing is based on signal state and virtual stop line.
         if signal_state == "RED" and cy > stop_line_y:
             violation_type = "V-RED-LIGHT"
             violation_name = "Red Light Signal Jumping"
             fine_amount = 2500
             
-        # Rule 2: Over-Speeding (Vehicle speed exceeded speed limit by > 5 km/h)
+        # Rule 2: issue speeding only when the reading exceeds the limit by 5 km/h.
         elif speed > (speed_limit + 5):
             violation_type = "V-OVERSPEED"
             violation_name = f"Over-Speeding ({speed} km/h in {speed_limit} km/h zone)"
             fine_amount = 2000
             
         if violation_type and tracker.can_generate_challan(track_id, plate_number):
-            # Save proof snapshot
+            # Create a unique ticket and preserve visual proof for later review.
             challan_uuid = f"CH-{datetime.datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
             
-            # Annotated evidence frame
+            # Annotate the frame so an officer can see why the ticket was issued.
             evidence_frame = frame.copy()
             # Draw red banner on evidence frame
             cv2.rectangle(evidence_frame, (0, 0), (w, 50), (0, 0, 180), -1)
@@ -83,11 +86,11 @@ def check_and_create_violations(frame, detections, camera_info, tracker):
             now_str = now_dt.strftime("%Y-%m-%d %H:%M:%S")
             due_str = (now_dt + datetime.timedelta(days=15)).strftime("%Y-%m-%d")
             
-            # Insert into database
+            # Save vehicle/challan data in one database transaction.
             conn = sqlite3.connect(str(DB_PATH))
             cursor = conn.cursor()
             
-            # Check if vehicle exists in DB, else register provisional owner
+            # Unknown plates receive a provisional owner until registry verification.
             cursor.execute("SELECT owner_name FROM vehicles WHERE plate_number = ?", (plate_number,))
             v_row = cursor.fetchone()
             if not v_row and plate_number != "UNKNOWN":
@@ -109,7 +112,7 @@ def check_and_create_violations(frame, detections, camera_info, tracker):
                 evidence_filename, plate_crop_filename, now_str, due_str
             ))
             
-            # Log event
+            # Record the event for the dashboard activity feed and audit history.
             cursor.execute("""
             INSERT INTO system_logs (event_type, description, timestamp)
             VALUES (?, ?, ?)
@@ -122,7 +125,7 @@ def check_and_create_violations(frame, detections, camera_info, tracker):
             challan_row = cursor.fetchone()
             conn.close()
             
-            # Generate official PDF slip
+            # Generate the printable challan after the database row exists.
             pdf_rel_path = generate_challan_pdf(challan_uuid)
             
             created_violations.append({

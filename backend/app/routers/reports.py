@@ -1,14 +1,18 @@
+"""Report summary and CSV export endpoints."""
+
 import io
 import csv
 import sqlite3
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from app.config import DB_PATH
+from app.routers.auth import require_roles
 
 router = APIRouter(prefix="/api/reports", tags=["Reports & Analytics"])
 
 @router.get("/summary")
-def get_reports_summary():
+def get_reports_summary(_: dict = Depends(require_roles("Officer"))):
+    # Compute totals and grouped records used by the reports page.
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -68,7 +72,8 @@ def get_reports_summary():
     }
 
 @router.get("/csv")
-def download_reports_csv():
+def download_reports_csv(_: dict = Depends(require_roles("Officer"))):
+    # Stream a spreadsheet-compatible CSV without creating a server-side file.
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()

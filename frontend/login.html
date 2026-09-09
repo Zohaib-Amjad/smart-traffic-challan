@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<!-- Login page: authenticates a user through the backend API. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
   <title>Login - Smart Traffic Challan System</title>
   
   <!-- Google Fonts -->
@@ -15,7 +17,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/styles.css?v=17">
 </head>
 <body>
 
@@ -23,7 +25,7 @@
   <header class="navbar">
     <a href="/" class="brand">
       <div class="brand-icon">
-        <i class="fa-solid fa-traffic-light"></i>
+        <img src="/static/logo.png" alt="Smart Traffic Challan System logo">
       </div>
       <div>
         <div class="brand-title">Smart Traffic Challan System</div>
@@ -31,10 +33,7 @@
       </div>
     </a>
 
-    <nav class="nav-links">
-      <a href="/" class="nav-item">Home</a>
-      <a href="/register" class="nav-item">Register</a>
-    </nav>
+    <nav class="nav-links" id="appNav" data-nav-mode="guest"></nav>
   </header>
 
   <!-- Login Container -->
@@ -42,14 +41,31 @@
     <div class="card" style="max-width: 440px; width: 100%; padding: 2.5rem 2rem; box-shadow: var(--shadow-lg); border-top: 4px solid var(--color-secondary);">
       <h2 style="font-size: 1.6rem; font-weight: 800; text-align: center; color: #0F172A; margin-bottom: 1.75rem;">Login</h2>
       <div id="registeredMessage" style="display: none; background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857; border-radius: 6px; padding: 10px 12px; margin-bottom: 1.25rem; text-align: center; font-size: 0.86rem;">
-        Account create ho gaya hai. Ab apne email aur password se login karein.
+          Your account has been created. Sign in with your email and password.
       </div>
 
       <form id="loginForm" onsubmit="handleLogin(event)">
-        <!-- Email Address -->
         <div class="form-group">
+          <label class="form-label" for="loginRole">Login As</label>
+          <select id="loginRole" class="text-input" required>
+            <option value="Citizen">Citizen</option>
+            <option value="Officer">Traffic Police Officer</option>
+            <option value="Admin">Vehicle Registerer</option>
+          </select>
+        </div>
+
+        <!-- Email Address -->
+        <div class="form-group" id="loginEmailInputGroup">
           <label class="form-label">Email Address</label>
           <input type="email" id="loginEmail" class="text-input" placeholder="Enter Email Address" required>
+        </div>
+
+        <div class="form-group" id="loginOfficerEmailGroup" style="display: none;">
+          <label class="form-label" for="loginOfficerEmail">Officer Email</label>
+          <select id="loginOfficerEmail" class="text-input">
+            <option value="officer@traffic.gov.pk">officer@traffic.gov.pk</option>
+            <option value="officer2@traffic.gov.pk">officer2@traffic.gov.pk</option>
+          </select>
         </div>
 
         <!-- Password -->
@@ -75,15 +91,41 @@
     © 2026 Smart Traffic Challan System | Final Year Project
   </footer>
 
-  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/auth.js?v=17"></script>
   <script>
     if (new URLSearchParams(window.location.search).get('registered') === '1') {
       document.getElementById('registeredMessage').style.display = 'block';
     }
 
+    function updateLoginEmailField() {
+      const role = document.getElementById('loginRole').value;
+      const isOfficer = role === 'Officer';
+      const inputGroup = document.getElementById('loginEmailInputGroup');
+      const officerGroup = document.getElementById('loginOfficerEmailGroup');
+      const emailInput = document.getElementById('loginEmail');
+      const officerEmail = document.getElementById('loginOfficerEmail');
+      const demoEmails = {
+        Citizen: 'citizen@test.pk',
+        Admin: 'admin@traffic.gov.pk'
+      };
+      inputGroup.style.display = isOfficer ? 'none' : '';
+      officerGroup.style.display = isOfficer ? '' : 'none';
+      emailInput.required = !isOfficer;
+      officerEmail.required = isOfficer;
+      if (!isOfficer) {
+        emailInput.value = demoEmails[role] || '';
+      }
+    }
+
+    document.getElementById('loginRole').addEventListener('change', updateLoginEmailField);
+    updateLoginEmailField();
+
     async function handleLogin(e) {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
+      const role = document.getElementById('loginRole').value;
+      const email = role === 'Officer'
+        ? document.getElementById('loginOfficerEmail').value
+        : document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
       const btn = document.getElementById('btnLogin');
       btn.disabled = true;
@@ -93,7 +135,7 @@
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, password, role })
         });
         const data = await res.json();
         if (data.success) {

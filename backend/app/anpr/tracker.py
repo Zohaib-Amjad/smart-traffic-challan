@@ -1,3 +1,5 @@
+"""Centroid-based tracking, speed estimation, and duplicate prevention."""
+
 import time
 import math
 
@@ -20,7 +22,7 @@ class VehicleTracker:
         current_time = time.time()
         updated_detections = []
         
-        # Clean up stale tracks older than 5 seconds
+        # Remove vehicles that disappeared so old tracks cannot be reused forever.
         stale_ids = [tid for tid, data in self.tracks.items() if current_time - data["last_time"] > 5.0]
         for tid in stale_ids:
             del self.tracks[tid]
@@ -29,7 +31,7 @@ class VehicleTracker:
             x, y, w, h = det["vehicle_bbox"]
             cx, cy = x + w // 2, y + h // 2
             
-            # Find closest existing track
+            # Match this frame's vehicle to the closest previous centroid.
             best_track_id = None
             min_dist = 120 # pixel matching threshold
             
@@ -43,7 +45,8 @@ class VehicleTracker:
             if best_track_id is None:
                 best_track_id = self.next_track_id
                 self.next_track_id += 1
-                estimated_speed = 45 # default starting baseline speed in km/h
+                # New tracks start with a reasonable baseline until movement is measured.
+                estimated_speed = 45
                 self.tracks[best_track_id] = {
                     "last_pos": (cx, cy),
                     "last_time": current_time,
@@ -59,7 +62,7 @@ class VehicleTracker:
                 if dt > 0.05:
                     pixel_dist = math.hypot(cx - lx, cy - ly)
                     raw_speed = (pixel_dist / dt) * 0.15 * self.pixel_to_kmh_ratio
-                    # Exponential smoothing filter
+                    # Smooth frame-to-frame noise, then clamp unrealistic speeds.
                     estimated_speed = int(0.7 * track["speed"] + 0.3 * raw_speed)
                     estimated_speed = max(15, min(140, estimated_speed)) # clamp between 15 and 140 km/h
                 else:

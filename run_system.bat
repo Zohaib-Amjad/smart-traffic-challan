@@ -1,4 +1,5 @@
 @echo off
+REM One-click launcher: prepare the virtual environment, install dependencies, and run FastAPI.
 title Smart Traffic Challan & ANPR Surveillance System (FYP)
 color 0b
 
@@ -10,6 +11,7 @@ echo.
 
 cd /d "%~dp0"
 
+REM Reuse the local environment when available; otherwise create it with uv.
 IF EXIST ".venv\Scripts\python.exe" (
     echo [1/3] Python Virtual Environment Detected.
 ) ELSE (
@@ -22,12 +24,12 @@ echo.
 echo [2/3] Starting Backend API, AI ANPR Engine ^& Live CCTV Server...
 echo ------------------------------------------------------------------------------
 echo Server will be available at: http://127.0.0.1:8000
-echo Command Center:   http://127.0.0.1:8000/
-echo Citizen Portal:   http://127.0.0.1:8000/citizen.html
-echo FYP Demo Studio:  http://127.0.0.1:8000/simulate.html
+echo Home:             http://127.0.0.1:8000/
+echo Command Center:   http://127.0.0.1:8000/dashboard
 echo ------------------------------------------------------------------------------
 echo.
 
+REM Open the public command center before starting the blocking server process.
 echo [3/3] Opening Dashboard in Default Browser...
 start "" "http://127.0.0.1:8000"
 

@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<!-- Manual challan page: officer enters an offence and issues a ticket. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
   <title>Generate Challan - Traffic Challan System</title>
   
   <!-- Google Fonts -->
@@ -15,28 +17,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="/static/css/styles.css">
-  <script src="/static/js/auth.js"></script>
+  <link rel="stylesheet" href="/static/css/styles.css?v=18">
+  <script src="/static/js/auth.js?v=18"></script>
   <script>requireAuth();</script>
   
   <style>
-    .gen-hero {
-      background-color: var(--color-primary);
-      padding: 4rem 1.5rem;
-      text-align: center;
-      color: #FFFFFF;
-      margin-bottom: 2.5rem;
-    }
-    .gen-hero-title {
-      font-size: 2.5rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      margin-bottom: 0.75rem;
-    }
-    .gen-hero-sub {
-      font-size: 1.05rem;
-      color: #CBD5E1;
-    }
     .gen-card {
       background: #FFFFFF;
       border: 1px solid var(--border-color);
@@ -47,15 +32,72 @@
       box-shadow: var(--shadow-card);
       border-top: 4px solid var(--color-secondary);
     }
+    .challan-preview-box {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 1.5rem;
+    }
+    .challan-preview-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #1E40AF;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .challan-preview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 16px;
+    }
+    .challan-preview-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #1E40AF;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .challan-preview-value {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #1E3A8A;
+      word-break: break-word;
+    }
+    .challan-preview-fine {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      padding-top: 8px;
+      border-top: 1px solid #BFDBFE;
+    }
+    .challan-preview-amount {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #1D4ED8;
+      text-align: right;
+    }
+    .challan-preview-bracket {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #3B82F6;
+      margin-top: 2px;
+    }
+    @media (max-width: 520px) {
+      .challan-preview-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
   <!-- Top Navbar (Deep Navy #0F172A) -->
   <header class="navbar">
-    <a href="/dashboard" class="brand">
+    <a href="/" class="brand">
       <div class="brand-icon">
-        <i class="fa-solid fa-traffic-light"></i>
+        <img src="/static/logo.png" alt="Smart Traffic Challan System logo">
       </div>
       <div>
         <div class="brand-title">Smart Traffic Challan System</div>
@@ -63,37 +105,38 @@
       </div>
     </a>
 
-    <nav class="nav-links">
-      <a href="/dashboard" class="nav-item">Dashboard</a>
-      <a href="/challans" class="nav-item">Challan History</a>
-      <a href="/reports" class="nav-item">Reports</a>
-      <a href="#" onclick="logout(); return false;" class="nav-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    <nav class="nav-links" id="appNav" data-nav-mode="app" data-active="challans">
+      <div class="nav-cluster">
+        <div class="nav-group">
+          <a href="/dashboard" class="nav-item nav-parent" data-nav="dashboard"><img class="nav-parent-icon" src="/static/admin-control.svg?v=17" alt=""> Administrative Control</a>
+          <a href="/vehicles" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Vehicle Management</a>
+          <a href="/number-plate" class="nav-item" data-nav="number-plate"><i class="fa-solid fa-camera"></i> Number Plate Recognition</a>
+          <div class="nav-dropdown">
+            <button type="button" class="nav-item" data-nav="challans" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-file-lines"></i> Challan Management <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i></button>
+            <div class="nav-dropdown-menu">
+              <a href="/generate-challan" class="nav-item" data-nav="generate-challan">Generate Challan</a>
+              <a href="/challans" class="nav-item" data-nav="challan-history">Challan History</a>
+            </div>
+          </div>
+          <a href="/reports" class="nav-item" data-nav="reports"><i class="fa-solid fa-chart-column"></i> Reports</a>
+        </div>
+      </div>
+      <a href="#" class="nav-item nav-logout" onclick="logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     </nav>
   </header>
 
-  <!-- Hero Banner -->
-  <section class="gen-hero">
-    <h1 class="gen-hero-title">Generate Traffic Challan</h1>
-    <p class="gen-hero-sub">Create a new traffic violation challan</p>
-  </section>
-
   <!-- Main Form Container -->
-  <main class="container">
+  <main class="container" style="padding-top: 2.5rem;">
     <div class="gen-card">
       <h2 style="font-size: 1.4rem; font-weight: 800; text-align: center; color: #0F172A; margin-bottom: 1.5rem;">
-        Challan Information
+        Generate Traffic Challan
       </h2>
 
       <form id="genChallanForm" onsubmit="handleGenerateChallan(event)">
         <!-- Vehicle Number -->
         <div class="form-group">
           <label class="form-label">Vehicle Registration Number (Plate)</label>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="chVehicleNumber" class="text-input" placeholder="e.g. LEA-21-4589 or 123" required oninput="lookupOwnerInfo()">
-            <button type="button" class="btn btn-secondary" onclick="lookupOwnerInfo()" style="white-space: nowrap;">
-              <i class="fa-solid fa-search"></i> Check Owner
-            </button>
-          </div>
+          <input type="text" id="chVehicleNumber" class="text-input" placeholder="Enter number plate number" required oninput="lookupOwnerInfo(); updateChallanPreview()">
         </div>
 
         <!-- Live Owner Info Box -->
@@ -102,42 +145,54 @@
             <i class="fa-solid fa-circle-check"></i> Registered Vehicle Found:
           </div>
           <div style="color: #0F172A;"><strong style="color: #64748B;">Owner:</strong> <span id="chOwnerName">--</span> | <strong style="color: #64748B;">CNIC:</strong> <span id="chOwnerCnic">--</span></div>
-          <div style="color: #0F172A; margin-top: 2px;"><strong style="color: #64748B;">Model:</strong> <span id="chVehicleModel">--</span> | <strong style="color: #64748B;">Phone:</strong> <span id="chOwnerPhone">--</span></div>
+          <div style="color: #0F172A; margin-top: 2px;"><span id="chVehicleModelWrap"><strong style="color: #64748B;">Model:</strong> <span id="chVehicleModel">--</span> | </span><strong style="color: #64748B;">Phone:</strong> <span id="chOwnerPhone">--</span></div>
         </div>
-
         <!-- Traffic Violation Dropdown -->
         <div class="form-group">
           <label class="form-label">Traffic Violation</label>
           <select id="chViolation" class="select-input" required onchange="updateChallanPreview()">
-            <!-- Loaded dynamically from SQLite tariffs -->
-            <option value="Red Light Signal Jumping - Rs. 2500" data-fine="2500">Red Light Signal Jumping - Rs. 2,500</option>
-            <option value="Over-Speeding Violation - Rs. 2000" data-fine="2000">Over-Speeding Violation - Rs. 2,000</option>
-            <option value="Signal Violation - Rs. 3000" data-fine="3000">Signal Violation - Rs. 3,000</option>
-            <option value="One-Way / Wrong-Way Driving - Rs. 3000" data-fine="3000">One-Way / Wrong-Way Driving - Rs. 3,000</option>
-            <option value="Illegal Parking in No-Parking Zone - Rs. 2000" data-fine="2000">Illegal Parking in No-Parking Zone - Rs. 2,000</option>
-            <option value="Riding Without Safety Helmet - Rs. 1000" data-fine="1000">Riding Without Safety Helmet - Rs. 1,000</option>
-            <option value="Triple Riding on Motorcycle - Rs. 1500" data-fine="1500">Triple Riding on Motorcycle - Rs. 1,500</option>
-            <option value="Mobile Phone Usage While Driving - Rs. 2000" data-fine="2000">Mobile Phone Usage While Driving - Rs. 2,000</option>
-            <option value="Lane Straddling / Illegal Lane Change - Rs. 1000" data-fine="1000">Lane Straddling / Illegal Lane Change - Rs. 1,000</option>
-            <option value="Prohibited Tinted / Black Windows - Rs. 2000" data-fine="2000">Prohibited Tinted / Black Windows - Rs. 2,000</option>
+            <option value="" selected>Select traffic violation</option>
           </select>
+          <div id="chScheduleHint" style="font-size: 0.78rem; color: #64748B; margin-top: 6px;">Twelfth Schedule, Provincial Motor Vehicles Ordinance, 1965</div>
         </div>
 
         <!-- Location -->
         <div class="form-group">
           <label class="form-label">Violation Location</label>
-          <input type="text" id="chLocation" class="text-input" placeholder="e.g. Kalma Chowk, Lahore" value="Lahore - Kalma Chowk" required>
+          <input type="text" id="chLocation" class="text-input" placeholder="e.g. Kalma Chowk, Lahore" required oninput="updateChallanPreview()">
         </div>
 
-        <!-- Challan Details Preview Box (Fine & Expiry Date) -->
-        <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <div style="font-size: 0.78rem; font-weight: 700; color: #1E40AF; text-transform: uppercase;">Payment Due / Expiry Date</div>
-            <div id="chPreviewDueDate" style="font-size: 0.95rem; font-weight: 800; color: #1E3A8A;">15 Days from Today</div>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-size: 0.78rem; font-weight: 700; color: #1E40AF; text-transform: uppercase;">Fine Payable</div>
-            <div id="chPreviewFine" style="font-size: 1.25rem; font-weight: 800; color: #1D4ED8;">Rs. 2,500</div>
+        <div class="form-group">
+          <label class="form-label">Payment Due / Expiry Date</label>
+          <input type="date" id="chDueDate" class="text-input" required onchange="updateChallanPreview()">
+        </div>
+
+        <div class="challan-preview-box">
+          <div class="challan-preview-title">Challan summary</div>
+          <div class="challan-preview-grid">
+            <div>
+              <div class="challan-preview-label">Plate number</div>
+              <div id="chPreviewPlate" class="challan-preview-value">—</div>
+            </div>
+            <div>
+              <div class="challan-preview-label">Violation</div>
+              <div id="chPreviewViolation" class="challan-preview-value">—</div>
+            </div>
+            <div>
+              <div class="challan-preview-label">Location</div>
+              <div id="chPreviewLocation" class="challan-preview-value">—</div>
+            </div>
+            <div>
+              <div class="challan-preview-label">Payment due / expiry date</div>
+              <div id="chPreviewDueDate" class="challan-preview-value">—</div>
+            </div>
+            <div class="challan-preview-fine">
+              <div>
+                <div class="challan-preview-label">Fine payable</div>
+                <div id="chPreviewBracket" class="challan-preview-bracket"></div>
+              </div>
+              <div id="chPreviewFine" class="challan-preview-amount">—</div>
+            </div>
           </div>
         </div>
 
@@ -155,29 +210,17 @@
   </footer>
 
   <script>
+    let currentVehicleType = 'Motor car';
+    let currentEngineCc = 1600;
+    let currentBracketLabel = '';
+    let scheduleFromLookup = false;
+
     document.addEventListener('DOMContentLoaded', async () => {
-      // Calculate due date (15 days from now)
-      const now = new Date();
-      const dueDate = new Date();
-      dueDate.setDate(now.getDate() + 15);
-      document.getElementById('chPreviewDueDate').innerText = dueDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      const dueInput = document.getElementById('chDueDate');
+      dueInput.min = toDateInputValue(new Date());
+      dueInput.value = '';
 
-      // Load tariffs from backend if available
-      try {
-        const res = await fetch('/api/challans/tariffs/list');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.tariffs && data.tariffs.length > 0) {
-            const select = document.getElementById('chViolation');
-            select.innerHTML = data.tariffs.map(t => 
-              `<option value="${t.title} - Rs. ${t.fine_amount}" data-fine="${t.fine_amount}">${t.title} - Rs. ${Number(t.fine_amount).toLocaleString()}</option>`
-            ).join('');
-          }
-        }
-      } catch (e) {
-        console.log('Tariffs fallback loaded.');
-      }
-
+      await loadPunjabSchedule();
       updateChallanPreview();
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -185,16 +228,80 @@
       if (plateParam) {
         document.getElementById('chVehicleNumber').value = plateParam;
         lookupOwnerInfo();
+        updateChallanPreview();
       }
     });
 
+    function toDateInputValue(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function formatDueDate(isoDate) {
+      if (!isoDate) return '—';
+      const parts = isoDate.split('-').map(Number);
+      const parsed = new Date(parts[0], parts[1] - 1, parts[2]);
+      return parsed.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    async function loadPunjabSchedule() {
+      const select = document.getElementById('chViolation');
+      const previous = select.value;
+      const params = new URLSearchParams();
+      if (currentVehicleType) params.set('vehicle_type', currentVehicleType);
+      if (currentEngineCc) params.set('engine_cc', String(currentEngineCc));
+      try {
+        const res = await fetch('/api/challans/schedule?' + params.toString());
+        if (!res.ok) throw new Error('schedule');
+        const data = await res.json();
+        currentBracketLabel = data.fine_bracket_label || '';
+        const hint = document.getElementById('chScheduleHint');
+        const law = data.law_reference || 'Twelfth Schedule, Provincial Motor Vehicles Ordinance, 1965';
+        hint.innerText = (scheduleFromLookup && currentBracketLabel) ? `${law} — ${currentBracketLabel}` : law;
+        const blank = '<option value="" selected>Select traffic violation</option>';
+        select.innerHTML = blank + (data.violations || []).map(item => {
+          const amountLabel = item.applicable
+            ? `Rs. ${Number(item.amount).toLocaleString()}`
+            : 'N/A';
+          const disabled = item.applicable ? '' : ' disabled';
+          return `<option value="${item.code}" data-fine="${item.applicable ? item.amount : ''}" data-title="${item.title}" data-applicable="${item.applicable ? '1' : '0'}"${disabled}>${item.code} ${item.title} — ${amountLabel}</option>`;
+        }).join('');
+        if (previous && [...select.options].some(opt => opt.value === previous && !opt.disabled)) {
+          select.value = previous;
+        } else {
+          select.value = '';
+        }
+      } catch (e) {
+        console.log('Punjab schedule fallback.');
+      }
+    }
+
     function updateChallanPreview() {
+      const plate = document.getElementById('chVehicleNumber').value.trim().toUpperCase();
+      document.getElementById('chPreviewPlate').innerText = plate || '—';
+
       const select = document.getElementById('chViolation');
       const selectedOpt = select.options[select.selectedIndex];
-      const fine = selectedOpt ? selectedOpt.getAttribute('data-fine') : '2500';
-      if (fine) {
+      const hasChoice = selectedOpt && selectedOpt.value;
+      const title = hasChoice ? (selectedOpt.getAttribute('data-title') || selectedOpt.text) : '';
+      const applicable = hasChoice && selectedOpt.getAttribute('data-applicable') === '1';
+      const fine = hasChoice ? selectedOpt.getAttribute('data-fine') : '';
+      document.getElementById('chPreviewViolation').innerText = title || '—';
+
+      const location = document.getElementById('chLocation').value.trim();
+      document.getElementById('chPreviewLocation').innerText = location || '—';
+      document.getElementById('chPreviewDueDate').innerText = formatDueDate(document.getElementById('chDueDate').value);
+
+      if (applicable && fine) {
         document.getElementById('chPreviewFine').innerText = `Rs. ${Number(fine).toLocaleString()}`;
+      } else if (hasChoice) {
+        document.getElementById('chPreviewFine').innerText = 'N/A';
+      } else {
+        document.getElementById('chPreviewFine').innerText = '—';
       }
+      document.getElementById('chPreviewBracket').innerText = scheduleFromLookup ? (currentBracketLabel || '') : '';
     }
 
     let lookupTimeout = null;
@@ -205,6 +312,11 @@
         const previewBox = document.getElementById('chOwnerPreview');
         if (plate.length < 2) {
           previewBox.style.display = 'none';
+          currentVehicleType = 'Motor car';
+          currentEngineCc = 1600;
+          scheduleFromLookup = false;
+          await loadPunjabSchedule();
+          updateChallanPreview();
           return;
         }
 
@@ -214,39 +326,76 @@
             const v = await res.json();
             document.getElementById('chOwnerName').innerText = v.owner_name || 'N/A';
             document.getElementById('chOwnerCnic').innerText = v.owner_cnic || 'N/A';
-            document.getElementById('chVehicleModel').innerText = `${v.vehicle_make || ''} ${v.vehicle_model || ''} (${v.vehicle_color || ''})`;
             document.getElementById('chOwnerPhone').innerText = v.owner_phone || 'N/A';
+            const modelWrap = document.getElementById('chVehicleModelWrap');
+            const source = (v.source || '').toLowerCase();
+            const registryKnown = source === 'user' || source === 'demo';
+            const makeModel = [v.vehicle_make, v.vehicle_model].filter(Boolean).join(' ').trim();
+            if (registryKnown && makeModel) {
+              const colour = v.vehicle_color ? ` (${v.vehicle_color})` : '';
+              document.getElementById('chVehicleModel').innerText = makeModel + colour;
+              modelWrap.style.display = '';
+            } else {
+              modelWrap.style.display = 'none';
+            }
             previewBox.style.display = 'block';
+            currentVehicleType = v.vehicle_type || 'Motor car';
+            currentEngineCc = v.engine_cc || 1600;
+            scheduleFromLookup = true;
+            await loadPunjabSchedule();
           } else {
             previewBox.style.display = 'none';
+            currentVehicleType = 'Motor car';
+            currentEngineCc = 1600;
+            scheduleFromLookup = false;
+            await loadPunjabSchedule();
           }
         } catch (e) {
           previewBox.style.display = 'none';
+          scheduleFromLookup = false;
         }
+        updateChallanPreview();
       }, 300);
     }
 
     async function handleGenerateChallan(e) {
       e.preventDefault();
       const vehicle_number = document.getElementById('chVehicleNumber').value;
-      const violation_name = document.getElementById('chViolation').value;
+      const select = document.getElementById('chViolation');
+      const selectedOpt = select.options[select.selectedIndex];
+      const violation_code = select.value;
       const location = document.getElementById('chLocation').value;
+      const due_date = document.getElementById('chDueDate').value;
+      if (!due_date) {
+        alert('Please choose a payment due date.');
+        return;
+      }
+      if (!violation_code || !selectedOpt || selectedOpt.disabled || selectedOpt.getAttribute('data-applicable') !== '1') {
+        alert('This offence does not apply to this vehicle type.');
+        return;
+      }
 
       const btn = document.getElementById('btnGenChallan');
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating Challan...';
 
       try {
+        const user = getCurrentUser();
+        if (!user || !user.id) {
+          alert('Please sign in again before issuing a challan.');
+          window.location.replace('/login?next=' + encodeURIComponent('/generate-challan'));
+          return;
+        }
         const res = await fetch('/api/challans/generate', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ vehicle_number, violation_name, location })
+          body: JSON.stringify({ vehicle_number, violation_code, location, due_date, issued_by: user.id })
         });
         const data = await res.json();
         if (data.success) {
           window.location.href = `/challan/${data.id}`;
         } else {
-          alert('Could not generate challan.');
+          alert(data.detail || 'Could not generate challan.');
         }
       } catch (err) {
         alert('Network error: ' + err.message);
