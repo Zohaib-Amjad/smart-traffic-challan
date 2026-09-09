@@ -573,7 +573,7 @@ function requireAuth() {
   }
 
   const next = `${window.location.pathname}${window.location.search}`;
-  window.location.replace(`/login?next=${encodeURIComponent(next)}`);
+  window.location.replace(`/login.html?next=${encodeURIComponent(next)}`);
   return false;
 }
 
@@ -584,7 +584,7 @@ function requireRole(...allowedRoles) {
   }
 
   const next = `${window.location.pathname}${window.location.search}`;
-  window.location.replace(user ? '/' : `/login?next=${encodeURIComponent(next)}`);
+  window.location.replace(user ? '/index.html' : `/login.html?next=${encodeURIComponent(next)}`);
   return false;
 }
 
@@ -594,7 +594,7 @@ function logout() {
   localStorage.removeItem(AUTH_STORAGE_KEY);
   sessionStorage.removeItem('lastDetectedPlate');
   sessionStorage.removeItem('lastPreviewImg');
-  window.location.replace('/login');
+  window.location.replace('/login.html');
 }
 
 function applyPublicNavAuth() {
@@ -615,11 +615,11 @@ function openAdministrativeControl(event) {
   }
 
   if (!getCurrentUser()) {
-    window.location.replace(`/login?next=${encodeURIComponent('/dashboard')}`);
+    window.location.replace(`/login.html?next=${encodeURIComponent('/dashboard.html')}`);
     return false;
   }
 
-  window.location.assign('/dashboard');
+  window.location.assign('/dashboard.html');
   return false;
 }
 
@@ -628,20 +628,18 @@ function redirectAfterAuth(defaultPath = null) {
   const next = new URLSearchParams(window.location.search).get('next');
   const user = getCurrentUser();
   const roleDefault = user && user.role === 'Citizen'
-    ? '/citizen'
-    : (user && user.role === 'Admin' ? '/vehicles' : '/dashboard');
+    ? '/number_plate.html'
+    : (user && user.role === 'Admin' ? '/vehicles.html' : '/dashboard.html');
   let destination = next && next.startsWith('/') && !next.startsWith('//')
     ? next
     : (defaultPath || roleDefault);
 
-  if (user && user.role === 'Citizen' && !['/', '/citizen', '/number-plate', '/traffic-rules'].some((path) => destination.startsWith(path))) {
-    destination = '/citizen';
-  }
-  if (user && user.role === 'Admin' && destination !== '/vehicles' && !destination.startsWith('/vehicles/')) {
-    destination = '/vehicles';
-  }
-  if (user && user.role === 'Officer' && destination.startsWith('/vehicles')) {
-    destination = '/dashboard';
+  if (user && user.role === 'Citizen') {
+    destination = '/number_plate.html';
+  } else if (user && user.role === 'Admin') {
+    destination = '/vehicles.html';
+  } else if (user && user.role === 'Officer') {
+    destination = '/dashboard.html';
   }
   window.location.replace(destination);
 }
@@ -654,11 +652,11 @@ function getActiveNavKey() {
 
   const path = window.location.pathname;
   if (path === '/' || path.endsWith('/index.html')) return 'home';
-  if (path.startsWith('/dashboard')) return 'dashboard';
-  if (path.startsWith('/vehicles')) return 'vehicles';
-  if (path.startsWith('/number-plate') || path.startsWith('/number_plate')) return 'number-plate';
-  if (path.startsWith('/reports')) return 'reports';
-  if (path.startsWith('/challans') || path.startsWith('/challan') || path.startsWith('/generate-challan')) {
+  if (path.includes('dashboard')) return 'dashboard';
+  if (path.includes('vehicles')) return 'vehicles';
+  if (path.includes('number-plate') || path.includes('number_plate') || path.includes('citizen')) return 'number-plate';
+  if (path.includes('reports')) return 'reports';
+  if (path.includes('challans') || path.includes('challan') || path.includes('generate_challan')) {
     return 'challans';
   }
   return '';
@@ -668,9 +666,9 @@ function adminControlGroupHtml(user) {
   const isOfficer = user.role === 'Officer';
   const isAdmin = user.role === 'Admin';
   const vehicleLink = isAdmin
-    ? '<a href="/vehicles" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Vehicle Registration</a>'
+    ? '<a href="/vehicles.html" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Vehicle Registration</a>'
     : (isOfficer
-      ? '<a href="/vehicles" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Registered Vehicles</a>'
+      ? '<a href="/vehicles.html" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Registered Vehicles</a>'
       : '');
   const challanGroup = isOfficer ? `
           <div class="nav-dropdown">
@@ -679,20 +677,20 @@ function adminControlGroupHtml(user) {
               <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i>
             </button>
             <div class="nav-dropdown-menu">
-              <a href="/generate-challan" class="nav-item" data-nav="generate-challan">Generate Challan</a>
-              <a href="/challans" class="nav-item" data-nav="challan-history">Challan History</a>
+              <a href="/generate_challan.html" class="nav-item" data-nav="generate-challan">Generate Challan</a>
+              <a href="/challans.html" class="nav-item" data-nav="challan-history">Challan History</a>
             </div>
           </div>` : '';
 
   return `
     <div class="nav-cluster">
       <div class="nav-group">
-        ${isOfficer ? '<a href="/dashboard" class="nav-item nav-parent" data-nav="dashboard"><img class="nav-parent-icon" src="/static/admin-control.svg?v=15" alt=""> Administrative Control</a>' : ''}
+        ${isOfficer ? '<a href="/dashboard.html" class="nav-item nav-parent" data-nav="dashboard"><img class="nav-parent-icon" src="/static/admin-control.svg?v=15" alt=""> Administrative Control</a>' : ''}
         <div class="nav-children" role="group" aria-label="Administrative Control modules">
           ${vehicleLink}
-          ${isOfficer ? '<a href="/number-plate" class="nav-item" data-nav="number-plate"><i class="fa-solid fa-camera"></i> Number Plate Recognition</a>' : ''}
+          ${isOfficer ? '<a href="/number_plate.html" class="nav-item" data-nav="number-plate"><i class="fa-solid fa-camera"></i> Number Plate Recognition</a>' : ''}
           ${challanGroup}
-          ${isOfficer ? '<a href="/reports" class="nav-item" data-nav="reports"><i class="fa-solid fa-chart-column"></i> Reports</a>' : ''}
+          ${isOfficer ? '<a href="/reports.html" class="nav-item" data-nav="reports"><i class="fa-solid fa-chart-column"></i> Reports</a>' : ''}
         </div>
       </div>
     </div>
@@ -737,10 +735,7 @@ function bindNavDropdowns() {
     trigger.setAttribute('aria-haspopup', 'true');
     trigger.setAttribute('aria-expanded', 'false');
 
-    let hideTimer = 0;
-
     const open = () => {
-      window.clearTimeout(hideTimer);
       closeNavDropdowns(dropdown);
       dropdown.classList.add('open');
       trigger.setAttribute('aria-expanded', 'true');
@@ -748,88 +743,69 @@ function bindNavDropdowns() {
     };
 
     const close = () => {
-      dropdown.classList.remove('open');
-      trigger.setAttribute('aria-expanded', 'false');
+      window.setTimeout(() => {
+        dropdown.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }, 120);
     };
 
-    const scheduleClose = () => {
-      window.clearTimeout(hideTimer);
-      hideTimer = window.setTimeout(close, 140);
-    };
-
-    dropdown.addEventListener('mouseenter', open);
-    dropdown.addEventListener('mouseleave', scheduleClose);
+    trigger.addEventListener('mouseenter', open);
+    trigger.addEventListener('mouseleave', close);
     menu.addEventListener('mouseenter', open);
-    menu.addEventListener('mouseleave', scheduleClose);
+    menu.addEventListener('mouseleave', close);
 
     trigger.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-      if (canHover) {
-        open();
-        return;
-      }
-      if (dropdown.classList.contains('open')) {
-        close();
+      const isOpen = dropdown.classList.contains('open');
+      if (isOpen) {
+        dropdown.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
       } else {
         open();
       }
     });
   });
-}
 
-if (!window.__navDropdownListeners) {
-  window.__navDropdownListeners = true;
-
-  document.addEventListener('click', (event) => {
-    if (!event.target.closest('.nav-dropdown')) {
-      closeNavDropdowns();
-    }
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      closeNavDropdowns();
-    }
-  });
-
-  window.addEventListener('resize', () => {
-    document.querySelectorAll('.nav-dropdown.open').forEach(placeNavDropdown);
-  });
+  if (!window.__navDropdownGlobalBound) {
+    window.__navDropdownGlobalBound = true;
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('.nav-dropdown')) {
+        closeNavDropdowns(null);
+      }
+    });
+    window.addEventListener('resize', () => {
+      const openDropdown = document.querySelector('.nav-dropdown.open');
+      if (openDropdown) {
+        placeNavDropdown(openDropdown);
+      }
+    });
+  }
 }
 
 function applyActiveNav() {
+  const activeKey = getActiveNavKey();
+  if (!activeKey) return;
+
+  const currentPath = window.location.pathname;
   const nav = document.getElementById('appNav');
-  if (!nav) {
-    return;
+  if (!nav) return;
+
+  const activeParent = nav.querySelector(`.nav-parent[data-nav="${activeKey}"]`);
+  if (activeParent) {
+    activeParent.classList.add('active');
   }
 
-  const active = nav.dataset.active || getActiveNavKey();
-  const childKeys = ['vehicles', 'number-plate', 'challans', 'reports'];
-  const parentActive = active === 'dashboard' || childKeys.includes(active);
-
-  nav.querySelectorAll('.nav-parent, .nav-children > .nav-item, .nav-children > .nav-dropdown > .nav-item').forEach((el) => {
-    const isParent = el.classList.contains('nav-parent') || el.dataset.nav === 'dashboard';
-    const isActive = isParent ? parentActive : el.dataset.nav === active;
-    el.classList.toggle('active', isActive);
-
-    if (!isParent && isActive) {
-      el.setAttribute('aria-current', 'page');
-    } else if (isParent && active === 'dashboard') {
-      el.setAttribute('aria-current', 'page');
-    } else {
-      el.removeAttribute('aria-current');
-    }
-  });
-
-  const generateLink = nav.querySelector('[data-nav="generate-challan"]');
-  const historyLink = nav.querySelector('[data-nav="challan-history"]');
-  if (generateLink) {
-    generateLink.classList.toggle('active', window.location.pathname.startsWith('/generate-challan'));
+  const activeLink = nav.querySelector(`.nav-children .nav-item[data-nav="${activeKey}"]`);
+  if (activeLink) {
+    activeLink.classList.add('active');
   }
-  if (historyLink) {
-    historyLink.classList.toggle('active', window.location.pathname.startsWith('/challans') || window.location.pathname.startsWith('/challan/'));
+
+  const generateLink = nav.querySelector('.nav-dropdown-menu a[data-nav="generate-challan"]');
+  const historyLink = nav.querySelector('.nav-dropdown-menu a[data-nav="challan-history"]');
+  if (generateLink && historyLink) {
+    generateLink.classList.toggle('active', currentPath.includes('generate_challan') || currentPath.includes('generate-challan'));
+    historyLink.classList.toggle('active', currentPath.includes('challans') || currentPath.includes('challan_detail'));
   }
 }
 
@@ -844,29 +820,29 @@ function mountAppNav() {
 
   if (mode === 'guest') {
     const path = window.location.pathname;
-    nav.innerHTML = path.startsWith('/login')
-      ? '<a href="/register" class="nav-item">Register</a>'
-      : '<a href="/login" class="nav-item">Login</a>';
+    nav.innerHTML = path.includes('login')
+      ? '<a href="/register.html" class="nav-item">Register</a>'
+      : '<a href="/login.html" class="nav-item">Login</a>';
     return;
   }
 
   if (mode === 'public') {
     nav.innerHTML = `
-      <a href="/login?next=${encodeURIComponent('/citizen')}" class="nav-item"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Vehicle Check</a>
-      <a href="/login" class="nav-item">Login</a>
-      <a href="/register" class="nav-item">Sign up</a>`;
+      <a href="/login.html?next=${encodeURIComponent('/number_plate.html')}" class="nav-item"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Vehicle Check</a>
+      <a href="/login.html" class="nav-item">Login</a>
+      <a href="/register.html" class="nav-item">Sign up</a>`;
     return;
   }
 
   if (loggedIn || mode === 'app') {
     const user = getCurrentUser();
     if (!user) {
-      nav.innerHTML = '<a href="/login" class="nav-item">Login</a>';
+      nav.innerHTML = '<a href="/login.html" class="nav-item">Login</a>';
       return;
     }
     if (user.role === 'Citizen') {
       nav.innerHTML = `
-        <a href="/number-plate" class="nav-item"><i class="fa-solid fa-car"></i> Citizen Portal</a>
+        <a href="/number_plate.html" class="nav-item"><i class="fa-solid fa-car"></i> Citizen Portal</a>
         <a href="#" class="nav-item nav-logout" onclick="logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>`;
       return;
     }
@@ -878,11 +854,11 @@ function mountAppNav() {
   }
 
   nav.innerHTML = `
-    <a href="/login?next=${encodeURIComponent('/dashboard')}" class="nav-item" onclick="return openAdministrativeControl(event);">
+    <a href="/login.html?next=${encodeURIComponent('/dashboard.html')}" class="nav-item" onclick="return openAdministrativeControl(event);">
       <img class="nav-parent-icon" src="/static/admin-control.svg?v=14" alt=""> Administrative Control
     </a>
-    <a href="/login" class="nav-item" data-guest>Sign in</a>
-    <a href="/register" class="nav-item" data-guest>Register</a>
+    <a href="/login.html" class="nav-item" data-guest>Sign in</a>
+    <a href="/register.html" class="nav-item" data-guest>Register</a>
   `;
 }
 
