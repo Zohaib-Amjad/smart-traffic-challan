@@ -1,9 +1,15 @@
 """Authentication endpoints for login, registration, and current-user lookup."""
 
+import os
+import random
+import smtplib
 import sqlite3
+import uuid
+from email.message import EmailMessage
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
-from app.config import DB_PATH
+from app.config import DB_PATH, HOST, PORT
 import datetime
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
@@ -11,15 +17,60 @@ router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 class LoginRequest(BaseModel):
     email: str
     password: str
-    role: str
+    role: str | None = None
 
 class RegisterRequest(BaseModel):
     name: str
     email: str
     password: str
+    role: str = "Citizen"
 
 class ProfileUpdateRequest(BaseModel):
     name: str
+
+
+def _normalize_email(value: str) -> str:
+    return (value or "").strip().lower()
+
+
+def _generate_verification_token() -> str:
+    return uuid.uuid4().hex
+
+
+def _generate_verification_code() -> str:
+    return str(random.randint(100000, 999999))
+
+
+def _verification_link(token: str) -> str:
+    return f"http://{HOST}:{PORT}/api/auth/verify?token={token}"
+
+
+def send_verification_email(email: str, code: str):
+    smtp_host = os.getenv("SMTP_HOST")
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user = os.getenv("SMTP_USERNAME")
+    smtp_pass = os.getenv("SMTP_PASSWORD")
+    from_email = os.getenv("SMTP_FROM_EMAIL", "noreply@traffic.local")
+
+    if smtp_host and smtp_user and smtp_pass:
+        msg = EmailMessage()
+        msg["Subject"] = "Smart Traffic Challan - Email Verification Code"
+        msg["From"] = from_email
+        msg["To"] = email
+        msg.set_content(
+            "Your email verification code is: " + code + "\n\n"
+            "Enter this code in the application to complete your registration."
+        )
+
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_pass)
+            server.send_message(msg)
+        return {"sent": True, "mode": "smtp"}
+
+    print(f"[DEV_EMAIL] Verification code for {email}: {code}")
+    return {"sent": True, "mode": "dev-console", "debug_code": code}
+
 
 @router.post("/login")
 def login_user(req: LoginRequest, response: Response):
@@ -29,20 +80,30 @@ def login_user(req: LoginRequest, response: Response):
     cursor = conn.cursor()
 
     requested_role = (req.role or "").strip().title()
+    email = _normalize_email(req.email)
     cursor.execute(
-        "SELECT id, name, email, role FROM users WHERE email = ? AND password = ?",
-        (req.email.strip().lower(), req.password),
+        "SELECT id, name, email, password, role, is_verified FROM users WHERE email = ?",
+        (email,),
     )
     user = cursor.fetchone()
     conn.close()
 
     if not user:
+        raise HTTPException(status_code=404, detail="No account found for this email. Please register first.")
+
+    if user["password"] != req.password:
         raise HTTPException(status_code=401, detail="Invalid email address or password.")
 
-    if user["role"] != requested_role:
+    if requested_role and user["role"] != requested_role:
         raise HTTPException(
             status_code=403,
             detail="This account is not allowed to log in as that role. Use the correct role for your registered account.",
+        )
+
+    if not user["is_verified"]:
+        raise HTTPException(
+            status_code=403,
+            detail="Your email is not verified yet. Please check the verification link sent to your inbox before logging in.",
         )
 
     # Public accounts are limited to the citizen portal only.
@@ -62,32 +123,124 @@ def logout_user(response: Response):
 
 @router.post("/register")
 def register_user(req: RegisterRequest):
-    # Public registration creates a limited citizen account.
+    # Public registration creates a pending account for the selected role and requires email verification.
+    role = (req.role or "Citizen").strip().title()
+    allowed_roles = {"Citizen", "Officer", "Admin"}
+    if role not in allowed_roles:
+        raise HTTPException(status_code=400, detail="Role must be one of: Citizen, Officer, Admin.")
+
     conn = sqlite3.connect(str(DB_PATH))
     cursor = conn.cursor()
     now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
+    email = _normalize_email(req.email)
+    verification_code = _generate_verification_code()
+    verification_expires_at = (datetime.datetime.now() + datetime.timedelta(minutes=10)).strftime("%Y-%m-%d %H:%M:%S")
+
     try:
         cursor.execute("""
-        INSERT INTO users (name, email, password, role, created_at)
-        VALUES (?, ?, ?, 'Citizen', ?)
-        """, (req.name.strip(), req.email.strip().lower(), req.password, now_str))
+        INSERT INTO users (name, email, password, role, created_at, is_verified, verification_token, verification_expires_at)
+        VALUES (?, ?, ?, ?, ?, 0, ?, ?)
+        """, (req.name.strip(), email, req.password, role, now_str, verification_code, verification_expires_at))
         conn.commit()
         user_id = cursor.lastrowid
         conn.close()
-        
-        return {
+
+        email_result = send_verification_email(email, verification_code)
+        response = {
             "success": True,
             "user": {
                 "id": user_id,
-                "name": req.name,
-                "email": req.email,
-                "role": "Citizen"
-            }
+                "name": req.name.strip(),
+                "email": email,
+                "role": role,
+                "is_verified": False,
+            },
+            "message": "Verification code sent to your email. Enter it below to complete registration.",
         }
+        if email_result.get("mode") == "dev-console":
+            response["debug_code"] = verification_code
+        return response
     except sqlite3.IntegrityError:
         conn.close()
         raise HTTPException(status_code=400, detail="An account with this email address already exists.")
+
+
+@router.post("/verify-code")
+def verify_email_code(req: dict):
+    email = _normalize_email(req.get("email", ""))
+    code = (req.get("code") or "").strip()
+    if not email or not code:
+        raise HTTPException(status_code=400, detail="Email and verification code are required.")
+
+    conn = sqlite3.connect(str(DB_PATH))
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    user = cursor.execute(
+        "SELECT id, email, verification_token, verification_expires_at FROM users WHERE LOWER(email) = ?",
+        (email,),
+    ).fetchone()
+
+    if not user:
+        conn.close()
+        raise HTTPException(status_code=404, detail="No account found for this email.")
+
+    expires_at = user["verification_expires_at"]
+    if not expires_at:
+        conn.close()
+        raise HTTPException(status_code=400, detail="This account has already been verified or does not need a code.")
+
+    expires_dt = datetime.datetime.strptime(expires_at, "%Y-%m-%d %H:%M:%S")
+    if expires_dt < datetime.datetime.now():
+        conn.close()
+        raise HTTPException(status_code=400, detail="This verification code has expired. Please register again.")
+
+    if str(user["verification_token"]) != str(code):
+        conn.close()
+        raise HTTPException(status_code=400, detail="Incorrect verification code.")
+
+    cursor.execute(
+        "UPDATE users SET is_verified = 1, verification_token = NULL, verification_expires_at = NULL, email_verified_at = ? WHERE id = ?",
+        (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), user["id"]),
+    )
+    conn.commit()
+    conn.close()
+
+    return {"success": True, "message": "Email verified successfully. You can now log in.", "redirect": "/login?verified=1"}
+
+
+@router.get("/verify")
+def verify_email(request: Request):
+    token = (request.query_params.get("token") or "").strip()
+    if not token:
+        raise HTTPException(status_code=400, detail="Verification token is missing.")
+
+    conn = sqlite3.connect(str(DB_PATH))
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    user = cursor.execute(
+        "SELECT id, name, email, role, is_verified, verification_expires_at FROM users WHERE verification_token = ?",
+        (token,),
+    ).fetchone()
+
+    if not user:
+        conn.close()
+        raise HTTPException(status_code=400, detail="Invalid or expired verification link.")
+
+    expires_at = user["verification_expires_at"]
+    if expires_at:
+        expires_dt = datetime.datetime.strptime(expires_at, "%Y-%m-%d %H:%M:%S")
+        if expires_dt < datetime.datetime.now():
+            conn.close()
+            raise HTTPException(status_code=400, detail="This verification link has expired. Please register again and request a new confirmation code.")
+
+    cursor.execute(
+        "UPDATE users SET is_verified = 1, verification_token = NULL, verification_expires_at = NULL, email_verified_at = ? WHERE id = ?",
+        (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), user["id"]),
+    )
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url="/login?verified=1", status_code=302)
 
 def _session_user(request: Request):
     user_id = request.cookies.get("auth_session")

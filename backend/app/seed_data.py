@@ -329,18 +329,23 @@ def seed_database():
     # Citizen accounts must be created via public registration only.
     for user in USERS_DATA:
         cursor.execute("""
-        INSERT INTO users (name, email, password, role, created_at)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO users (name, email, password, role, created_at, is_verified, verification_token, verification_expires_at, email_verified_at)
+        VALUES (?, ?, ?, ?, ?, 1, NULL, NULL, ?)
         ON CONFLICT(email) DO UPDATE SET
             name = excluded.name,
             password = excluded.password,
-            role = excluded.role
+            role = excluded.role,
+            is_verified = 1,
+            verification_token = NULL,
+            verification_expires_at = NULL,
+            email_verified_at = excluded.email_verified_at
         """, (
             user["name"],
             user["email"],
             user["password"],
             user["role"],
             user["created_at"],
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         ))
     
     # 1. Keep registry plates available for Check Owner / challan lookup.

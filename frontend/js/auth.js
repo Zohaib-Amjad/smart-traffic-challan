@@ -615,8 +615,10 @@ function requireAuth() {
   return false;
 }
 
-function requireRole(...allowedRoles) {
-  const user = getCurrentUser();
+async function requireRole(...allowedRoles) {
+  const serverUser = await ensureSessionMatchesServer();
+  const user = serverUser || getCurrentUser();
+
   if (user && allowedRoles.includes(user.role)) {
     if (user.role === 'Citizen') {
       const citizenOnlyPaths = ['/number_plate.html', '/number-plate', '/number_plate', '/citizen', '/citizen.html', '/login.html', '/login'];
@@ -636,23 +638,39 @@ function requireRole(...allowedRoles) {
   return false;
 }
 
-function enforceCitizenScope() {
-  const user = getCurrentUser();
+async function enforceCitizenScope() {
+  const serverUser = await ensureSessionMatchesServer();
+  const user = serverUser || getCurrentUser();
+  const currentPath = window.location.pathname;
+  const isLoginPage = currentPath === '/login' || currentPath === '/login.html';
+  const isRegisterPage = currentPath === '/register' || currentPath === '/register.html';
+
+  if (isRegisterPage) {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    document.cookie = 'auth_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    return true;
+  }
+
   if (!user || user.role !== 'Citizen') {
     return true;
   }
 
-  const currentPath = window.location.pathname;
-
-  if (currentPath === '/login' || currentPath === '/login.html') {
+  if (isLoginPage) {
+    const hasAuthCookie = document.cookie.split('; ').some((part) => part.startsWith('auth_session='));
+    if (!hasAuthCookie) {
+      return true;
+    }
     window.location.replace('/number_plate.html');
     return false;
   }
+
   const allowedCitizenPaths = [
     '/',
     '/index.html',
     '/login',
     '/login.html',
+    '/register',
+    '/register.html',
     '/number_plate.html',
     '/number-plate',
     '/number_plate',
@@ -662,7 +680,7 @@ function enforceCitizenScope() {
 
   const next = new URLSearchParams(window.location.search).get('next');
   const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : '/number_plate.html';
-  const isLoginFlow = (currentPath === '/login' || currentPath === '/login.html') && new URLSearchParams(window.location.search).has('next');
+  const isLoginFlow = isLoginPage && new URLSearchParams(window.location.search).has('next');
 
   const isCitizenAllowed = allowedCitizenPaths.includes(currentPath)
     || currentPath.startsWith('/challan/')
@@ -678,7 +696,7 @@ function enforceCitizenScope() {
     return true;
   }
 
-  if ((currentPath === '/login' || currentPath === '/login.html') && safeNext) {
+  if (isLoginPage && safeNext) {
     window.location.replace(safeNext);
     return false;
   }
@@ -692,6 +710,7 @@ function logout() {
   localStorage.removeItem(AUTH_STORAGE_KEY);
   sessionStorage.removeItem('lastDetectedPlate');
   sessionStorage.removeItem('lastPreviewImg');
+  document.cookie = 'auth_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   window.location.replace('/login.html');
 }
 

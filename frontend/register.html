@@ -41,31 +41,50 @@
     <div class="card" style="max-width: 440px; width: 100%; padding: 2.5rem 2rem; box-shadow: var(--shadow-lg); border-top: 4px solid var(--color-success);">
       <h2 style="font-size: 1.6rem; font-weight: 800; text-align: center; color: #0F172A; margin-bottom: 1.75rem;">Register</h2>
 
-      <form id="regForm" onsubmit="handleRegister(event)">
-        <!-- Full Name -->
-        <div class="form-group">
-          <label class="form-label">Full Name</label>
-          <input type="text" id="regName" class="text-input" placeholder="Enter Full Name" required>
+      <div id="registerMessage" style="display: none; background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; border-radius: 6px; padding: 10px 12px; margin-bottom: 1.25rem; text-align: center; font-size: 0.86rem;"></div>
+
+      <form id="regForm">
+        <div id="regFields">
+          <!-- Full Name -->
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="regName" class="text-input" placeholder="Enter Full Name" required>
+          </div>
+
+          <!-- Role -->
+          <div class="form-group">
+            <label class="form-label">Register As</label>
+            <select id="regRole" class="text-input" required>
+              <option value="Citizen">Citizen</option>
+              <option value="Officer">Traffic Police Officer</option>
+              <option value="Admin">Vehicle Registerer</option>
+            </select>
+          </div>
+
+          <!-- Email Address -->
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="regEmail" class="text-input" placeholder="Enter Email" required>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group" style="margin-bottom: 1.75rem;">
+            <label class="form-label">Password</label>
+            <input type="password" id="regPassword" class="text-input" placeholder="Enter Password" required>
+          </div>
         </div>
 
-        <!-- Email Address -->
-        <div class="form-group">
-          <label class="form-label">Email Address</label>
-          <input type="email" id="regEmail" class="text-input" placeholder="Enter Email" required>
+        <div id="verificationFields" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Verification Code</label>
+            <input type="text" id="verificationCode" class="text-input" placeholder="Enter 6-digit code" maxlength="6" required>
+          </div>
         </div>
 
-        <!-- Password -->
-        <div class="form-group" style="margin-bottom: 1.75rem;">
-          <label class="form-label">Password</label>
-          <input type="password" id="regPassword" class="text-input" placeholder="Enter Password" required>
-        </div>
-
-        <!-- Submit Button (Green #16A34A) -->
         <button type="submit" id="btnRegister" class="btn btn-success" style="width: 100%; justify-content: center; padding: 12px; font-size: 1rem; margin-bottom: 1.25rem;">
           Register
         </button>
 
-        <!-- Login Link -->
         <div style="text-align: center; font-size: 0.88rem; color: #64748B;">
           Already have an account? <a href="/login" style="color: #2563EB; font-weight: 700; text-decoration: none;">Login</a>
         </div>
@@ -79,33 +98,117 @@
 
   <script src="/static/js/auth.js?v=17"></script>
   <script>
+    const params = new URLSearchParams(window.location.search);
+    const prefilledEmail = params.get('email');
+    if (prefilledEmail) {
+      const emailInput = document.getElementById('regEmail');
+      if (emailInput) {
+        emailInput.value = prefilledEmail;
+      }
+    }
+
+    const regForm = document.getElementById('regForm');
+    const regFields = document.getElementById('regFields');
+    const verificationFields = document.getElementById('verificationFields');
+    const registerMessage = document.getElementById('registerMessage');
+    const verificationCodeInput = document.getElementById('verificationCode');
+    let pendingEmail = '';
+
+    function showMessage(text, style = 'info') {
+      registerMessage.textContent = text;
+      registerMessage.style.display = 'block';
+      if (style === 'success') {
+        registerMessage.style.background = '#ECFDF5';
+        registerMessage.style.borderColor = '#A7F3D0';
+        registerMessage.style.color = '#047857';
+      } else if (style === 'error') {
+        registerMessage.style.background = '#FEF2F2';
+        registerMessage.style.borderColor = '#FECACA';
+        registerMessage.style.color = '#B91C1C';
+      } else {
+        registerMessage.style.background = '#EFF6FF';
+        registerMessage.style.borderColor = '#BFDBFE';
+        registerMessage.style.color = '#1D4ED8';
+      }
+    }
+
     async function handleRegister(e) {
       e.preventDefault();
+
+      if (verificationFields.style.display !== 'none') {
+        const email = pendingEmail;
+        const code = verificationCodeInput.value.trim();
+        const btn = document.getElementById('btnRegister');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
+
+        try {
+          const res = await fetch('/api/auth/verify-code', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ email, code })
+          });
+          const data = await res.json();
+          if (data.success) {
+            localStorage.setItem('stcs_verified_email', email);
+            localStorage.setItem('stcs_registration_session', JSON.stringify({ email, verified: true, at: new Date().toISOString() }));
+            showMessage('Email verified successfully. Redirecting to login...', 'success');
+            setTimeout(() => window.location.href = '/login?verified=1', 900);
+          } else {
+            showMessage(data.detail || 'Verification failed.', 'error');
+          }
+        } catch (err) {
+          showMessage('Network error: ' + err.message, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = 'Register';
+        }
+        return;
+      }
+
       const name = document.getElementById('regName').value;
       const email = document.getElementById('regEmail').value;
       const password = document.getElementById('regPassword').value;
+      const role = document.getElementById('regRole').value;
       const btn = document.getElementById('btnRegister');
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating Account...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending Code...';
 
       try {
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ name, email, password })
+          body: JSON.stringify({ name, email, password, role })
         });
         const data = await res.json();
         if (data.success) {
-          window.location.href = '/login?registered=1';
+          pendingEmail = email;
+          const verificationCode = data.debug_code || '000000';
+          localStorage.setItem('stcs_pending_verification', JSON.stringify({
+            email,
+            role,
+            code: verificationCode,
+            createdAt: new Date().toISOString()
+          }));
+          regFields.style.display = 'none';
+          verificationFields.style.display = 'block';
+          verificationCodeInput.value = verificationCode;
+          verificationCodeInput.focus();
+          btn.innerHTML = 'Verify & Complete Registration';
+          const debugCode = data.debug_code ? ` Use code: ${data.debug_code}` : '';
+          showMessage(`A 6-digit verification code has been sent to ${email}.${debugCode}`, 'info');
         } else {
-          alert(data.detail || 'Registration failed.');
+          showMessage(data.detail || 'Registration failed.', 'error');
         }
       } catch (err) {
-        alert('Network error: ' + err.message);
+        showMessage('Network error: ' + err.message, 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = 'Register';
       }
+    }
+
+    if (regForm) {
+      regForm.addEventListener('submit', handleRegister);
     }
   </script>
 </body>

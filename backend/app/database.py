@@ -27,7 +27,11 @@ def init_db():
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         role TEXT DEFAULT 'Officer',
-        created_at TEXT NOT NULL
+        created_at TEXT NOT NULL,
+        is_verified INTEGER NOT NULL DEFAULT 0,
+        verification_token TEXT,
+        verification_expires_at TEXT,
+        email_verified_at TEXT
     );
     """)
     
@@ -247,6 +251,17 @@ def init_db():
     ):
         try:
             cursor.execute(f"ALTER TABLE vehicles ADD COLUMN {column} {definition}")
+        except sqlite3.OperationalError:
+            pass
+
+    for column, definition in (
+        ("is_verified", "INTEGER NOT NULL DEFAULT 0"),
+        ("verification_token", "TEXT"),
+        ("verification_expires_at", "TEXT"),
+        ("email_verified_at", "TEXT"),
+    ):
+        try:
+            cursor.execute(f"ALTER TABLE users ADD COLUMN {column} {definition}")
         except sqlite3.OperationalError:
             pass
 
