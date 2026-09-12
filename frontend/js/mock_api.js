@@ -542,20 +542,23 @@
     const originalFetch = window.fetch;
     window.fetch = async function (input, init) {
       const url = typeof input === 'string' ? input : (input && input.url ? input.url : '');
-      
+
       // If it's an API route:
       if (url.startsWith('/api/') || url.includes('/api/')) {
         try {
           const liveRes = await originalFetch.apply(this, arguments);
-          // If server returned valid JSON, use live server
           const contentType = liveRes.headers.get('content-type') || '';
-          if (liveRes.ok && contentType.includes('application/json')) {
+          // Always trust the real backend JSON/HTML response and do not hide it
+          // behind the offline mock if the server is reachable.
+          if (contentType.includes('application/json')) {
             return liveRes;
           }
-          // If server returned 404/500/HTML (e.g. Vercel static hosting), fallback to mock
+          if (contentType.includes('text/html') || contentType.includes('text/plain')) {
+            return liveRes;
+          }
           return await handleMockRequest(url, init);
         } catch (netErr) {
-          // Network error or offline -> handle locally
+          // Network error or offline -> handle locally.
           return await handleMockRequest(url, init);
         }
       }

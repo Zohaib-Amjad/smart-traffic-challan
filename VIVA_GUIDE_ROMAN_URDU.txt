@@ -74,6 +74,14 @@ mein login kar sakta hai aur uska dashboard sirf apni citizen portal /number-pla
 par limited hota hai. Dashboard, vehicle registry, challan generation, reports,
 aur officer/admin workflows usay block kar diye gaye hain.
 
+Registration ke baad account seedha database mein save hota hai aur user login
+page par redirect hota hai. Email verification code, SMTP setup aur extra
+verification step is workflow mein use nahi hotay.
+
+Login page par ek seeded Traffic Police Officer option hai: admin1@gmail.com.
+Is ka password filhaal blank hai. Vehicle Registerer open-access option se
+email aur password ke baghair registry workspace khol sakta hai.
+
 Demo accounts:
 - Traffic Police Officer: officer@traffic.gov.pk / admin123
 - Traffic Police Officer 2: officer2@traffic.gov.pk / admin123
@@ -91,6 +99,11 @@ API: POST /api/auth/login
 Backend registered email aur password match karta hai. Successful login par
 8-hour HttpOnly auth_session cookie set hoti hai. Frontend user object ko
 localStorage.currentUser mein rakhta hai. Logout dono values clear karta hai.
+
+If the user tries to log in with an unregistered email, the browser must hand
+off to the registration page with that email prefilled. The client fetch shim
+must keep the live FastAPI JSON response and only fall back to the local mock
+engine when the backend endpoint is actually unreachable.
 
 Important limitation: password plain text mein stored hai. Production mein
 password hashing, signed sessions aur proper expiry zaroori hain.

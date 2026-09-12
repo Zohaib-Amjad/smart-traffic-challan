@@ -1,10 +1,12 @@
 """FastAPI entry point: startup, router registration, static files, and pages."""
 
 import os
-from fastapi import FastAPI, Depends
+from urllib.parse import quote
+from fastapi import FastAPI, Depends, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse, JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import (
     STATIC_DIR, EVIDENCE_DIR, PDFS_DIR, SYSTEM_VERSION, POLICE_DEPT_NAME
@@ -17,6 +19,25 @@ app = FastAPI(
     description="Automated Traffic Surveillance, Violation Detection, and E-Challan System",
     version=SYSTEM_VERSION
 )
+
+@app.exception_handler(StarletteHTTPException)
+async def html_safe_http_exception(request: Request, exc: StarletteHTTPException):
+    # Keep API JSON routes returning normal FastAPI error payloads while
+    # HTML page routes redirect to the login page instead of exposing the
+    # internal pretty-print body above the app shell.
+    accept = (request.headers.get("accept") or "").lower()
+    is_html_request = "text/html" in accept or request.url.path.endswith(".html")
+    if is_html_request:
+        location = exc.headers.get("location") if exc.headers else None
+        if location:
+            return RedirectResponse(url=location, status_code=exc.status_code)
+
+        next_path = request.url.path
+        if request.url.query:
+            next_path = f"{next_path}?{request.url.query}"
+        return RedirectResponse(url=f"/login?next={quote(next_path)}", status_code=307)
+
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 # Allow the browser frontend to call the API during local development.
 app.add_middleware(

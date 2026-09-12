@@ -24,6 +24,16 @@ python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --
 
 Open `http://127.0.0.1:8000/`. API docs: `http://127.0.0.1:8000/docs`.
 
+### Registration
+
+Registration saves the account directly in the database and redirects to the
+login page. No email verification code or SMTP configuration is required.
+
+The login page includes one seeded Traffic Police Officer choice:
+`admin1@gmail.com`, with a blank password as requested. Vehicle Registerer is
+available through an open-access special option and does not require the user to
+enter an email or password.
+
 ### Docker
 
 ```powershell

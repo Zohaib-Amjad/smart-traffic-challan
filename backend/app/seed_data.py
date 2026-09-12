@@ -23,11 +23,25 @@ USERS_DATA = [
         "created_at": "2026-08-10 08:00:00"
     },
     {
+        "name": "Traffic Police Officer 1",
+        "email": "admin1@gmail.com",
+        "password": "",
+        "role": "Officer",
+        "created_at": "2026-09-12 08:00:00"
+    },
+    {
         "name": "Vehicle Registration Officer",
         "email": "admin@traffic.gov.pk",
         "password": "admin123",
         "role": "Admin",
         "created_at": "2026-08-10 08:00:00"
+    },
+    {
+        "name": "Vehicle Registerer Open Access",
+        "email": "vehicle-registerer@local.test",
+        "password": "",
+        "role": "Admin",
+        "created_at": "2026-09-12 08:00:00"
     }
 ]
 
@@ -324,6 +338,7 @@ def seed_database():
         "citizen@example.com",
         "demo.citizen@traffic.gov.pk",
     ))
+    cursor.execute("DELETE FROM users WHERE email = ?", ("admin2@gmail.com",))
 
     # Keep the local demo officer/admin identities available for role-based login.
     # Citizen accounts must be created via public registration only.

@@ -47,13 +47,13 @@
         <div id="regFields">
           <!-- Full Name -->
           <div class="form-group">
-            <label class="form-label">Full Name</label>
+            <label class="form-label" for="regName">Full Name</label>
             <input type="text" id="regName" class="text-input" placeholder="Enter Full Name" required>
           </div>
 
           <!-- Role -->
           <div class="form-group">
-            <label class="form-label">Register As</label>
+            <label class="form-label" for="regRole">Register As</label>
             <select id="regRole" class="text-input" required>
               <option value="Citizen">Citizen</option>
               <option value="Officer">Traffic Police Officer</option>
@@ -63,21 +63,19 @@
 
           <!-- Email Address -->
           <div class="form-group">
-            <label class="form-label">Email Address</label>
+            <label class="form-label" for="regEmail">Email Address</label>
             <input type="email" id="regEmail" class="text-input" placeholder="Enter Email" required>
           </div>
 
           <!-- Password -->
           <div class="form-group" style="margin-bottom: 1.75rem;">
-            <label class="form-label">Password</label>
-            <input type="password" id="regPassword" class="text-input" placeholder="Enter Password" required>
-          </div>
-        </div>
-
-        <div id="verificationFields" style="display: none;">
-          <div class="form-group">
-            <label class="form-label">Verification Code</label>
-            <input type="text" id="verificationCode" class="text-input" placeholder="Enter 6-digit code" maxlength="6" required>
+            <label class="form-label" for="regPassword">Password</label>
+            <div style="position: relative;">
+              <input type="password" id="regPassword" class="text-input" placeholder="Enter Password" required style="padding-right: 3rem;">
+              <button type="button" class="password-toggle" data-password-target="regPassword" aria-label="Show password" title="Show password" style="position: absolute; top: 50%; right: 0.75rem; transform: translateY(-50%); border: 0; background: transparent; color: #64748B; cursor: pointer; padding: 0.35rem;">
+                <i class="fa-solid fa-eye" aria-hidden="true"></i>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -108,11 +106,27 @@
     }
 
     const regForm = document.getElementById('regForm');
-    const regFields = document.getElementById('regFields');
-    const verificationFields = document.getElementById('verificationFields');
     const registerMessage = document.getElementById('registerMessage');
-    const verificationCodeInput = document.getElementById('verificationCode');
-    let pendingEmail = '';
+
+    function setFieldError(fieldId, hasError) {
+      const field = document.getElementById(fieldId);
+      if (!field) return;
+      field.style.borderColor = hasError ? '#dc2626' : '#bfdbfe';
+      field.style.boxShadow = hasError ? '0 0 0 3px rgba(220, 38, 38, 0.12)' : 'none';
+      field.style.background = hasError ? '#fef2f2' : '#f8fbff';
+    }
+
+    function markRegistrationFields() {
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const role = document.getElementById('regRole').value;
+      setFieldError('regName', !name);
+      setFieldError('regEmail', !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+      setFieldError('regPassword', !password || password.length < 6);
+      setFieldError('regRole', !role);
+      return !!name && !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && !!password && password.length >= 6 && !!role;
+    }
 
     function showMessage(text, style = 'info') {
       registerMessage.textContent = text;
@@ -132,37 +146,27 @@
       }
     }
 
+    document.querySelectorAll('.password-toggle').forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const input = document.getElementById(toggle.dataset.passwordTarget);
+        const icon = toggle.querySelector('i');
+        const isVisible = input.type === 'text';
+        input.type = isVisible ? 'password' : 'text';
+        toggle.setAttribute('aria-label', isVisible ? 'Show password' : 'Hide password');
+        toggle.title = isVisible ? 'Show password' : 'Hide password';
+        icon.className = isVisible ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+      });
+    });
+
     async function handleRegister(e) {
       e.preventDefault();
 
-      if (verificationFields.style.display !== 'none') {
-        const email = pendingEmail;
-        const code = verificationCodeInput.value.trim();
-        const btn = document.getElementById('btnRegister');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
-
-        try {
-          const res = await fetch('/api/auth/verify-code', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ email, code })
-          });
-          const data = await res.json();
-          if (data.success) {
-            localStorage.setItem('stcs_verified_email', email);
-            localStorage.setItem('stcs_registration_session', JSON.stringify({ email, verified: true, at: new Date().toISOString() }));
-            showMessage('Email verified successfully. Redirecting to login...', 'success');
-            setTimeout(() => window.location.href = '/login?verified=1', 900);
-          } else {
-            showMessage(data.detail || 'Verification failed.', 'error');
-          }
-        } catch (err) {
-          showMessage('Network error: ' + err.message, 'error');
-        } finally {
-          btn.disabled = false;
-          btn.innerHTML = 'Register';
-        }
+      if (!markRegistrationFields()) {
+        const invalidField = !document.getElementById('regName').value.trim() ? 'regName'
+          : (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('regEmail').value.trim()) ? 'regEmail'
+          : (!document.getElementById('regPassword').value || document.getElementById('regPassword').value.length < 6 ? 'regPassword' : 'regRole'));
+        setFieldError(invalidField, true);
+        showMessage('Please correct the highlighted field(s) before continuing.', 'error');
         return;
       }
 
@@ -172,7 +176,7 @@
       const role = document.getElementById('regRole').value;
       const btn = document.getElementById('btnRegister');
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending Code...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registering...';
 
       try {
         const res = await fetch('/api/auth/register', {
@@ -180,31 +184,29 @@
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ name, email, password, role })
         });
-        const data = await res.json();
+        const data = await readApiResponse(res);
         if (data.success) {
-          pendingEmail = email;
-          const verificationCode = data.debug_code || '000000';
-          localStorage.setItem('stcs_pending_verification', JSON.stringify({
-            email,
-            role,
-            code: verificationCode,
-            createdAt: new Date().toISOString()
-          }));
-          regFields.style.display = 'none';
-          verificationFields.style.display = 'block';
-          verificationCodeInput.value = verificationCode;
-          verificationCodeInput.focus();
-          btn.innerHTML = 'Verify & Complete Registration';
-          const debugCode = data.debug_code ? ` Use code: ${data.debug_code}` : '';
-          showMessage(`A 6-digit verification code has been sent to ${email}.${debugCode}`, 'info');
+          window.location.href = '/login?registered=1';
         } else {
           showMessage(data.detail || 'Registration failed.', 'error');
         }
       } catch (err) {
         showMessage('Network error: ' + err.message, 'error');
+        btn.innerHTML = 'Register';
       } finally {
         btn.disabled = false;
       }
+    }
+
+    async function readApiResponse(response) {
+      const contentType = response.headers.get('content-type') || '';
+      const body = contentType.includes('application/json')
+        ? await response.json()
+        : { detail: (await response.text()).replace(/<[^>]*>/g, '').trim() };
+      if (!response.ok) {
+        throw new Error(body.detail || `Request failed (${response.status})`);
+      }
+      return body;
     }
 
     if (regForm) {

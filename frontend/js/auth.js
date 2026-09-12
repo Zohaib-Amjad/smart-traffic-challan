@@ -534,12 +534,19 @@
     const originalFetch = window.fetch;
     window.fetch = async function (input, init) {
       const url = typeof input === 'string' ? input : (input && input.url ? input.url : '');
-      
+
       if (url.startsWith('/api/') || url.includes('/api/')) {
         try {
           const liveRes = await originalFetch.apply(this, arguments);
           const contentType = liveRes.headers.get('content-type') || '';
-          if (liveRes.ok && contentType.includes('application/json')) {
+          // Trust the live backend response whenever it is reachable.
+          // That allows the login page to redirect to register when the
+          // account is missing, and lets the register page display the
+          // verification UI after a real 200 JSON payload.
+          if (contentType.includes('application/json')) {
+            return liveRes;
+          }
+          if (contentType.includes('text/html') || contentType.includes('text/plain')) {
             return liveRes;
           }
           return await handleMockRequest(url, init);
@@ -553,7 +560,21 @@
   }
 })();
 
+function clearClientAuthState() {
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+  sessionStorage.removeItem('lastDetectedPlate');
+  sessionStorage.removeItem('lastPreviewImg');
+  document.cookie = 'auth_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
+  const path = window.location.pathname;
+  if (path === '/register' || path === '/register.html' || path === '/login' || path === '/login.html') {
+    const hasCookie = document.cookie.split('; ').some((part) => part.startsWith('auth_session='));
+    if (!hasCookie) {
+      clearClientAuthState();
+    }
+  }
   await ensureSessionMatchesServer();
   enforceCitizenScope();
 });
@@ -570,21 +591,21 @@ async function ensureSessionMatchesServer() {
   try {
     const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
     if (!res.ok) {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
+      clearClientAuthState();
       return null;
     }
 
     const data = await res.json();
     const serverUser = data?.user || null;
     if (!serverUser) {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
+      clearClientAuthState();
       return null;
     }
 
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(serverUser));
     return serverUser;
   } catch (error) {
-    localStorage.removeItem(AUTH_STORAGE_KEY);
+    clearClientAuthState();
     return null;
   }
 }

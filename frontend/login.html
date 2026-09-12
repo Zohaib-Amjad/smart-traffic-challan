@@ -47,14 +47,28 @@
       <form id="loginForm" onsubmit="handleLogin(event)">
         <!-- Email Address -->
         <div class="form-group" id="loginEmailInputGroup">
-          <label class="form-label">Email Address</label>
+          <label class="form-label" for="loginEmail">Email Address</label>
           <input type="email" id="loginEmail" class="text-input" placeholder="Enter Email Address" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="specialAccount">Special role account</label>
+          <select id="specialAccount" class="text-input">
+            <option value="">Select an account</option>
+            <option value="admin1@gmail.com" data-allow-blank="true">Traffic Police Officer 1</option>
+            <option value="vehicle-registerer" data-email="vehicle-registerer@local.test" data-allow-blank="true">Vehicle Registerer (open access)</option>
+          </select>
         </div>
 
         <!-- Password -->
         <div class="form-group" style="margin-bottom: 1.75rem;">
-          <label class="form-label">Password</label>
-          <input type="password" id="loginPassword" class="text-input" placeholder="Enter Password" required>
+          <label class="form-label" for="loginPassword">Password</label>
+          <div style="position: relative;">
+            <input type="password" id="loginPassword" class="text-input" placeholder="Enter Password" style="padding-right: 3rem;">
+            <button type="button" class="password-toggle" data-password-target="loginPassword" aria-label="Show password" title="Show password" style="position: absolute; top: 50%; right: 0.75rem; transform: translateY(-50%); border: 0; background: transparent; color: #64748B; cursor: pointer; padding: 0.35rem;">
+              <i class="fa-solid fa-eye" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
 
         <!-- Submit Button (Blue #2563EB) -->
@@ -64,7 +78,7 @@
 
         <!-- Register Link -->
         <div style="text-align: center; font-size: 0.88rem; color: #64748B;">
-          Don't have an account? <a href="/register" style="color: #2563EB; font-weight: 700; text-decoration: none;">Register</a>
+          Don't have an account? <a href="/register" style="color: #2563EB; font-weight: 700; text-decoration: none;">Register with special role</a>
         </div>
       </form>
     </div>
@@ -79,7 +93,7 @@
     const params = new URLSearchParams(window.location.search);
     if (params.get('registered') === '1') {
       const msg = document.getElementById('registeredMessage');
-      msg.textContent = 'Your account has been created. Check your inbox and verify your email before logging in.';
+      msg.textContent = 'Your account has been created. You can now sign in.';
       msg.style.display = 'block';
     }
     if (params.get('verified') === '1') {
@@ -88,13 +102,60 @@
       msg.style.background = '#ECFDF5';
       msg.style.borderColor = '#A7F3D0';
       msg.style.color = '#047857';
-      msg.textContent = 'Email verified successfully. You can now sign in.';
+      msg.textContent = 'Your account is ready. You can now sign in.';
+    }
+
+    document.getElementById('specialAccount').addEventListener('change', (event) => {
+      const option = event.target.selectedOptions[0];
+      const emailGroup = document.getElementById('loginEmailInputGroup');
+      const emailInput = document.getElementById('loginEmail');
+      if (event.target.value === 'vehicle-registerer') {
+        emailGroup.style.display = 'none';
+        emailInput.value = option.dataset.email;
+      } else {
+        emailGroup.style.display = '';
+        emailInput.value = event.target.value || '';
+      }
+    });
+
+    document.querySelectorAll('.password-toggle').forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const input = document.getElementById(toggle.dataset.passwordTarget);
+        const icon = toggle.querySelector('i');
+        const isVisible = input.type === 'text';
+        input.type = isVisible ? 'password' : 'text';
+        toggle.setAttribute('aria-label', isVisible ? 'Show password' : 'Hide password');
+        toggle.title = isVisible ? 'Show password' : 'Hide password';
+        icon.className = isVisible ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+      });
+    });
+
+    function setFieldError(fieldId, hasError) {
+      const field = document.getElementById(fieldId);
+      if (!field) return;
+      field.style.borderColor = hasError ? '#dc2626' : '#bfdbfe';
+      field.style.boxShadow = hasError ? '0 0 0 3px rgba(220, 38, 38, 0.12)' : 'none';
+      field.style.background = hasError ? '#fef2f2' : '#f8fbff';
     }
 
     async function handleLogin(e) {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
+      const selectedAccount = document.getElementById('specialAccount').selectedOptions[0];
+      const email = selectedAccount.dataset.email || document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
+      const emailValid = !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      const passwordValid = selectedAccount.dataset.allowBlank === 'true'
+        ? password.length === 0 || password.length >= 6
+        : password.length >= 6;
+
+      setFieldError('loginEmail', !emailValid);
+      setFieldError('loginPassword', !passwordValid);
+
+      if (!emailValid || !passwordValid) {
+        alert('Please fix the highlighted field(s) before logging in.');
+        return;
+      }
+
       const btn = document.getElementById('btnLogin');
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
@@ -113,7 +174,7 @@
           if (res.status === 404 || /register first|No account found/i.test(data.detail || '')) {
             localStorage.removeItem('currentUser');
             document.cookie = 'auth_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            window.location.href = `/register?email=${encodeURIComponent(email)}`;
+            window.location.replace(`/register?email=${encodeURIComponent(email)}`);
             return;
           }
           alert(data.detail || 'Login failed.');
