@@ -27,14 +27,25 @@ def login_user(req: LoginRequest, response: Response):
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    
-    cursor.execute("SELECT id, name, email, role FROM users WHERE email = ? AND password = ?", (req.email.strip().lower(), req.password))
+
+    requested_role = (req.role or "").strip().title()
+    cursor.execute(
+        "SELECT id, name, email, role FROM users WHERE email = ? AND password = ?",
+        (req.email.strip().lower(), req.password),
+    )
     user = cursor.fetchone()
     conn.close()
-    
-    if not user or user["role"] != req.role:
+
+    if not user:
         raise HTTPException(status_code=401, detail="Invalid email address or password.")
 
+    if user["role"] != requested_role:
+        raise HTTPException(
+            status_code=403,
+            detail="This account is not allowed to log in as that role. Use the correct role for your registered account.",
+        )
+
+    # Public accounts are limited to the citizen portal only.
     response.set_cookie(
         key="auth_session",
         value=str(user["id"]),
@@ -110,6 +121,26 @@ def require_roles(*allowed_roles):
     """Build a dependency that permits only the requested database roles."""
     def dependency(request: Request):
         user = require_user(request)
+        if user["role"] not in allowed_roles:
+            raise HTTPException(
+                status_code=403,
+                detail="Your account does not have access to this feature.",
+            )
+        return user
+    return dependency
+
+
+def require_roles_or_redirect(*allowed_roles):
+    """HTML page guard: redirect guests to the login page instead of showing JSON errors."""
+    def dependency(request: Request):
+        user = _session_user(request)
+        if not user:
+            next_url = f"{request.url.path}?{request.url.query}" if request.url.query else request.url.path
+            raise HTTPException(
+                status_code=307,
+                detail="Please sign in.",
+                headers={"Location": f"/login?next={next_url}"},
+            )
         if user["role"] not in allowed_roles:
             raise HTTPException(
                 status_code=403,

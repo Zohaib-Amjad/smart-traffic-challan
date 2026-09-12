@@ -80,37 +80,37 @@ def serve_traffic_rules():
 
 @app.get("/dashboard")
 @app.get("/dashboard.html")
-def serve_dashboard(_: dict = Depends(auth.require_roles("Officer"))):
+def serve_dashboard(_: dict = Depends(auth.require_roles_or_redirect("Officer"))):
     return html_page("dashboard.html")
 
 @app.get("/vehicles")
 @app.get("/vehicles/add")
 @app.get("/vehicles.html")
-def serve_vehicles(_: dict = Depends(auth.require_roles("Officer", "Admin"))):
+def serve_vehicles(_: dict = Depends(auth.require_roles_or_redirect("Officer", "Admin"))):
     return html_page("vehicles.html")
 
 @app.get("/number-plate")
 @app.get("/number_plate.html")
-def serve_number_plate(_: dict = Depends(auth.require_roles("Citizen", "Officer"))):
+def serve_number_plate(_: dict = Depends(auth.require_roles_or_redirect("Citizen", "Officer"))):
     return html_page("number_plate.html")
 
 @app.get("/generate-challan")
 @app.get("/generate_challan.html")
-def serve_generate_challan(_: dict = Depends(auth.require_roles("Officer"))):
+def serve_generate_challan(_: dict = Depends(auth.require_roles_or_redirect("Officer"))):
     return html_page("generate_challan.html")
 
 @app.get("/challan/{challan_id}")
-def serve_challan_page(challan_id: str, _: dict = Depends(auth.require_roles("Officer"))):
+def serve_challan_page(challan_id: str, _: dict = Depends(auth.require_roles_or_redirect("Officer"))):
     return html_page("challan_detail.html")
 
 @app.get("/challans")
 @app.get("/challans.html")
-def serve_challans(_: dict = Depends(auth.require_roles("Officer"))):
+def serve_challans(_: dict = Depends(auth.require_roles_or_redirect("Officer"))):
     return html_page("challans.html")
 
 @app.get("/reports")
 @app.get("/reports.html")
-def serve_reports(_: dict = Depends(auth.require_roles("Officer"))):
+def serve_reports(_: dict = Depends(auth.require_roles_or_redirect("Officer"))):
     return html_page("reports.html")
 
 @app.get("/citizen")

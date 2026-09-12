@@ -105,7 +105,8 @@
       const emailInput = document.getElementById('loginEmail');
       const officerEmail = document.getElementById('loginOfficerEmail');
       const demoEmails = {
-        Citizen: 'citizen@test.pk',
+        Citizen: '',
+        Officer: 'officer@traffic.gov.pk',
         Admin: 'admin@traffic.gov.pk'
       };
       inputGroup.style.display = isOfficer ? 'none' : '';
@@ -114,6 +115,9 @@
       officerEmail.required = isOfficer;
       if (!isOfficer) {
         emailInput.value = demoEmails[role] || '';
+      }
+      if (isOfficer) {
+        officerEmail.value = demoEmails.Officer || 'officer@traffic.gov.pk';
       }
     }
 

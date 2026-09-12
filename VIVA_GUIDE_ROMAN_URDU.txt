@@ -50,6 +50,9 @@ Protected: /dashboard, /vehicles, /number-plate, /generate-challan,
 /challans, /challan/{id}, /reports
 
 Guest protected URL khole to server /login?next=... par redirect karta hai.
+Yeh next value sirf valid local path ke liye preserve hota hai; unsafe ya
+empty values role default se replace ho jate hain. Citizen ka default citizen
+portal /number-plate tak hi jata hai.
 Sirf users table mein registered user valid auth_session ke sath pages khol
 sakta hai.
 
@@ -66,13 +69,20 @@ API: POST /api/auth/register
 
 Name, email aur password users table mein save hotay hain. Email lowercase hoti
 hai. Duplicate email reject hoti hai. Public registration ka role Citizen hota
-hai; Officer aur Admin privileged accounts hain.
+hai; Officer aur Admin privileged accounts hain. Citizen account sirf usi role
+mein login kar sakta hai aur uska dashboard sirf apni citizen portal /number-plate
+par limited hota hai. Dashboard, vehicle registry, challan generation, reports,
+aur officer/admin workflows usay block kar diye gaye hain.
 
 Demo accounts:
-- Citizen: citizen@test.pk / citizen123
 - Traffic Police Officer: officer@traffic.gov.pk / admin123
 - Traffic Police Officer 2: officer2@traffic.gov.pk / admin123
 - Vehicle Registerer/System Admin: admin@traffic.gov.pk / admin123
+
+Citizen registration is public, but built-in demo citizen account is not used as
+a default login credential. New citizen users must register and then log in with
+that exact account; citizen role is restricted to the citizen portal and cannot
+access officer/admin workflows.
 
 Login:
 URL: /login

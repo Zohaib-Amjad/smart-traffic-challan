@@ -28,13 +28,6 @@ USERS_DATA = [
         "password": "admin123",
         "role": "Admin",
         "created_at": "2026-08-10 08:00:00"
-    },
-    {
-        "name": "Muhammad Usman Khan (Citizen)",
-        "email": "citizen@test.pk",
-        "password": "citizen123",
-        "role": "Citizen",
-        "created_at": "2026-08-10 08:00:00"
     }
 ]
 
@@ -324,7 +317,16 @@ def seed_database():
     conn = sqlite3.connect(str(DB_PATH))
     cursor = conn.cursor()
 
-    # Keep the three local demo identities available for role-based login.
+    # Remove built-in demo citizen identities so public registration is the only route
+    # to create a citizen account. Keep officer/admin demo accounts available.
+    cursor.execute("DELETE FROM users WHERE email IN (?, ?, ?)", (
+        "citizen@test.pk",
+        "citizen@example.com",
+        "demo.citizen@traffic.gov.pk",
+    ))
+
+    # Keep the local demo officer/admin identities available for role-based login.
+    # Citizen accounts must be created via public registration only.
     for user in USERS_DATA:
         cursor.execute("""
         INSERT INTO users (name, email, password, role, created_at)

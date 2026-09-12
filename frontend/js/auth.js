@@ -553,13 +553,51 @@
   }
 })();
 
+window.addEventListener('DOMContentLoaded', async () => {
+  await ensureSessionMatchesServer();
+  enforceCitizenScope();
+});
+
 // Shared browser authentication helper used by every protected page.
 const AUTH_STORAGE_KEY = 'currentUser';
+
+async function ensureSessionMatchesServer() {
+  const storedUser = getCurrentUser();
+  if (!storedUser) {
+    return null;
+  }
+
+  try {
+    const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+    if (!res.ok) {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      return null;
+    }
+
+    const data = await res.json();
+    const serverUser = data?.user || null;
+    if (!serverUser) {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      return null;
+    }
+
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(serverUser));
+    return serverUser;
+  } catch (error) {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    return null;
+  }
+}
 
 function getCurrentUser() {
   // Corrupted browser storage is treated as a logged-out state.
   try {
-    return JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || 'null');
+    const storedUser = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || 'null');
+    if (!storedUser || !storedUser.role) {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      return null;
+    }
+    return storedUser;
   } catch (error) {
     localStorage.removeItem(AUTH_STORAGE_KEY);
     return null;
@@ -580,12 +618,72 @@ function requireAuth() {
 function requireRole(...allowedRoles) {
   const user = getCurrentUser();
   if (user && allowedRoles.includes(user.role)) {
+    if (user.role === 'Citizen') {
+      const citizenOnlyPaths = ['/number_plate.html', '/number-plate', '/number_plate', '/citizen', '/citizen.html', '/login.html', '/login'];
+      const currentPath = window.location.pathname;
+      if (!citizenOnlyPaths.includes(currentPath) && !currentPath.startsWith('/challan/') && !currentPath.startsWith('/challans')) {
+        const next = new URLSearchParams(window.location.search).get('next');
+        const target = next && next.startsWith('/') && !next.startsWith('//') ? next : '/number_plate.html';
+        window.location.replace(target);
+        return false;
+      }
+    }
     return true;
   }
 
   const next = `${window.location.pathname}${window.location.search}`;
   window.location.replace(user ? '/index.html' : `/login.html?next=${encodeURIComponent(next)}`);
   return false;
+}
+
+function enforceCitizenScope() {
+  const user = getCurrentUser();
+  if (!user || user.role !== 'Citizen') {
+    return true;
+  }
+
+  const currentPath = window.location.pathname;
+
+  if (currentPath === '/login' || currentPath === '/login.html') {
+    window.location.replace('/number_plate.html');
+    return false;
+  }
+  const allowedCitizenPaths = [
+    '/',
+    '/index.html',
+    '/login',
+    '/login.html',
+    '/number_plate.html',
+    '/number-plate',
+    '/number_plate',
+    '/citizen.html',
+    '/citizen'
+  ];
+
+  const next = new URLSearchParams(window.location.search).get('next');
+  const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : '/number_plate.html';
+  const isLoginFlow = (currentPath === '/login' || currentPath === '/login.html') && new URLSearchParams(window.location.search).has('next');
+
+  const isCitizenAllowed = allowedCitizenPaths.includes(currentPath)
+    || currentPath.startsWith('/challan/')
+    || currentPath.startsWith('/challans')
+    || currentPath.startsWith('/api/');
+
+  if (!isCitizenAllowed) {
+    window.location.replace(safeNext);
+    return false;
+  }
+
+  if (isLoginFlow) {
+    return true;
+  }
+
+  if ((currentPath === '/login' || currentPath === '/login.html') && safeNext) {
+    window.location.replace(safeNext);
+    return false;
+  }
+
+  return true;
 }
 
 function logout() {
@@ -630,17 +728,20 @@ function redirectAfterAuth(defaultPath = null) {
   const roleDefault = user && user.role === 'Citizen'
     ? '/number_plate.html'
     : (user && user.role === 'Admin' ? '/vehicles.html' : '/dashboard.html');
-  let destination = next && next.startsWith('/') && !next.startsWith('//')
-    ? next
-    : (defaultPath || roleDefault);
+
+  const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : null;
+  let destination = safeNext || (defaultPath || roleDefault);
 
   if (user && user.role === 'Citizen') {
-    destination = '/number_plate.html';
+    const citizenOnlyPaths = ['/number_plate.html', '/number-plate', '/number_plate', '/challan/', '/challans'];
+    const allowedCitizenDestination = citizenOnlyPaths.some((path) => destination === path || destination.startsWith(path));
+    destination = allowedCitizenDestination ? destination : '/number_plate.html';
   } else if (user && user.role === 'Admin') {
     destination = '/vehicles.html';
   } else if (user && user.role === 'Officer') {
     destination = '/dashboard.html';
   }
+
   window.location.replace(destination);
 }
 
@@ -828,7 +929,7 @@ function mountAppNav() {
 
   if (mode === 'public') {
     nav.innerHTML = `
-      <a href="/login.html?next=${encodeURIComponent('/number_plate.html')}" class="nav-item"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Vehicle Check</a>
+      <a href="/login.html?next=${encodeURIComponent('/number_plate.html')}" class="nav-item"><i class="fa-solid fa-wand-magic-sparkles"></i> Vehicle Details</a>
       <a href="/login.html" class="nav-item">Login</a>
       <a href="/register.html" class="nav-item">Sign up</a>`;
     return;
@@ -842,7 +943,7 @@ function mountAppNav() {
     }
     if (user.role === 'Citizen') {
       nav.innerHTML = `
-        <a href="/number_plate.html" class="nav-item"><i class="fa-solid fa-car"></i> Citizen Portal</a>
+        <a href="/number_plate.html" class="nav-item"><i class="fa-solid fa-car"></i> My Details</a>
         <a href="#" class="nav-item nav-logout" onclick="logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>`;
       return;
     }

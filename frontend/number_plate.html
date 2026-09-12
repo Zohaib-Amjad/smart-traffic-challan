@@ -262,28 +262,41 @@
       const list = document.getElementById('citizenChallanList');
       try {
         const res = await fetch('/api/citizen/challans');
-        if (!res.ok) throw new Error('Could not load challans.');
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.detail || 'Could not load challans.');
+        }
+
         const data = await res.json();
-        if (!data.challans.length) {
+        const challans = Array.isArray(data?.challans) ? data.challans : [];
+
+        if (!challans.length) {
           list.innerHTML = '<p style="color: #64748B; margin: 0;">No challans are linked to your account.</p>';
           return;
         }
-        list.innerHTML = data.challans.map((challan) => {
-          const paid = String(challan.status).toLowerCase() === 'paid';
+
+        list.innerHTML = challans.map((challan) => {
+          const paid = String(challan?.status || '').toLowerCase() === 'paid';
+          const challanNo = escapeCitizenText(challan?.challan_no || 'N/A');
+          const plateNumber = escapeCitizenText(challan?.plate_number || 'N/A');
+          const violationName = escapeCitizenText(challan?.violation_name || 'Traffic violation');
+          const fineAmount = Number(challan?.fine_amount || 0);
+          const encodedNo = encodeURIComponent(String(challan?.challan_no || ''));
+
           return `<article style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; background: #F8FAFC;">
             <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-              <strong>${escapeCitizenText(challan.challan_no)}</strong>
-              <span class="status-pill ${paid ? 'paid' : 'unpaid'}">${escapeCitizenText(challan.status)}</span>
+              <strong>${challanNo}</strong>
+              <span class="status-pill ${paid ? 'paid' : 'unpaid'}">${escapeCitizenText(challan?.status || 'Pending')}</span>
             </div>
-            <div style="margin-top: 6px; color: #475569; font-size: 0.86rem;">${escapeCitizenText(challan.plate_number)} · ${escapeCitizenText(challan.violation_name)}</div>
+            <div style="margin-top: 6px; color: #475569; font-size: 0.86rem;">${plateNumber} · ${violationName}</div>
             <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
-              <span style="font-weight: 800; color: #0F172A;">PKR ${Number(challan.fine_amount).toLocaleString()}</span>
-              ${paid ? '<span style="color: #15803D; font-size: 0.82rem;">Payment recorded</span>' : `<button class="btn btn-success btn-sm" onclick="payCitizenChallan('${encodeURIComponent(challan.challan_no)}')"><i class="fa-solid fa-credit-card"></i> Pay (Demo)</button>`}
+              <span style="font-weight: 800; color: #0F172A;">PKR ${fineAmount.toLocaleString()}</span>
+              ${paid ? '<span style="color: #15803D; font-size: 0.82rem;">Payment recorded</span>' : `<button class="btn btn-success btn-sm" onclick="payCitizenChallan('${encodedNo}')"><i class="fa-solid fa-credit-card"></i> Pay (Demo)</button>`}
             </div>
           </article>`;
         }).join('');
       } catch (error) {
-        list.innerHTML = `<p style="color: #B91C1C; margin: 0;">${escapeCitizenText(error.message)}</p>`;
+        list.innerHTML = `<p style="color: #B91C1C; margin: 0;">${escapeCitizenText(error.message || 'Unable to load challans.')}</p>`;
       }
     }
 
