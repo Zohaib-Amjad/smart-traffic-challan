@@ -26,7 +26,7 @@ def init_db():
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        role TEXT DEFAULT 'Officer',
+        role TEXT NOT NULL DEFAULT 'Citizen',
         created_at TEXT NOT NULL,
         is_verified INTEGER NOT NULL DEFAULT 0,
         verification_token TEXT,
@@ -34,6 +34,22 @@ def init_db():
         email_verified_at TEXT
     );
     """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS allowed_emails (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        role TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    """)
+    cursor.executemany(
+        "INSERT OR IGNORE INTO allowed_emails (email, role) VALUES (?, ?)",
+        (
+            ("officer1@example.com", "Traffic Police Officer"),
+            ("officer2@example.com", "Traffic Police Officer"),
+        ),
+    )
     
     # 2. Vehicles: registered plate and owner information.
     cursor.execute("""
@@ -253,6 +269,43 @@ def init_db():
             cursor.execute(f"ALTER TABLE vehicles ADD COLUMN {column} {definition}")
         except sqlite3.OperationalError:
             pass
+
+    # Normalize legacy role labels while keeping existing databases compatible.
+    cursor.execute(
+        """UPDATE users SET role = CASE role
+        WHEN 'Officer' THEN 'Traffic Police Officer'
+        WHEN 'Admin' THEN 'Vehicle Registerer'
+        ELSE role END
+        WHERE role IN ('Officer', 'Admin')"""
+    )
+    cursor.execute("""
+    CREATE TRIGGER IF NOT EXISTS normalize_user_role_insert
+    AFTER INSERT ON users
+    WHEN NEW.role IN ('Officer', 'Admin')
+    BEGIN
+        UPDATE users
+        SET role = CASE NEW.role
+            WHEN 'Officer' THEN 'Traffic Police Officer'
+            WHEN 'Admin' THEN 'Vehicle Registerer'
+            ELSE NEW.role
+        END
+        WHERE id = NEW.id;
+    END;
+    """)
+    cursor.execute("""
+    CREATE TRIGGER IF NOT EXISTS normalize_user_role_update
+    AFTER UPDATE OF role ON users
+    WHEN NEW.role IN ('Officer', 'Admin')
+    BEGIN
+        UPDATE users
+        SET role = CASE NEW.role
+            WHEN 'Officer' THEN 'Traffic Police Officer'
+            WHEN 'Admin' THEN 'Vehicle Registerer'
+            ELSE NEW.role
+        END
+        WHERE id = NEW.id;
+    END;
+    """)
 
     for column, definition in (
         ("is_verified", "INTEGER NOT NULL DEFAULT 0"),

@@ -104,6 +104,11 @@ def serve_traffic_rules():
 def serve_dashboard(_: dict = Depends(auth.require_roles_or_redirect("Officer"))):
     return html_page("dashboard.html")
 
+@app.get("/registered-users")
+@app.get("/registered-users.html")
+def serve_registered_users(_: dict = Depends(auth.require_roles_or_redirect("Officer"))):
+    return html_page("registered-users.html")
+
 @app.get("/vehicles")
 @app.get("/vehicles/add")
 @app.get("/vehicles.html")
