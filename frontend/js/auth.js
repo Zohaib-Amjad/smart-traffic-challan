@@ -226,17 +226,17 @@
     if (path === '/api/auth/login' && method === 'POST') {
       let body = {};
       try { body = typeof options.body === 'string' ? JSON.parse(options.body) : options.body || {}; } catch {}
-      const role = body.role || 'Officer';
-      const email = body.email || (role === 'Officer' ? 'officer@traffic.gov.pk' : (role === 'Admin' ? 'admin@traffic.gov.pk' : 'citizen@test.pk'));
+      const role = body.role || 'Traffic Police Officer';
+      const email = body.email || (role === 'Traffic Police Officer' ? 'officer1@example.com' : (role === 'Vehicle Registerer' ? 'registrar@example.com' : 'citizen@test.pk'));
       
       let user = {
-        id: role === 'Admin' ? 301 : (role === 'Citizen' ? 101 : 201),
-        full_name: role === 'Admin' ? 'Excise Registrar Tahir' : (role === 'Citizen' ? 'Muhammad Ali' : 'Sub-Inspector Farhan'),
+        id: role === 'Vehicle Registerer' ? 301 : (role === 'Citizen' ? 101 : 201),
+        full_name: role === 'Vehicle Registerer' ? 'Excise Registrar Tahir' : (role === 'Citizen' ? 'Muhammad Ali' : 'Sub-Inspector Farhan'),
         email: email,
         role: role,
-        cnic: role === 'Admin' ? '35201-9876543-5' : (role === 'Citizen' ? '35201-1234567-1' : '35201-7654321-3'),
+        cnic: role === 'Vehicle Registerer' ? '35201-9876543-5' : (role === 'Citizen' ? '35201-1234567-1' : '35201-7654321-3'),
         phone: '0300-1234567',
-        badge_number: role === 'Officer' ? 'TP-4821' : null
+        badge_number: role === 'Traffic Police Officer' ? 'TP-4821' : null
       };
 
       return jsonResponse({ success: true, user });
@@ -767,7 +767,7 @@ function redirectAfterAuth(defaultPath = null) {
   const user = getCurrentUser();
   const roleDefault = user && user.role === 'Citizen'
     ? '/number_plate.html'
-    : (user && user.role === 'Admin' ? '/vehicles.html' : '/dashboard.html');
+    : (user && user.role === 'Vehicle Registerer' ? '/vehicles.html' : '/dashboard.html');
 
   const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : null;
   let destination = safeNext || (defaultPath || roleDefault);
@@ -776,9 +776,9 @@ function redirectAfterAuth(defaultPath = null) {
     const citizenOnlyPaths = ['/number_plate.html', '/number-plate', '/number_plate', '/challan/', '/challans'];
     const allowedCitizenDestination = citizenOnlyPaths.some((path) => destination === path || destination.startsWith(path));
     destination = allowedCitizenDestination ? destination : '/number_plate.html';
-  } else if (user && user.role === 'Admin') {
+  } else if (user && user.role === 'Vehicle Registerer') {
     destination = '/vehicles.html';
-  } else if (user && user.role === 'Officer') {
+  } else if (user && user.role === 'Traffic Police Officer') {
     destination = '/dashboard.html';
   }
 
@@ -804,8 +804,8 @@ function getActiveNavKey() {
 }
 
 function adminControlGroupHtml(user) {
-  const isOfficer = user.role === 'Officer';
-  const isAdmin = user.role === 'Admin';
+  const isOfficer = user.role === 'Traffic Police Officer';
+  const isAdmin = user.role === 'Vehicle Registerer';
   const vehicleLink = isAdmin
     ? '<a href="/vehicles.html" class="nav-item" data-nav="vehicles"><i class="fa-solid fa-car"></i> Vehicle Registration</a>'
     : (isOfficer
