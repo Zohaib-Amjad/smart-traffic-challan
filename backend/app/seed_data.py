@@ -2,46 +2,42 @@
 
 import sqlite3
 import datetime
+from passlib.context import CryptContext
 from app.config import DB_PATH
 from app.database import init_db
 from app.punjab_schedule import seed_punjab_schedule
 from app.services.archive_registry import import_archive_plates, index_archive_dataset, plate_key
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 USERS_DATA = [
     {
-        "name": "Traffic Enforcement Officer",
-        "email": "officer@traffic.gov.pk",
-        "password": "admin123",
-        "role": "Officer",
-        "created_at": "2026-08-10 08:00:00"
-    },
-    {
-        "name": "Traffic Patrol Officer",
-        "email": "officer2@traffic.gov.pk",
-        "password": "admin123",
-        "role": "Officer",
-        "created_at": "2026-08-10 08:00:00"
-    },
-    {
         "name": "Traffic Police Officer 1",
-        "email": "admin1@gmail.com",
-        "password": "",
-        "role": "Officer",
-        "created_at": "2026-09-12 08:00:00"
+        "email": "officer1@example.com",
+        "password": "Officer@1234",
+        "role": "Traffic Police Officer",
+        "created_at": "2026-09-13 08:00:00"
     },
     {
-        "name": "Vehicle Registration Officer",
-        "email": "admin@traffic.gov.pk",
-        "password": "admin123",
-        "role": "Admin",
-        "created_at": "2026-08-10 08:00:00"
+        "name": "Traffic Police Officer 2",
+        "email": "officer2@example.com",
+        "password": "Officer@5678",
+        "role": "Traffic Police Officer",
+        "created_at": "2026-09-13 08:00:00"
     },
     {
-        "name": "Vehicle Registerer Open Access",
-        "email": "vehicle-registerer@local.test",
-        "password": "",
-        "role": "Admin",
-        "created_at": "2026-09-12 08:00:00"
+        "name": "Vehicle Registerer 1",
+        "email": "registrar1@example.com",
+        "password": "Registrar@1234",
+        "role": "Vehicle Registerer",
+        "created_at": "2026-09-13 08:00:00"
+    },
+    {
+        "name": "Vehicle Registerer 2",
+        "email": "registrar2@example.com",
+        "password": "Registrar@5678",
+        "role": "Vehicle Registerer",
+        "created_at": "2026-09-13 08:00:00"
     }
 ]
 
@@ -339,10 +335,18 @@ def seed_database():
         "demo.citizen@traffic.gov.pk",
     ))
     cursor.execute("DELETE FROM users WHERE email = ?", ("admin2@gmail.com",))
+    cursor.execute("DELETE FROM users WHERE email IN (?, ?, ?)", (
+        "officer@traffic.gov.pk",
+        "officer2@traffic.gov.pk",
+        "admin@traffic.gov.pk",
+    ))
 
     # Keep the local demo officer/admin identities available for role-based login.
     # Citizen accounts must be created via public registration only.
     for user in USERS_DATA:
+        password = user["password"]
+        if not password.startswith("$2"):
+            password = pwd_context.hash(password)
         cursor.execute("""
         INSERT INTO users (name, email, password, role, created_at, is_verified, verification_token, verification_expires_at, email_verified_at)
         VALUES (?, ?, ?, ?, ?, 1, NULL, NULL, ?)
@@ -357,7 +361,7 @@ def seed_database():
         """, (
             user["name"],
             user["email"],
-            user["password"],
+            password,
             user["role"],
             user["created_at"],
             datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

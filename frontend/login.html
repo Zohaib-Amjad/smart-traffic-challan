@@ -49,14 +49,15 @@
         <div class="form-group" id="loginEmailInputGroup">
           <label class="form-label" for="loginEmail">Email Address</label>
           <input type="email" id="loginEmail" class="text-input" placeholder="Enter Email Address" required>
+          <select id="loginSpecialEmail" class="text-input" style="display: none; margin-top: 0.5rem;"></select>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="specialAccount">Special role account</label>
-          <select id="specialAccount" class="text-input">
-            <option value="">Select an account</option>
-            <option value="admin1@gmail.com" data-allow-blank="true">Traffic Police Officer 1</option>
-            <option value="vehicle-registerer" data-email="vehicle-registerer@local.test" data-allow-blank="true">Vehicle Registerer (open access)</option>
+          <label class="form-label" for="loginRole">Login As</label>
+          <select id="loginRole" class="text-input" required>
+            <option value="Citizen">Citizen</option>
+            <option value="Traffic Police Officer">Traffic Police Officer</option>
+            <option value="Vehicle Registerer">Vehicle Registerer</option>
           </select>
         </div>
 
@@ -64,7 +65,7 @@
         <div class="form-group" style="margin-bottom: 1.75rem;">
           <label class="form-label" for="loginPassword">Password</label>
           <div style="position: relative;">
-            <input type="password" id="loginPassword" class="text-input" placeholder="Enter Password" style="padding-right: 3rem;">
+            <input type="password" id="loginPassword" class="text-input" placeholder="Enter Password" required style="padding-right: 3rem;">
             <button type="button" class="password-toggle" data-password-target="loginPassword" aria-label="Show password" title="Show password" style="position: absolute; top: 50%; right: 0.75rem; transform: translateY(-50%); border: 0; background: transparent; color: #64748B; cursor: pointer; padding: 0.35rem;">
               <i class="fa-solid fa-eye" aria-hidden="true"></i>
             </button>
@@ -105,16 +106,38 @@
       msg.textContent = 'Your account is ready. You can now sign in.';
     }
 
-    document.getElementById('specialAccount').addEventListener('change', (event) => {
-      const option = event.target.selectedOptions[0];
-      const emailGroup = document.getElementById('loginEmailInputGroup');
+    const fixedLoginAccounts = {
+      'Traffic Police Officer': [
+        ['officer1@example.com', 'Officer@1234'],
+        ['officer2@example.com', 'Officer@5678']
+      ],
+      'Vehicle Registerer': [
+        ['registrar1@example.com', 'Registrar@1234'],
+        ['registrar2@example.com', 'Registrar@5678']
+      ]
+    };
+
+    function updateLoginRoleFields() {
+      const role = document.getElementById('loginRole').value;
+      const accounts = fixedLoginAccounts[role] || [];
       const emailInput = document.getElementById('loginEmail');
-      if (event.target.value === 'vehicle-registerer') {
-        emailGroup.style.display = 'none';
-        emailInput.value = option.dataset.email;
-      } else {
-        emailGroup.style.display = '';
-        emailInput.value = event.target.value || '';
+      const emailSelect = document.getElementById('loginSpecialEmail');
+      emailSelect.innerHTML = '<option value="">Select account email</option>'
+        + accounts.map(([email]) => `<option value="${email}">${email}</option>`).join('');
+      emailInput.style.display = accounts.length ? 'none' : '';
+      emailInput.required = !accounts.length;
+      emailSelect.style.display = accounts.length ? '' : 'none';
+      emailSelect.required = !!accounts.length;
+      document.getElementById('loginPassword').value = '';
+    }
+
+    document.getElementById('loginRole').addEventListener('change', updateLoginRoleFields);
+    document.getElementById('loginSpecialEmail').addEventListener('change', (event) => {
+      const role = document.getElementById('loginRole').value;
+      const selected = (fixedLoginAccounts[role] || []).find(([email]) => email === event.target.value);
+      document.getElementById('loginEmail').value = event.target.value;
+      if (selected) {
+        document.getElementById('loginPassword').value = selected[1];
       }
     });
 
@@ -140,13 +163,11 @@
 
     async function handleLogin(e) {
       e.preventDefault();
-      const selectedAccount = document.getElementById('specialAccount').selectedOptions[0];
-      const email = selectedAccount.dataset.email || document.getElementById('loginEmail').value.trim();
+      const email = document.getElementById('loginSpecialEmail').value || document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
+      const role = document.getElementById('loginRole').value;
       const emailValid = !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      const passwordValid = selectedAccount.dataset.allowBlank === 'true'
-        ? password.length === 0 || password.length >= 6
-        : password.length >= 6;
+      const passwordValid = password.length >= 6;
 
       setFieldError('loginEmail', !emailValid);
       setFieldError('loginPassword', !passwordValid);
@@ -164,7 +185,7 @@
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, password, role })
         });
         const data = await res.json();
         if (data.success) {

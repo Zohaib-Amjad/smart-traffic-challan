@@ -29,10 +29,16 @@ Open `http://127.0.0.1:8000/`. API docs: `http://127.0.0.1:8000/docs`.
 Registration saves the account directly in the database and redirects to the
 login page. No email verification code or SMTP configuration is required.
 
-The login page includes one seeded Traffic Police Officer choice:
-`admin1@gmail.com`, with a blank password as requested. Vehicle Registerer is
-available through an open-access special option and does not require the user to
-enter an email or password.
+The login and registration pages provide exactly two fixed accounts for each
+special role:
+
+- Traffic Police Officer: `officer1@example.com` / `Officer@1234`
+- Traffic Police Officer: `officer2@example.com` / `Officer@5678`
+- Vehicle Registerer: `registrar1@example.com` / `Registrar@1234`
+- Vehicle Registerer: `registrar2@example.com` / `Registrar@5678`
+
+Citizen remains the only free-form public role. Special-role email/password
+pairs are enforced by the backend, not only by the browser dropdown.
 
 ### Docker
 
@@ -51,7 +57,7 @@ The system has three roles:
 - **Traffic Police Officer:** can use number plate recognition, generate challans, inspect challan history, and view reports.
 - **Vehicle Registrar:** can register, update, search, transfer ownership, record or verify documents, and suspend or block vehicles. It cannot open the dashboard, number plate recognition, reports, or challan workflows.
 
-Only the seeded Officer and Admin accounts have administrative privileges. Public registration can never create a privileged account.
+Traffic Police Officer registration is restricted to the two rows in `allowed_emails`; Citizen and Vehicle Registerer registration is open.
 
 1. Open the concise public home page.
 2. Choose AI Vehicle Check, Traffic Rules, Login, or Sign up.
@@ -175,7 +181,7 @@ Python, FastAPI, Uvicorn, Pydantic, SQLite, OpenCV, NumPy, Pillow, Tesseract, Ea
 
 ## Known Limitations
 
-- Passwords are stored as plain text; production must use password hashing.
+- Passwords are stored with Passlib bcrypt hashes.
 - The session cookie contains a user ID rather than a signed session token.
 - Legacy API routes still need the same authorization treatment as protected HTML pages.
 - Reports are global while history is per issuer.

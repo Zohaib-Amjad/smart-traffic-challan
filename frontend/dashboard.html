@@ -118,14 +118,88 @@
       margin-bottom: 1.25rem;
       line-height: 1.5;
     }
+    .accounts-section {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: 1.25rem;
+      width: 100%;
+      max-width: 1080px;
+      margin: 0 auto 1.25rem;
+      padding: 1.25rem;
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+    }
+    .accounts-intro {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .accounts-intro h2 {
+      margin: 0 0 0.65rem;
+      color: #0F172A;
+      font-size: 1.35rem;
+    }
+    .accounts-intro p {
+      margin: 0 0 1rem;
+      color: #64748B;
+      line-height: 1.55;
+      font-size: 0.9rem;
+    }
+    .accounts-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-bottom: 1rem;
+    }
+    .account-stat {
+      padding: 0.55rem 0.7rem;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 6px;
+      color: #334155;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+    .account-stat strong { color: #1D4ED8; font-size: 1rem; margin-right: 0.2rem; }
+    .accounts-preview {
+      min-width: 0;
+      border: 1px solid #E2E8F0;
+      border-radius: 7px;
+      overflow: hidden;
+    }
+    .accounts-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      background: #F8FAFC;
+      border-bottom: 1px solid #E2E8F0;
+    }
+    .accounts-preview-header h3 { margin: 0; color: #0F172A; font-size: 0.95rem; }
+    .accounts-preview-list { max-height: 180px; overflow-y: auto; }
+    .account-preview-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.65rem 0.9rem;
+      border-bottom: 1px solid #F1F5F9;
+      font-size: 0.78rem;
+    }
+    .account-preview-row:last-child { border-bottom: 0; }
+    .account-preview-name { min-width: 0; color: #334155; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .account-preview-meta { flex: 0 0 auto; color: #64748B; text-align: right; }
+    .account-preview-empty { padding: 1.25rem; color: #64748B; text-align: center; font-size: 0.82rem; }
 
     .dashboard-page > main.container {
       flex: 1 1 auto;
-      display: flex;
-      align-items: center;
+      display: block;
       padding-top: 1rem;
       padding-bottom: 1rem;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .dashboard-page .app-footer {
@@ -160,6 +234,12 @@
 
       .dashboard-page > main.container {
         padding: 0.75rem;
+      }
+
+      .accounts-section {
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+        padding: 0.85rem;
       }
 
       .action-grid {
@@ -280,7 +360,31 @@
   <!-- Dashboard Container -->
   <main class="container">
 
-    <!-- 4 Hub Action Cards -->
+    <!-- Registered Accounts Overview -->
+    <section class="accounts-section" aria-labelledby="accounts-overview-title">
+      <div class="accounts-intro">
+        <h2 id="accounts-overview-title">Registered Accounts</h2>
+        <p>Monitor the people registered in the system by role. Review recent accounts and open the full management view when you need to remove a registration.</p>
+        <div class="accounts-stats" aria-label="Registered account totals">
+          <div class="account-stat"><strong id="dashboardTotalAccounts">0</strong>Total</div>
+          <div class="account-stat"><strong id="dashboardCitizenAccounts">0</strong>Citizens</div>
+          <div class="account-stat"><strong id="dashboardOfficerAccounts">0</strong>Officers</div>
+          <div class="account-stat"><strong id="dashboardRegistererAccounts">0</strong>Registerers</div>
+        </div>
+        <a href="/registered-users" class="btn btn-primary" style="align-self: flex-start; padding: 10px 20px; font-weight: 700;">View All Accounts</a>
+      </div>
+      <div class="accounts-preview">
+        <div class="accounts-preview-header">
+          <h3>Recent registrations</h3>
+          <i class="fa-solid fa-users" aria-hidden="true" style="color: #2563EB;"></i>
+        </div>
+        <div class="accounts-preview-list" id="dashboardAccountsPreview">
+          <div class="account-preview-empty">Loading registered accounts...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Action Cards -->
     <div class="action-grid">
       <!-- Card 1: Vehicle Management -->
       <div class="action-card">
@@ -344,6 +448,33 @@
     function handleLogout() {
       logout();
     }
+
+    function escapeDashboardText(value) {
+      return String(value).replace(/[&<>\"']/g, (character) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[character]));
+    }
+
+    async function loadDashboardAccounts() {
+      try {
+        const response = await fetch('/api/auth/users');
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || 'Unable to load account details.');
+        document.getElementById('dashboardTotalAccounts').textContent = data.total;
+        document.getElementById('dashboardCitizenAccounts').textContent = data.counts.Citizen || 0;
+        document.getElementById('dashboardOfficerAccounts').textContent = data.counts['Traffic Police Officer'] || 0;
+        document.getElementById('dashboardRegistererAccounts').textContent = data.counts['Vehicle Registerer'] || 0;
+        const preview = document.getElementById('dashboardAccountsPreview');
+        const recentUsers = data.users.slice(0, 12);
+        preview.innerHTML = recentUsers.length ? recentUsers.map((registeredUser) => `
+          <div class="account-preview-row">
+            <span class="account-preview-name">${escapeDashboardText(registeredUser.name)}</span>
+            <span class="account-preview-meta">${escapeDashboardText(registeredUser.role)}</span>
+          </div>`).join('') : '<div class="account-preview-empty">No registered accounts yet.</div>';
+      } catch (error) {
+        document.getElementById('dashboardAccountsPreview').innerHTML = `<div class="account-preview-empty">${escapeDashboardText(error.message)}</div>`;
+      }
+    }
+
+    loadDashboardAccounts();
   </script>
 </body>
 </html>

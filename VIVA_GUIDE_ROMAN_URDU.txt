@@ -37,7 +37,7 @@ Docker:
 docker build -t smart-traffic-challan .
 docker run --rm -p 8000:7860 -e PORT=7860 smart-traffic-challan
 
-Startup init_db() se tables banata hai, demo Citizen/Officer/Admin accounts aur
+Startup init_db() se tables banata hai, demo Citizen/Traffic Police Officer/Vehicle Registerer accounts aur
 Punjab reference data refresh karta hai. Demo challans startup par create nahi
 hotay.
 
@@ -68,8 +68,9 @@ URL: /register
 API: POST /api/auth/register
 
 Name, email aur password users table mein save hotay hain. Email lowercase hoti
-hai. Duplicate email reject hoti hai. Public registration ka role Citizen hota
-hai; Officer aur Admin privileged accounts hain. Citizen account sirf usi role
+hai. Duplicate email reject hoti hai. Public registration mein Citizen aur
+Vehicle Registerer open hain; Traffic Police Officer ke liye allowed_emails
+whitelist zaroori hai. Citizen account sirf usi role
 mein login kar sakta hai aur uska dashboard sirf apni citizen portal /number-plate
 par limited hota hai. Dashboard, vehicle registry, challan generation, reports,
 aur officer/admin workflows usay block kar diye gaye hain.
@@ -78,9 +79,14 @@ Registration ke baad account seedha database mein save hota hai aur user login
 page par redirect hota hai. Email verification code, SMTP setup aur extra
 verification step is workflow mein use nahi hotay.
 
-Login page par ek seeded Traffic Police Officer option hai: admin1@gmail.com.
-Is ka password filhaal blank hai. Vehicle Registerer open-access option se
-email aur password ke baghair registry workspace khol sakta hai.
+Login aur registration page par special roles ke liye exactly do fixed accounts
+hain:
+- Traffic Police Officer: officer1@example.com / Officer@1234
+- Traffic Police Officer: officer2@example.com / Officer@5678
+- Vehicle Registerer: registrar1@example.com / Registrar@1234
+- Vehicle Registerer: registrar2@example.com / Registrar@5678
+Citizen hi free-form public role hai. Special-role credentials backend bhi enforce
+karta hai, sirf browser dropdown par depend nahi karta.
 
 Demo accounts:
 - Traffic Police Officer: officer@traffic.gov.pk / admin123
@@ -105,8 +111,8 @@ off to the registration page with that email prefilled. The client fetch shim
 must keep the live FastAPI JSON response and only fall back to the local mock
 engine when the backend endpoint is actually unreachable.
 
-Important limitation: password plain text mein stored hai. Production mein
-password hashing, signed sessions aur proper expiry zaroori hain.
+Passwords Passlib bcrypt hash ke sath stored hotay hain. Signed sessions aur
+proper expiry production mein ab bhi zaroori hain.
 
 ============================================================
 5. ADMINISTRATIVE CONTROL
@@ -310,7 +316,7 @@ Deployment: Windows batch file and Docker
 15. LIMITATIONS
 ============================================================
 
-1. Passwords plain text mein save hotay hain.
+1. Passwords bcrypt hash ke sath save hotay hain.
 2. Session cookie simple user ID rakhti hai.
 3. Legacy APIs ko complete server authorization ki zaroorat hai.
 4. Reports global hain, history per issuer hai.
