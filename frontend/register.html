@@ -56,8 +56,8 @@
             <label class="form-label" for="regRole">Register As</label>
             <select id="regRole" class="text-input" required>
               <option value="Citizen">Citizen</option>
-              <option value="Officer">Traffic Police Officer</option>
-              <option value="Admin">Vehicle Registerer</option>
+              <option value="Traffic Police Officer">Traffic Police Officer</option>
+              <option value="Vehicle Registerer">Vehicle Registerer</option>
             </select>
           </div>
 
@@ -65,6 +65,9 @@
           <div class="form-group">
             <label class="form-label" for="regEmail">Email Address</label>
             <input type="email" id="regEmail" class="text-input" placeholder="Enter Email" required>
+            <select id="regSpecialEmail" class="text-input" style="display: none; margin-top: 0.5rem;">
+              <option value="">Select authorized email</option>
+            </select>
           </div>
 
           <!-- Password -->
@@ -76,6 +79,11 @@
                 <i class="fa-solid fa-eye" aria-hidden="true"></i>
               </button>
             </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.75rem;">
+            <label class="form-label" for="regConfirmPassword">Confirm Password</label>
+            <input type="password" id="regConfirmPassword" class="text-input" placeholder="Confirm Password" required>
           </div>
         </div>
 
@@ -107,6 +115,48 @@
 
     const regForm = document.getElementById('regForm');
     const registerMessage = document.getElementById('registerMessage');
+    const specialEmails = {
+      'Traffic Police Officer': [
+        ['officer1@example.com', 'Officer@1234'],
+        ['officer2@example.com', 'Officer@5678']
+      ],
+      'Vehicle Registerer': [
+        ['registrar1@example.com', 'Registrar@1234'],
+        ['registrar2@example.com', 'Registrar@5678']
+      ]
+    };
+
+    function updateSpecialRegistrationFields() {
+      const role = document.getElementById('regRole').value;
+      const emailInput = document.getElementById('regEmail');
+      const emailSelect = document.getElementById('regSpecialEmail');
+      const passwordInput = document.getElementById('regPassword');
+      const confirmInput = document.getElementById('regConfirmPassword');
+      const options = specialEmails[role] || [];
+      emailSelect.innerHTML = '<option value="">Select authorized email</option>'
+        + options.map(([email]) => `<option value="${email}">${email}</option>`).join('');
+      emailInput.style.display = options.length ? 'none' : '';
+      emailInput.required = !options.length;
+      emailSelect.style.display = options.length ? '' : 'none';
+      emailSelect.required = !!options.length;
+      passwordInput.readOnly = false;
+      confirmInput.readOnly = false;
+      if (!options.length) {
+        passwordInput.value = '';
+        confirmInput.value = '';
+      }
+    }
+
+    document.getElementById('regRole').addEventListener('change', updateSpecialRegistrationFields);
+    document.getElementById('regSpecialEmail').addEventListener('change', (event) => {
+      const selected = (specialEmails[document.getElementById('regRole').value] || [])
+        .find(([email]) => email === event.target.value);
+      document.getElementById('regEmail').value = event.target.value;
+      if (selected) {
+        document.getElementById('regPassword').value = selected[1];
+        document.getElementById('regConfirmPassword').value = selected[1];
+      }
+    });
 
     function setFieldError(fieldId, hasError) {
       const field = document.getElementById(fieldId);
@@ -120,12 +170,14 @@
       const name = document.getElementById('regName').value.trim();
       const email = document.getElementById('regEmail').value.trim();
       const password = document.getElementById('regPassword').value;
+      const confirmPassword = document.getElementById('regConfirmPassword').value;
       const role = document.getElementById('regRole').value;
       setFieldError('regName', !name);
       setFieldError('regEmail', !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
       setFieldError('regPassword', !password || password.length < 6);
+      setFieldError('regConfirmPassword', !confirmPassword || password !== confirmPassword);
       setFieldError('regRole', !role);
-      return !!name && !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && !!password && password.length >= 6 && !!role;
+      return !!name && !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && !!password && password.length >= 6 && password === confirmPassword && !!role;
     }
 
     function showMessage(text, style = 'info') {
@@ -164,7 +216,8 @@
       if (!markRegistrationFields()) {
         const invalidField = !document.getElementById('regName').value.trim() ? 'regName'
           : (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('regEmail').value.trim()) ? 'regEmail'
-          : (!document.getElementById('regPassword').value || document.getElementById('regPassword').value.length < 6 ? 'regPassword' : 'regRole'));
+          : (!document.getElementById('regPassword').value || document.getElementById('regPassword').value.length < 6 ? 'regPassword'
+          : (document.getElementById('regPassword').value !== document.getElementById('regConfirmPassword').value ? 'regConfirmPassword' : 'regRole')));
         setFieldError(invalidField, true);
         showMessage('Please correct the highlighted field(s) before continuing.', 'error');
         return;
@@ -173,6 +226,7 @@
       const name = document.getElementById('regName').value;
       const email = document.getElementById('regEmail').value;
       const password = document.getElementById('regPassword').value;
+      const confirmPassword = document.getElementById('regConfirmPassword').value;
       const role = document.getElementById('regRole').value;
       const btn = document.getElementById('btnRegister');
       btn.disabled = true;
@@ -182,7 +236,7 @@
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ name, email, password, role })
+          body: JSON.stringify({ name, email, password, confirm_password: confirmPassword, role })
         });
         const data = await readApiResponse(res);
         if (data.success) {
@@ -191,7 +245,7 @@
           showMessage(data.detail || 'Registration failed.', 'error');
         }
       } catch (err) {
-        showMessage('Network error: ' + err.message, 'error');
+        showMessage(err.message, 'error');
         btn.innerHTML = 'Register';
       } finally {
         btn.disabled = false;

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <title>Registered Accounts - Smart Traffic Challan System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/styles.css?v=17">
+  <script src="/static/js/auth.js?v=17"></script>
+  <script>requireAuth();</script>
+  <style>
+    .accounts-page { min-height: 100vh; background: #F8FAFC; }
+    .accounts-main { max-width: 1180px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+    .accounts-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+    .accounts-header h1 { margin: 0 0 0.35rem; color: #0F172A; font-size: clamp(1.5rem, 3vw, 2.25rem); }
+    .accounts-header p { margin: 0; color: #64748B; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .summary-card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 1.1rem; box-shadow: var(--shadow-card); }
+    .summary-label { color: #64748B; font-size: 0.8rem; font-weight: 700; }
+    .summary-value { color: #0F172A; font-size: 1.8rem; font-weight: 800; margin-top: 0.3rem; }
+    .accounts-panel { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-card); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 700px; }
+    th, td { padding: 0.9rem 1rem; border-bottom: 1px solid #E2E8F0; text-align: left; font-size: 0.86rem; }
+    th { background: #F8FAFC; color: #475569; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    td { color: #334155; }
+    tr:last-child td { border-bottom: 0; }
+    .role-pill { display: inline-block; border-radius: 999px; padding: 0.3rem 0.55rem; background: #EFF6FF; color: #1D4ED8; font-size: 0.75rem; font-weight: 700; }
+    .delete-account { border: 0; background: transparent; color: #B91C1C; cursor: pointer; font-weight: 700; }
+    .delete-account:disabled { color: #94A3B8; cursor: not-allowed; }
+    .empty-state { padding: 2rem; text-align: center; color: #64748B; }
+    .accounts-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem; border-bottom: 1px solid #E2E8F0; }
+    .accounts-filter { max-width: 260px; }
+    @media (max-width: 720px) { .accounts-header { align-items: flex-start; flex-direction: column; } .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 520px) { .accounts-toolbar { align-items: stretch; flex-direction: column; } .accounts-filter { max-width: none; } }
+  </style>
+</head>
+<body class="accounts-page">
+  <header class="navbar">
+    <a href="/" class="brand">
+      <div class="brand-icon"><img src="/static/logo.png" alt="Smart Traffic Challan System logo"></div>
+      <div><div class="brand-title">Smart Traffic Challan System</div><div class="brand-subtitle">AI Violation Surveillance</div></div>
+    </a>
+    <nav class="nav-links" id="appNav" data-nav-mode="app" data-active="registered-users"></nav>
+  </header>
+
+  <main class="accounts-main">
+    <div class="accounts-header">
+      <div><h1>Registered Accounts</h1><p>View account totals and remove registrations from the system.</p></div>
+      <button class="btn btn-primary" id="refreshAccounts" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </div>
+    <div class="summary-grid" aria-label="Account totals">
+      <div class="summary-card"><div class="summary-label">Total accounts</div><div class="summary-value" id="totalCount">0</div></div>
+      <div class="summary-card"><div class="summary-label">Citizens</div><div class="summary-value" id="citizenCount">0</div></div>
+      <div class="summary-card"><div class="summary-label">Traffic Police Officers</div><div class="summary-value" id="officerCount">0</div></div>
+      <div class="summary-card"><div class="summary-label">Vehicle Registerers</div><div class="summary-value" id="registererCount">0</div></div>
+    </div>
+    <section class="accounts-panel" aria-labelledby="account-list-title">
+      <div class="accounts-toolbar">
+        <h2 id="account-list-title" style="margin: 0; color: #0F172A; font-size: 1.1rem;">Registered users</h2>
+        <label style="display: flex; align-items: center; gap: 0.55rem; color: #475569; font-size: 0.82rem; font-weight: 700;" for="roleFilter">
+          Filter by role
+          <select id="roleFilter" class="text-input accounts-filter">
+            <option value="All">All roles</option>
+            <option value="Citizen">Citizens</option>
+            <option value="Traffic Police Officer">Traffic Police Officers</option>
+            <option value="Vehicle Registerer">Vehicle Registerers</option>
+          </select>
+        </label>
+      </div>
+      <div id="accountsMessage" role="status" style="padding: 0 1rem; color: #B91C1C; font-size: 0.86rem;"></div>
+      <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Registered</th><th>Action</th></tr></thead><tbody id="accountsBody"></tbody></table></div>
+    </section>
+  </main>
+
+  <script>
+    const currentUser = getCurrentUser();
+    const accountsMessage = document.getElementById('accountsMessage');
+    const accountsBody = document.getElementById('accountsBody');
+    const roleFilter = document.getElementById('roleFilter');
+    let registeredUsers = [];
+
+    function setAccountsMessage(message) { accountsMessage.textContent = message || ''; }
+
+    function renderAccounts(data) {
+      document.getElementById('totalCount').textContent = data.total;
+      document.getElementById('citizenCount').textContent = data.counts.Citizen || 0;
+      document.getElementById('officerCount').textContent = data.counts['Traffic Police Officer'] || 0;
+      document.getElementById('registererCount').textContent = data.counts['Vehicle Registerer'] || 0;
+      registeredUsers = data.users;
+      renderFilteredAccounts();
+    }
+
+    function renderFilteredAccounts() {
+      const selectedRole = roleFilter.value;
+      const filteredUsers = selectedRole === 'All'
+        ? registeredUsers
+        : registeredUsers.filter((user) => user.role === selectedRole);
+      accountsBody.innerHTML = filteredUsers.length ? filteredUsers.map((user) => `
+        <tr>
+          <td>${escapeHtml(user.name)}</td>
+          <td>${escapeHtml(user.email)}</td>
+          <td><span class="role-pill">${escapeHtml(user.role)}</span></td>
+          <td>${escapeHtml(user.created_at || '-')}</td>
+          <td><button class="delete-account" type="button" data-user-id="${user.id}" ${currentUser && currentUser.id === user.id ? 'disabled title="You cannot remove your own account"' : ''}><i class="fa-solid fa-trash"></i> Remove</button></td>
+        </tr>`).join('') : '<tr><td class="empty-state" colspan="5">No registered accounts found.</td></tr>';
+      accountsBody.querySelectorAll('.delete-account:not(:disabled)').forEach((button) => button.addEventListener('click', () => removeAccount(button.dataset.userId)));
+    }
+
+    function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, (character) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[character])); }
+
+    async function loadAccounts() {
+      setAccountsMessage('');
+      try {
+        const response = await fetch('/api/auth/users');
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || 'Unable to load registered accounts.');
+        renderAccounts(data);
+      } catch (error) { setAccountsMessage(error.message); }
+    }
+
+    async function removeAccount(userId) {
+      if (!window.confirm('Remove this registered account? This cannot be undone.')) return;
+      try {
+        const response = await fetch(`/api/auth/users/${userId}`, { method: 'DELETE' });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || 'Unable to remove account.');
+        await loadAccounts();
+      } catch (error) { setAccountsMessage(error.message); }
+    }
+
+    document.getElementById('refreshAccounts').addEventListener('click', loadAccounts);
+    roleFilter.addEventListener('change', renderFilteredAccounts);
+    loadAccounts();
+  </script>
+</body>
+</html>
